@@ -29,6 +29,8 @@ The server is run with nodemon so it will check for changes and update constantl
 
 DB setting:
 
+Lancer Posgresql
+
 Install pgadmin and create a db with these properties:
 host=localhost port=5432 dbname=postgres user=postgres password=xxxxxxx sslmode=prefer connect_timeout=10
 
