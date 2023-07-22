@@ -34,6 +34,9 @@ db.sequelize = sequelize
 
 //connecting to model
 db.users = require('./userModel')(sequelize, DataTypes)
+db.companies = require('./companyModel')(sequelize, DataTypes)
+db.websites = require('./websiteModel')(sequelize, DataTypes)
+db.tags = require('./tagModel')(sequelize, DataTypes)
 
 //exporting the module
 module.exports = db

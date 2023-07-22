@@ -5,44 +5,58 @@ const jwt = require("jsonwebtoken");
 
 // Assigning users to the variable User
 const User = db.users;
+const Company = db.companies;
+const Website = db.websites;
 
 //signing a user up
 //hashing users password before its saved to the database with bcrypt
 
 const signup = async (req, res) => {
     try {
-        const { userName, email, password } = req.body;
+        const { userName, email, password, companyName, contactInfo, websiteUrl } = req.body;
 
+        // Hash the password before storing it
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // Save the user data to the database
         const user = await User.create({
             userName,
             email,
             password: hashedPassword,
+            role: userName === 'admin' ? 'admin' : 'user',
+            contactInfo,
         });
 
-        if (user) {
-            const token = jwt.sign({ id: user.id }, process.env.secretKey, {
-                expiresIn: '1d',
-            });
+        // Create a new Company record and associate it with the user
+        const company = await Company.create({
+            companyName,
+            kbis: req.file.filename, // The filename of the uploaded KBIS document
+            userId: user.id, // Set the userId to associate the Company with the user
+        });
 
-            res.cookie('jwt', token, { maxAge: 1 * 24 * 60 * 60 * 1000, httpOnly: true });
+        // Create a new Website record and associate it with the user
+        const website = await Website.create({
+            baseUrl: websiteUrl,
+            userId: user.id, // Set the userId to associate the Website with the user
+        });
 
-            console.log('User:', JSON.stringify(user, null, 2));
-            console.log('Token:', token);
+        // Generate and set the JWT token in the response cookie
+        const token = jwt.sign({ id: user.id }, process.env.secretKey, {
+            expiresIn: '1d',
+        });
+        res.cookie('jwt', token, { maxAge: 1 * 24 * 60 * 60 * 1000, httpOnly: true });
 
-            return res.status(201).json(user);
-        } else {
-            return res.status(409).send('Details are not correct');
-        }
+        console.log('User:', JSON.stringify(user, null, 2));
+        console.log('Company:', JSON.stringify(company, null, 2));
+        console.log('Website:', JSON.stringify(website, null, 2));
+        console.log('Token:', token);
+
+        return res.status(201).json(user);
     } catch (error) {
         console.error('Error during signup:', error);
         return res.status(500).send('Internal Server Error');
     }
 };
-
-module.exports = signup;
-
 
 
 //login authentication
@@ -71,13 +85,14 @@ const login = async (req, res) => {
                     expiresIn: 1 * 24 * 60 * 60 * 1000,
                 });
 
-                //if password matches wit the one in the database
-                //go ahead and generate a cookie for the user
                 res.cookie("jwt", token, { maxAge: 1 * 24 * 60 * 60, httpOnly: true });
-                console.log("user", JSON.stringify(user, null, 2));
-                console.log(token);
+
+                if(user.isValidated === false) {
+                    return res.status(401).send("Authentication failed, Your account is not validated yet");
+                }
+
                 //send user data
-                return res.status(201).send(user);
+                return res.status(201).send({ token, user });
             } else {
                 return res.status(401).send("Authentication failed");
             }
@@ -89,7 +104,77 @@ const login = async (req, res) => {
     }
 };
 
+// Controller function for validating a user
+const validateUser = async (req, res) => {
+    const { id } = req.params; // Assuming userId is passed as a URL parameter
+
+    console.log(id)
+
+    try {
+        // Find the user in the database based on the provided userId
+        const user = await User.findByPk(id);
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found.' });
+        }
+
+        // Check if the user making the request has the "admin" role
+        const { role } = req.user; // Assuming you have the authenticated user details in the request (set by userAuth middleware)
+        if (role !== 'admin') {
+            return res.status(403).json({ error: 'Unauthorized. Only admin users can validate users.' });
+        }
+
+        // Update the user's validation status to true
+        user.isValidated = true;
+        await user.save();
+
+        res.json({ message: 'User validated successfully.' });
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred during user validation.' });
+    }
+};
+
+const getAllUsers = async (req, res) => {
+    try {
+        const users = await User.findAll();
+        console.log(users)
+        return res.status(200).json(users);
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+const createDefaultAdmin = async () => {
+    try {
+        // Check if the default admin user already exists
+        const admin = await User.findOne({ where: { userName: 'admin' } });
+
+        if (!admin) {
+            // If the admin user doesn't exist, create it
+            const password = 'test1234'; // Set your default admin password here
+            const hashedPassword = await bcrypt.hash(password, 10);
+
+            await User.create({
+                userName: 'admin',
+                email: 'admin@example.com',
+                password: hashedPassword,
+                role: 'admin',
+                isValidated: true, // Assuming default admin is already validated
+            });
+
+            console.log('Default admin user created.');
+        } else {
+            console.log('Default admin user already exists.');
+        }
+    } catch (error) {
+        console.error('Error creating default admin user:', error);
+    }
+};
+
 module.exports = {
     signup,
     login,
+    validateUser,
+    getAllUsers,
+    createDefaultAdmin
 };
