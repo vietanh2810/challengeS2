@@ -104,15 +104,17 @@ const login = async (req, res) => {
     }
 };
 
+const { v4: uuidv4 } = require('uuid');
+
 // Controller function for validating a user
 const validateUser = async (req, res) => {
     const { id } = req.params; // Assuming userId is passed as a URL parameter
 
-    console.log(id)
-
     try {
         // Find the user in the database based on the provided userId
         const user = await User.findByPk(id);
+
+        const company = await Company.findOne({ where: { userId: id } });
 
         if (!user) {
             return res.status(404).json({ error: 'User not found.' });
@@ -123,13 +125,22 @@ const validateUser = async (req, res) => {
         if (role !== 'admin') {
             return res.status(403).json({ error: 'Unauthorized. Only admin users can validate users.' });
         }
+        
+        // Generate a uuid for the user
+        const uuid = uuidv4();
 
         // Update the user's validation status to true
         user.isValidated = true;
         await user.save();
 
+        // Update the linked Company's appId with the generated uuid
+        company.appId = uuid;
+        await company.save();
+        console.log(company);
+
         res.json({ message: 'User validated successfully.' });
     } catch (error) {
+        console.error('Error during user validation:', error); // Add the error log to the console
         res.status(500).json({ error: 'An error occurred during user validation.' });
     }
 };

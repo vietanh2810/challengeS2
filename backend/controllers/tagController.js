@@ -7,6 +7,8 @@ const getAllTags = async (req, res) => {
     try {
         const { dataValues } = req.user;
 
+        const role = dataValues.role;
+
         if (role === "admin") {
             // If the user is an admin, return all tags
             const tags = await Tag.findAll();
