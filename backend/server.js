@@ -7,6 +7,7 @@ const userRoutes = require('./routes/userRoutes');
 const tagRoutes = require('./routes/tagRoutes');
 const userController = require('./controllers/userController');
 const WebSocket = require('ws');
+require('dotenv').config();
 const expressWs = require('express-ws'); // Import express-ws library
 
 const PORT = process.env.PORT || 8080;

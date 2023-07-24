@@ -4,6 +4,7 @@ const db = require("../models");
 //Assigning db.users to User variable
 const User = db.users;
 const jwt = require("jsonwebtoken");
+const e = require("express");
 
 const checkAdminRole = (req, res, next) => {
     // Check if the user making the request is authenticated and has the role "admin"
@@ -64,7 +65,10 @@ const authenticate = (req, res, next) => {
         }
         const authToken = token.slice(7);
 
-        jwt.verify(authToken, process.env.secretKey, async (err, decoded) => {
+        jwt.verify(authToken, process.env.jwtSecret, async (err, decoded) => {
+
+            console.log(err)
+
             if (err) {
                 return res.status(401).json({ error: 'Unauthorized. Invalid or expired token.' });
             }

@@ -41,7 +41,7 @@ const signup = async (req, res) => {
         });
 
         // Generate and set the JWT token in the response cookie
-        const token = jwt.sign({ id: user.id }, process.env.secretKey, {
+        const token = jwt.sign({ id: user.id }, process.env.jwtSecret, {
             expiresIn: '1d',
         });
         res.cookie('jwt', token, { maxAge: 1 * 24 * 60 * 60 * 1000, httpOnly: true });
@@ -81,7 +81,7 @@ const login = async (req, res) => {
             //generate token with the user's id and the secretKey in the env file
 
             if (isSame) {
-                let token = jwt.sign({ id: user.id }, process.env.secretKey, {
+                let token = jwt.sign({ id: user.id },  process.env.jwtSecret, {
                     expiresIn: 1 * 24 * 60 * 60 * 1000,
                 });
 
