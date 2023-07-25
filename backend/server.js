@@ -27,7 +27,7 @@ db.sequelize.sync({ force: true }).then(() => {
 
 app.use("/api/users", userRoutes);
 app.use("/api/tags", tagRoutes);
-app.use("/api/kpi", kpiRoutes);
+app.use("/api/kpis", kpiRoutes);
 
 // Create an HTTP server using Express
 const server = app.listen(PORT, () =>
