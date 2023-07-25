@@ -6,6 +6,8 @@ const db = require("./models");
 const userRoutes = require("./routes/userRoutes");
 const tagRoutes = require("./routes/tagRoutes");
 const kpiRoutes = require("./routes/kpiRoutes");
+const grapheRoutes = require("./routes/grapheRoutes");
+const heatmapRoutes = require("./routes/heatmapRoutes");
 const userController = require("./controllers/userController");
 const WebSocket = require("ws");
 const expressWs = require("express-ws"); // Import express-ws library
@@ -28,6 +30,8 @@ db.sequelize.sync({ force: true }).then(() => {
 app.use("/api/users", userRoutes);
 app.use("/api/tags", tagRoutes);
 app.use("/api/kpis", kpiRoutes);
+app.use("/api/graphes", grapheRoutes);
+app.use("/api/heatmaps", heatmapRoutes);
 
 // Create an HTTP server using Express
 const server = app.listen(PORT, () =>

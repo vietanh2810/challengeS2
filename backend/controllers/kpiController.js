@@ -27,10 +27,10 @@ const createKpi = async (req, res) => {
 const getAllKpis = async (req, res) => {
   try {
     // Fetch all KPIs from the database
-    const Kpis = await Kpi.findAll();
+    const AllKpis = await Kpi.findAll();
 
     // Respond with the fetched KPIs
-    return res.status(200).json(Kpis);
+    return res.status(200).json(AllKpis);
   } catch (error) {
     // Handle errors
     console.error("Error fetching KPIs:", error);

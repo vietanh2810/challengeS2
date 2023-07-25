@@ -9,8 +9,7 @@ const router = express.Router();
 //get all tags
 router.get("/", kpiController.getAllKpis);
 
-//signup endpoint DONE
-//passing the middleware function to the signup
+//create a new KPI
 router.post("/create", kpiController.createKpi);
 
 // Route to get a single KPI by ID

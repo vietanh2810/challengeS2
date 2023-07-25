@@ -4,13 +4,21 @@ module.exports = (sequelize, DataTypes) => {
     {
       name: {
         type: DataTypes.STRING,
-        allowNull: true,
+        allowNull: null,
       },
       description: {
         type: DataTypes.STRING,
-        allowNull: true,
+        allowNull: null,
       },
       value: {
+        type: DataTypes.STRING,
+        allowNull: null,
+      },
+      user_id: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
+      event_type: {
         type: DataTypes.STRING,
         allowNull: true,
       },

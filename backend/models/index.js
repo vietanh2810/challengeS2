@@ -39,6 +39,8 @@ db.companies = require("./companyModel")(sequelize, DataTypes);
 db.websites = require("./websiteModel")(sequelize, DataTypes);
 db.tags = require("./tagModel")(sequelize, DataTypes);
 db.kpis = require("./kpiModel")(sequelize, DataTypes);
+db.graphes = require("./grapheModel")(sequelize, DataTypes);
+db.heatmaps = require("./heatmapModel")(sequelize, DataTypes);
 
 //exporting the module
 module.exports = db;
