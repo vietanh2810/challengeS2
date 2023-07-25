@@ -1,5 +1,6 @@
 // server.js
 
+
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const db = require("./models");
@@ -10,7 +11,8 @@ const grapheRoutes = require("./routes/grapheRoutes");
 const heatmapRoutes = require("./routes/heatmapRoutes");
 const userController = require("./controllers/userController");
 const WebSocket = require("ws");
-const expressWs = require("express-ws"); // Import express-ws library
+require('dotenv').config();
+
 
 const PORT = process.env.PORT || 8080;
 const app = express();
