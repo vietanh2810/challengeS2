@@ -46,8 +46,10 @@ const createConvFunn = async (req, res) => {
             });
             await ConversionFunnelTag.create({funnelId: conversion_funnel.id, tagId: tag.tag_uid });
         }
+
+        const table_tags = await ConversionFunnelTag.findAll({where: {funnelId: conversion_funnel.id}, order: [['createdAt', 'ASC']]})
         
-        return res.status(201).json(conversion_funnel);
+        return res.status(201).json([conversion_funnel, table_tags]);
     } catch (error) {
         console.error('Error during signup:', error);
         return res.status(500).send('Internal Server Error');
