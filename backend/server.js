@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const db = require('./models');
 const userRoutes = require('./routes/userRoutes');
 const tagRoutes = require('./routes/tagRoutes');
+const conversion_funnelRoutes = require('./routes/conversionFunnelRoutes');
 const userController = require('./controllers/userController');
 const WebSocket = require('ws');
 require('dotenv').config();
@@ -27,6 +28,7 @@ db.sequelize.sync({ force: true }).then(() => {
 
 app.use('/api/users', userRoutes);
 app.use('/api/tags', tagRoutes);
+app.use('/api/convTunnel', conversion_funnelRoutes);
 
 // Create an HTTP server using Express
 const server = app.listen(PORT, () => console.log(`Server is connected on ${PORT}`));
