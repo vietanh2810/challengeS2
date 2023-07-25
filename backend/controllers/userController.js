@@ -2,6 +2,7 @@
 const bcrypt = require("bcrypt");
 const db = require("../models");
 const jwt = require("jsonwebtoken");
+const mailer = require('../mailer/mailer');
 
 // Assigning users to the variable User
 const User = db.users;
@@ -50,7 +51,9 @@ const signup = async (req, res) => {
         console.log('Company:', JSON.stringify(company, null, 2));
         console.log('Website:', JSON.stringify(website, null, 2));
         console.log('Token:', token);
-
+        //send email
+        mailer()
+        
         return res.status(201).json(user);
     } catch (error) {
         console.error('Error during signup:', error);
