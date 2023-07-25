@@ -10,9 +10,8 @@ const heatmapRoutes = require("./routes/heatmapRoutes");
 const userController = require("./controllers/userController");
 const eventController = require('./controllers/eventController');
 const bodyParser = require('body-parser');
-const tagRoutes = require('./routes/tagRoutes');
+const auth = require('./middlewares/userAuth');
 const conversion_funnelRoutes = require('./routes/conversionFunnelRoutes');
-const WebSocket = require("ws");
 
 require('dotenv').config();
 const cors = require('cors'); // Import the cors middleware
@@ -29,9 +28,9 @@ app.use(cors()); // Use the cors middleware
 
 // Synchronizing the database and forcing it to false so we don't lose data
 db.sequelize.sync({ force: true }).then(() => {
-  console.log("db has been re-synced");
+    console.log("db has been re-synced");
 
-  userController.createDefaultAdmin();
+    userController.createDefaultAdmin();
 });
 
 
@@ -44,13 +43,7 @@ app.use("/api/graphes", grapheRoutes);
 app.use("/api/heatmaps", heatmapRoutes);
 
 
-// Create an HTTP server using Express
-const server = app.listen(PORT, () =>
-  console.log(`Server is connected on ${PORT}`)
-);
-
-
-app.post('/api/events',auth.checkAppId, (req, res) => {
+app.post('/api/events', auth.checkAppId, (req, res) => {
     const { eventName, eventData } = req.body;
 
     console.log('Received event data from SDK:', eventName, eventData);
