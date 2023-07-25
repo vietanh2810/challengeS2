@@ -10,7 +10,10 @@ const heatmapRoutes = require("./routes/heatmapRoutes");
 const userController = require("./controllers/userController");
 const eventController = require('./controllers/eventController');
 const bodyParser = require('body-parser');
+const tagRoutes = require('./routes/tagRoutes');
+const conversion_funnelRoutes = require('./routes/conversionFunnelRoutes');
 const WebSocket = require("ws");
+
 require('dotenv').config();
 const cors = require('cors'); // Import the cors middleware
 
@@ -31,11 +34,15 @@ db.sequelize.sync({ force: true }).then(() => {
   userController.createDefaultAdmin();
 });
 
+
 app.use("/api/users", userRoutes);
+app.use('/api/tags', tagRoutes);
+app.use('/api/convTunnel', conversion_funnelRoutes);
 app.use("/api/tags", tagRoutes);
 app.use("/api/kpis", kpiRoutes);
 app.use("/api/graphes", grapheRoutes);
 app.use("/api/heatmaps", heatmapRoutes);
+
 
 // Create an HTTP server using Express
 const server = app.listen(PORT, () =>
