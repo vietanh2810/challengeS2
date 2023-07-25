@@ -38,6 +38,7 @@ db.companies = require('./companyModel')(sequelize, DataTypes)
 db.websites = require('./websiteModel')(sequelize, DataTypes)
 db.tags = require('./tagModel')(sequelize, DataTypes)
 db.conversionFunnel = require('./conversionFunnelModel')(sequelize, DataTypes)
+db.conversionFunnelTag = require('./conversionFunnelTagModel')(sequelize, DataTypes)
 
 //exporting the module
 module.exports = db

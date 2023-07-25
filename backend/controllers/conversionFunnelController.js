@@ -3,6 +3,7 @@ const db = require("../models");
 // Assigning conversion_funnels to the variable ConvFunnel
 const ConversionFunnel = db.conversionFunnel;
 const Tag = db.tags;
+const ConversionFunnelTag = db.conversionFunnelTag;
 
 const getAllConvFunns = async (req, res) => {
     try {
@@ -40,21 +41,16 @@ const createConvFunn = async (req, res) => {
         for (let index = 0; index < tab_tags.length; index++) {
             const myID = tab_tags[index];
             console.log("uid:" + myID);
-            
-            const query = { where : {tag_uid: myID} };
-            
-            var tag= await Tag.findOne(query);
-            
-            tagsList.push("tag: "+tag);
+            const tag = await Tag.findOne({ 
+                where : 
+                {
+                    tag_uid: myID
+                } 
+            });
+            await ConversionFunnelTag.create({funnelId: conversion_funnel.id, tagId: tag.tag_uid });
         }
-
-        tagsList.forEach(tag => {
-            console.log(tag);
-            conversion_funnel.addTag(tag.tag_uid)
-        });
         
-        
-        //return res.status(201).json(conversion_funnel);
+        return res.status(201).json(conversion_funnel);
     } catch (error) {
         console.error('Error during signup:', error);
         return res.status(500).send('Internal Server Error');
