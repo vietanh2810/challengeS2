@@ -7,12 +7,19 @@ const userAuth = require("../middlewares/userAuth");
 const router = express.Router();
 
 //get all tags
-router.get("/", userAuth.authenticate, kpiController.getAllKpi);
+router.get("/",  kpiController.getAllKpis);
 
 //signup endpoint DONE
 //passing the middleware function to the signup
-router.post("/create", userAuth.authenticate, kpiController.createKpi);
+router.post("/create",  kpiController.createKpi);
 
-// router.put('/update/:id', userAuth.authenticate, kpiController.updateKpi)
+// Route to get a single KPI by ID
+router.get('/:id', kpiController.getKpiById);
+
+// Route to update a KPI by ID
+router.put('/:id', kpiController.updateKpiById);
+
+// Route to delete a KPI by ID
+router.delete('/:id', kpiController.deleteKpiById);
 
 module.exports = router;
