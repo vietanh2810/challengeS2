@@ -10,6 +10,14 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: true
         },
+        userId: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'users', // This should be the table name of the User model
+                key: 'id',      // This should be the primary key of the User model
+            },
+        }
     }, { timestamps: true });
 
     Tag.associate = (models) => {

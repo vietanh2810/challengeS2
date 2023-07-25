@@ -28,9 +28,12 @@ const getAllTags = async (req, res) => {
 const createTag = async (req, res) => {
     try {
         const { comment } = req.body;
+        const { dataValues } = req.user;
+        const userId = dataValues.id;
 
         const tag = await Tag.create({
-            comment,
+            comment: comment,
+            userId: userId
         });
 
         return res.status(201).json(tag);

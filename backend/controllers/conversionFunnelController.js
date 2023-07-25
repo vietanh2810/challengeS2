@@ -42,10 +42,7 @@ const createConvFunn = async (req, res) => {
             const myID = tab_tags[index];
             console.log("uid:" + myID);
             const tag = await Tag.findOne({ 
-                where : 
-                {
-                    tag_uid: myID
-                } 
+                where : {tag_uid: myID} 
             });
             await ConversionFunnelTag.create({funnelId: conversion_funnel.id, tagId: tag.tag_uid });
         }
@@ -59,17 +56,17 @@ const createConvFunn = async (req, res) => {
 
 const updateConvFunn = async (req, res) => {
     try {
-        /*const id = req.params.id;
+        const id = req.params.id;
         const { comment } = req.body;
 
-        const tag = await Tag.update({comment : comment}, {
-            where: { tag_uid : id },
+        const conversion_funnel = await ConversionFunnel.update({comment : comment}, {
+            where: { id : id },
             returning: true,
         });
 
-        if (!tag ) {
+        if (!conversion_funnel ) {
             return res.sendStatus(404);
-        } else return res.status(200).json(tag);*/
+        } else return res.status(200).json(conversion_funnel);
     } catch (error) {
         console.error('Error during edit:', error);
         return res.status(500).send('Internal Server Error');
