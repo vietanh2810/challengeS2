@@ -1,13 +1,37 @@
-// controllers/eventController.js
+// eventController.js
 
-// Example event controller methods for WebSocket handling
-exports.handleWebSocketEvent = (eventData, ws) => {
-    // Perform actions based on the incoming WebSocket event data
-    // For example, save the data to the database or broadcast it to other connected clients
-    console.log('Handling WebSocket event:', eventData);
+const { SessionEvent, CustomEvent } = require('../models/mongoDb');
 
-    // Example: Send a response back to the client
-    ws.send(JSON.stringify({ message: 'Event received successfully' }));
+const createEvent = (eventName, eventData) => {
+  if (eventName === 'session_event') {
+    // Create a new SessionEvent document
+    const sessionEvent = new SessionEvent(eventData);
+
+    // Save the sessionEvent to the database
+    sessionEvent.save()
+      .then((savedEvent) => {
+        console.log('SessionEvent saved:', savedEvent);
+      })
+      .catch((error) => {
+        console.error('Error saving SessionEvent:', error);
+      });
+  } else if (eventName === 'custom_event') {
+    // Create a new CustomEvent document
+    const customEvent = new CustomEvent(eventData);
+
+    // Save the customEvent to the database
+    customEvent.save()
+      .then((savedEvent) => {
+        console.log('CustomEvent saved:', savedEvent);
+      })
+      .catch((error) => {
+        console.error('Error saving CustomEvent:', error);
+      });
+  } else {
+    console.error('Unknown event type:', eventName);
+  }
 };
 
-  // Add more controller methods as needed
+module.exports = {
+  createEvent,
+};
