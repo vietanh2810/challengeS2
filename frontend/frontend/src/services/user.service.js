@@ -5,7 +5,7 @@ const API_URL = 'http://localhost:8080/api';
 
 class UserService {
     validateUser(userId) {
-        return axios.put(API_URL + '/users/validate/' + userId, { headers: authHeader() });
+        return axios.put(API_URL + '/users/validate/' + userId,null, { headers: authHeader() });
     }
 
     getAdminBoard() {
