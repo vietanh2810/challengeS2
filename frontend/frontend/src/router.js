@@ -4,6 +4,7 @@ import Login from "./components/Login.vue";
 import Dashboard from "./components/Dashboard.vue";
 import Signup from "./components/SignUp.vue";
 import Admin from "./components/Admin.vue";
+import Tag from "./components/Tag.vue";
 // import Register from "./components/Register.vue";
 // lazy-loaded
 // const Profile = () => import("./components/Profile.vue")
