@@ -17,6 +17,10 @@ module.exports = (sequelize, DataTypes) => {
                 key: 'id',      // This should be the primary key of the User model
             },
         },
+        appId: {
+            type: DataTypes.STRING,
+            allowNull: true
+        },
     }, { timestamps: true });
 
     Company.associate = (models) => {

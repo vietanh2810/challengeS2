@@ -42,7 +42,7 @@ db.kpis = require("./kpiModel")(sequelize, DataTypes);
 db.graphes = require("./grapheModel")(sequelize, DataTypes);
 db.heatmaps = require("./heatmapModel")(sequelize, DataTypes);
 db.conversionFunnel = require('./conversionFunnelModel')(sequelize, DataTypes)
-db.conversionFunnelTag = require('./conversionFunnelTagModel')(sequelize, DataTypes)
+// db.conversionFunnelTag = require('./conversionFunnelTagModel')(sequelize, DataTypes)
 
 
 //exporting the module

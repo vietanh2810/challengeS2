@@ -7,7 +7,7 @@
                 <label style="margin: 1.5rem 0 0 2rem; font-size: 21px; font-weight: 500;">DASHBOARD</label>
             </div>
             <!-- Dashboard content goes here -->
-            <div class="mt-4 col-3"
+            <div class="mt-4 col-12"
                 style="background-color: #f8fafb; height: 140px !important; width: 100%; margin-left: 2rem !important; border-radius: 1rem;">
                 <label style="margin: 1rem 0 0 2rem; font-weight: 500;">Filtres de la page</label>
                 <div class="d-flex" style="margin: 0.5rem 0 0 2rem !important;">
@@ -114,7 +114,7 @@ export default {
         };
     },
     mounted() {
-        this.$tracker.trackPageView('/example-page', 'Example Page');
+        // this.$tracker.trackPageView('/example-page', 'Example Page');
     },
 };
 </script>

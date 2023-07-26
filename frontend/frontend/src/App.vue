@@ -3,12 +3,16 @@
 import { watch } from "vue";
 import { useRoute } from "vue-router";
 import DashBoard from './components/DashBoard.vue'
+import Login from './components/Login.vue'
+import Signup from './components/SignUp.vue'
 import Cookies from 'js-cookie';
 
 export default {
   name: 'App',
   components: {
-    DashBoard
+    DashBoard,
+    Login,
+    Signup
   },
   data() {
     return {
@@ -16,24 +20,44 @@ export default {
     };
   },
   async mounted() {
-    this.$tracker.detectNewVisitor();
+    // this.$tracker.detectNewVisitor();
 
-    await this.$tracker.detectSession();
+    // await this.$tracker.detectSession();
 
-    const intervalDuration = 10 * 60 * 1000;
+    // const intervalDuration = 10 * 60 * 1000;
 
-    this.sessionInterval = setInterval(async () => {
-      await this.$tracker.detectSession();
-    }, intervalDuration);
+    // this.sessionInterval = setInterval(async () => {
+    //   await this.$tracker.detectSession();
+    // }, intervalDuration);
 
-    document.addEventListener('click', this.updateLastActivity);
-    // document.addEventListener('mousemove', this.updateLastActivity);
-    document.addEventListener('keydown', this.updateLastActivity);
+    // document.addEventListener('click', this.updateLastActivity);
+    // // document.addEventListener('mousemove', this.updateLastActivity);
+    // document.addEventListener('keydown', this.updateLastActivity);
+  },
+  computed: {
+    currentUser() {
+      return this.$store.state.auth.user;
+    },
+    showAdminBoard() {
+      if (this.currentUser && this.currentUser['roles']) {
+        return this.currentUser['roles'].includes('ROLE_ADMIN');
+      }
+
+      return false;
+    },
+    showModeratorBoard() {
+      if (this.currentUser && this.currentUser['roles']) {
+        return this.currentUser['roles'].includes('ROLE_MODERATOR');
+      }
+
+      return false;
+    }
   },
   methods: {
-    updateLastActivity() {
-      Cookies.set('last_activity_time', new Date().getTime());
-    },
+    logOut() {
+      this.$store.dispatch('auth/logout');
+      this.$router.push('/login');
+    }
   },
   setup() {
     // const route = useRoute();
@@ -53,7 +77,7 @@ export default {
 
 <template>
   <div id="app">
-    <DashBoard />
+    <router-view />
   </div>
 </template>
 
