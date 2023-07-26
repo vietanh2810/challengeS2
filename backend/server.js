@@ -1,5 +1,6 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
+const path = require('path');
 const db = require("./models");
 const userRoutes = require("./routes/userRoutes");
 const tagRoutes = require("./routes/tagRoutes");
@@ -42,9 +43,13 @@ app.use("/api/tags", tagRoutes);
 app.use("/api/kpis", kpiRoutes);
 app.use("/api/graphes", grapheRoutes);
 app.use("/api/heatmaps", heatmapRoutes);
+<<<<<<< HEAD
 
 app.post("/api/events", auth.checkAppId, (req, res) => {
   const { eventName, eventData } = req.body;
+=======
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+>>>>>>> e69590f2cd284a8355b1ab91e67cf35079a5b14a
 
   console.log("Received event data from SDK:", eventName, eventData);
 

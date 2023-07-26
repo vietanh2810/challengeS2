@@ -1,17 +1,12 @@
-//importing modules
 const bcrypt = require("bcrypt");
 const db = require("../models");
 const jwt = require("jsonwebtoken");
-
-// Assigning users to the variable User
 const User = db.users;
 const Company = db.companies;
 const Website = db.websites;
 
-//signing a user up
-//hashing users password before its saved to the database with bcrypt
-
 const signup = async (req, res) => {
+<<<<<<< HEAD
   try {
     const { userName, email, password, companyName, contactInfo, websiteUrl } =
       req.body;
@@ -62,6 +57,46 @@ const signup = async (req, res) => {
     console.error("Error during signup:", error);
     return res.status(500).send("Internal Server Error");
   }
+=======
+    try {
+        const { userName, email, password, companyName, contactInfo, websiteUrl } = req.body;
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const user = await User.create({
+            userName,
+            email,
+            password: hashedPassword,
+            role: userName === 'admin' ? 'admin' : 'user',
+            contactInfo,
+        });
+
+        const company = await Company.create({
+            companyName,
+            kbis: req.file.filename,
+            userId: user.id,
+        });
+        const website = await Website.create({
+            baseUrl: websiteUrl,
+            userId: user.id,
+        });
+
+        const token = jwt.sign({ id: user.id }, process.env.jwtSecret, {
+            expiresIn: '1d',
+        });
+        res.cookie('jwt', token, { maxAge: 1 * 24 * 60 * 60 * 1000, httpOnly: true });
+
+        console.log('User:', JSON.stringify(user, null, 2));
+        console.log('Company:', JSON.stringify(company, null, 2));
+        console.log('Website:', JSON.stringify(website, null, 2));
+        console.log('Token:', token);
+
+        return res.status(201).json(user);
+    } catch (error) {
+        console.error('Error during signup:', error);
+        return res.status(500).send('Internal Server Error');
+    }
+>>>>>>> e69590f2cd284a8355b1ab91e67cf35079a5b14a
 };
 
 //login authentication
@@ -89,12 +124,40 @@ const login = async (req, res) => {
           expiresIn: 1 * 24 * 60 * 60 * 1000,
         });
 
+<<<<<<< HEAD
         res.cookie("jwt", token, { maxAge: 1 * 24 * 60 * 60, httpOnly: true });
 
         if (user.isValidated === false) {
           return res
             .status(401)
             .send("Authentication failed, Your account is not validated yet");
+=======
+        //if user email is found, compare password with bcrypt
+        if (user) {
+            const isSame = await bcrypt.compare(password, user.password);
+
+            //if password is the same
+            //generate token with the user's id and the secretKey in the env file
+
+            if (isSame) {
+                let token = jwt.sign({ id: user.id }, process.env.jwtSecret, {
+                    expiresIn: 1 * 24 * 60 * 60 * 1000,
+                });
+
+                res.cookie("jwt", token, { maxAge: 1 * 24 * 60 * 60, httpOnly: true });
+
+                if (user.isValidated === false) {
+                    return res.status(401).send("Authentication failed, Your account is not validated yet");
+                }
+
+                //send user data
+                return res.status(201).send({ token, user });
+            } else {
+                return res.status(401).send("Authentication failed");
+            }
+        } else {
+            return res.status(401).send("Authentication failed");
+>>>>>>> e69590f2cd284a8355b1ab91e67cf35079a5b14a
         }
 
         //send user data
@@ -126,12 +189,37 @@ const validateUser = async (req, res) => {
       return res.status(404).json({ error: "User not found." });
     }
 
+<<<<<<< HEAD
     // Check if the user making the request has the "admin" role
     const { role } = req.user; // Assuming you have the authenticated user details in the request (set by userAuth middleware)
     if (role !== "admin") {
       return res
         .status(403)
         .json({ error: "Unauthorized. Only admin users can validate users." });
+=======
+        // Check if the user making the request has the "admin" role
+        const { role } = req.user; // Assuming you have the authenticated user details in the request (set by userAuth middleware)
+        if (role !== 'admin') {
+            return res.status(403).json({ error: 'Unauthorized. Only admin users can validate users.' });
+        }
+
+        // Generate a uuid for the user
+        const uuid = uuidv4();
+
+        // Update the user's validation status to true
+        user.isValidated = true;
+        await user.save();
+
+        // Update the linked Company's appId with the generated uuid
+        company.appId = uuid;
+        await company.save();
+        console.log(company);
+
+        res.json({ message: 'User validated successfully.' });
+    } catch (error) {
+        console.error('Error during user validation:', error); // Add the error log to the console
+        res.status(500).json({ error: 'An error occurred during user validation.' });
+>>>>>>> e69590f2cd284a8355b1ab91e67cf35079a5b14a
     }
 
     // Generate a uuid for the user
@@ -156,6 +244,7 @@ const validateUser = async (req, res) => {
 };
 
 const getAllUsers = async (req, res) => {
+<<<<<<< HEAD
   try {
     const users = await User.findAll();
     console.log(users);
@@ -163,6 +252,31 @@ const getAllUsers = async (req, res) => {
   } catch (error) {
     console.log(error);
   }
+=======
+    try {
+        const users = await User.findAll();
+        //loop every user and check if the user is validated
+
+        for (let i = 0; i < users.length; i++) {
+            let tmpId = users[i].id;
+            let tmpCompany = await Company.findOne({ where: { userId: tmpId } });
+
+            if (tmpCompany && tmpCompany.kbis !== null) {
+                const rawData = users[i].get();
+
+                rawData.kbis = tmpCompany.kbis;
+
+                users[i] = rawData;
+            }
+        }
+
+        console.log(users)
+
+        return res.status(200).json(users);
+    } catch (error) {
+        console.log(error);
+    }
+>>>>>>> e69590f2cd284a8355b1ab91e67cf35079a5b14a
 };
 
 const createDefaultAdmin = async () => {
