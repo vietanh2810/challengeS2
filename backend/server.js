@@ -1,6 +1,7 @@
 
 const express = require("express");
 const cookieParser = require("cookie-parser");
+const path = require('path');
 const db = require("./models");
 const userRoutes = require("./routes/userRoutes");
 const tagRoutes = require("./routes/tagRoutes");
@@ -41,7 +42,7 @@ app.use("/api/tags", tagRoutes);
 app.use("/api/kpis", kpiRoutes);
 app.use("/api/graphes", grapheRoutes);
 app.use("/api/heatmaps", heatmapRoutes);
-
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.post('/api/events', auth.checkAppId, (req, res) => {
     const { eventName, eventData } = req.body;

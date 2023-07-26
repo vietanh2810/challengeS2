@@ -1,26 +1,16 @@
-//importing modules
 const bcrypt = require("bcrypt");
 const db = require("../models");
 const jwt = require("jsonwebtoken");
-
-// Assigning users to the variable User
 const User = db.users;
 const Company = db.companies;
 const Website = db.websites;
-
-//signing a user up
-//hashing users password before its saved to the database with bcrypt
 
 const signup = async (req, res) => {
     try {
         const { userName, email, password, companyName, contactInfo, websiteUrl } = req.body;
 
-        console.log(req.body);
-
-        // Hash the password before storing it
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Save the user data to the database
         const user = await User.create({
             userName,
             email,
@@ -29,20 +19,16 @@ const signup = async (req, res) => {
             contactInfo,
         });
 
-        // Create a new Company record and associate it with the user
         const company = await Company.create({
             companyName,
-            kbis: req.file.filename, // The filename of the uploaded KBIS document
-            userId: user.id, // Set the userId to associate the Company with the user
+            kbis: req.file.filename,
+            userId: user.id,
         });
-
-        // Create a new Website record and associate it with the user
         const website = await Website.create({
             baseUrl: websiteUrl,
-            userId: user.id, // Set the userId to associate the Website with the user
+            userId: user.id,
         });
 
-        // Generate and set the JWT token in the response cookie
         const token = jwt.sign({ id: user.id }, process.env.jwtSecret, {
             expiresIn: '1d',
         });
@@ -83,13 +69,13 @@ const login = async (req, res) => {
             //generate token with the user's id and the secretKey in the env file
 
             if (isSame) {
-                let token = jwt.sign({ id: user.id },  process.env.jwtSecret, {
+                let token = jwt.sign({ id: user.id }, process.env.jwtSecret, {
                     expiresIn: 1 * 24 * 60 * 60 * 1000,
                 });
 
                 res.cookie("jwt", token, { maxAge: 1 * 24 * 60 * 60, httpOnly: true });
 
-                if(user.isValidated === false) {
+                if (user.isValidated === false) {
                     return res.status(401).send("Authentication failed, Your account is not validated yet");
                 }
 
@@ -127,7 +113,7 @@ const validateUser = async (req, res) => {
         if (role !== 'admin') {
             return res.status(403).json({ error: 'Unauthorized. Only admin users can validate users.' });
         }
-        
+
         // Generate a uuid for the user
         const uuid = uuidv4();
 
@@ -150,7 +136,23 @@ const validateUser = async (req, res) => {
 const getAllUsers = async (req, res) => {
     try {
         const users = await User.findAll();
+        //loop every user and check if the user is validated
+
+        for (let i = 0; i < users.length; i++) {
+            let tmpId = users[i].id;
+            let tmpCompany = await Company.findOne({ where: { userId: tmpId } });
+
+            if (tmpCompany && tmpCompany.kbis !== null) {
+                const rawData = users[i].get();
+
+                rawData.kbis = tmpCompany.kbis;
+
+                users[i] = rawData;
+            }
+        }
+
         console.log(users)
+
         return res.status(200).json(users);
     } catch (error) {
         console.log(error);
