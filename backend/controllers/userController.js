@@ -15,6 +15,8 @@ const signup = async (req, res) => {
     try {
         const { userName, email, password, companyName, contactInfo, websiteUrl } = req.body;
 
+        console.log(req.body);
+
         // Hash the password before storing it
         const hashedPassword = await bcrypt.hash(password, 10);
 

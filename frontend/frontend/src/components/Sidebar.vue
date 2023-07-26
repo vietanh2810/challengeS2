@@ -19,45 +19,47 @@
         ">
             <div id="my-scroll d-flex align-items-center">
                 <ul class="nav-list" style="overflow: visible; padding: 0 1rem;">
-                    <li id="links_search" v-if="isSearch" @click="isOpened = true">
-                        <i class="bx bx-search profile-logo" />
-                        <input type="text" :placeholder="searchPlaceholder"
-                            @input="$emit('search-input-emit', $event.target.value)">
-                        <span data-target="links_search" class="tooltip">{{
-                            searchTooltip
-                        }}</span>
-                    </li>
-
-                    <li v-for="(menuItem, index) in menuItems" :key="index" :id="'links_' + index">
-                        <router-link v-if="isUsedVueRouter" :to="menuItem.link">
-                            <i class="bx" :class="menuItem.icon || 'bx-square-rounded'" />
-                            <span class="links_name">{{ menuItem.name }}</span>
+                    <li>
+                        <router-link to="/dashboard">
+                            <i class="bx bx-grid-alt" />
+                            <span class="links_name">Dashboard</span>
                         </router-link>
-                        <a v-else @click.stop.prevent="$emit('menuItemClcked', menuItem.link)" :href="menuItem.link">
-                            <i class="bx" :class="menuItem.icon || 'bx-square-rounded'" />
-                            <span class="links_name">{{ menuItem.name }}</span>
-                        </a>
-                        <span :data-target="'links_' + index" class="tooltip">{{
-                            menuItem.tooltip || menuItem.name
-                        }}</span>
+                    </li>
+                    <li>
+                        <router-link to="/web-param">
+                            <i class="bx bx-folder" />
+                            <span class="links_name">Site Manager</span>
+                        </router-link>
+                    </li>
+                    <li>
+                        <router-link to="/web-param">
+                            <i class="bx bx-user" />
+                            <span class="links_name">My Profile</span>
+                        </router-link>
+                    </li>
+                    <li>
+                        <router-link to="/admin">
+                            <i class="bx bx-cog" />
+                            <span class="links_name">Settings</span>
+                        </router-link>
                     </li>
                 </ul>
             </div>
 
             <div v-if="isLoggedIn" class="profile">
-                <div class="profile-details">
+                <!-- <div class="profile-details">
                     <img v-if="profileImg" :src="profileImg" alt="profileImg" class="profile_logo">
                     <i v-else class="bx bxs-user-rectangle profile-logo" />
                     <div class="name_job">
                         <div class="name">
                             {{ profileName }}
-                        </div>
+                        </div> -->
                         <!-- <div class="job">
                             {{ profileRole }}
                         </div> -->
-                    </div>
-                </div>
-                <i v-if="isExitButton" class="bx bx-log-out" id="log_out" @click.stop="$emit('button-exit-clicked')" />
+                    <!-- </div>
+                </div> -->
+                <i v-if="isExitButton" class="bx bx-log-out" id="log_out" @click.stop="logOut" />
             </div>
         </div>
     </div>
@@ -72,17 +74,9 @@ export default {
             type: Boolean,
             default: false,
         },
-        isUsedVueRouter: {
-            type: Boolean,
-            default: false,
-        },
         menuTitle: {
             type: String,
             default: 'ChallengeS2',
-        },
-        menuLogo: {
-            type: String,
-            default: '',
         },
         menuIcon: {
             type: String,
@@ -101,64 +95,16 @@ export default {
             default: '78px',
         },
 
-        //! Menu items
-        menuItems: {
-            type: Array,
-            default: () => [
-                {
-                    link: '#',
-                    name: 'Dashboard',
-                    tooltip: 'Dashboard',
-                    icon: 'bx-grid-alt',
-                },
-                {
-                    link: '#',
-                    name: 'User',
-                    tooltip: 'User',
-                    icon: 'bx-user',
-                },
-                {
-                    link: '#',
-                    name: 'Account manager',
-                    tooltip: "Manage the platform's accoutns",
-                    icon: 'bx-folder',
-                },
-                {
-                    link: '#',
-                    name: 'Setting',
-                    tooltip: 'Setting',
-                    icon: 'bx-cog',
-                },
-            ],
-        },
-
-        //! Search
-        isSearch: {
-            type: Boolean,
-            default: true,
-        },
-        searchPlaceholder: {
-            type: String,
-            default: 'Search...',
-        },
-        searchTooltip: {
-            type: String,
-            default: 'Search',
-        },
-
         //! Profile detailes
-        profileImg: {
-            type: String,
-            default: '',
-        },
-        profileName: {
-            type: String,
-            default: 'Fayzullo Saidakbarov',
-        },
-        profileRole: {
-            type: String,
-            default: 'Frontend vue developer',
-        },
+
+        // profileName: {
+        //     type: String,
+        //     default: 'Fayzullo Saidakbarov',
+        // },
+        // profileRole: {
+        //     type: String,
+        //     default: 'Frontend vue developer',
+        // },
         isExitButton: {
             type: Boolean,
             default: true,
@@ -213,9 +159,11 @@ export default {
     data() {
         return {
             isOpened: false,
+            user: {},
         }
     },
     mounted() {
+        this.user = JSON.parse(localStorage.getItem('user'))
         this.isOpened = this.isMenuOpen
         this.tooltipAttached()
     },
@@ -267,6 +215,10 @@ export default {
                 })
             })
         },
+        logOut() {
+            this.$store.dispatch('auth/logout');
+            this.$router.push('/login');
+        }
     },
 }
 </script>
