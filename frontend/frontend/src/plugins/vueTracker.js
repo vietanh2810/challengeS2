@@ -36,6 +36,7 @@ const trackEvent = (eventName, eventData) => {
 
 const detectNewVisitor = () => {
     let visitorId = getCookie('visitor_id');
+    console.log(visitorId);
 
     if (!visitorId) {
         const newVisitorId = generateUniqueVisitorId();

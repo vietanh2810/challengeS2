@@ -10,9 +10,8 @@ const heatmapRoutes = require("./routes/heatmapRoutes");
 const userController = require("./controllers/userController");
 const eventController = require('./controllers/eventController');
 const bodyParser = require('body-parser');
-const tagRoutes = require('./routes/tagRoutes');
+const auth = require('./middlewares/userAuth');
 const conversion_funnelRoutes = require('./routes/conversionFunnelRoutes');
-const WebSocket = require("ws");
 
 require('dotenv').config();
 const cors = require('cors'); // Import the cors middleware
@@ -42,13 +41,6 @@ app.use("/api/tags", tagRoutes);
 app.use("/api/kpis", kpiRoutes);
 app.use("/api/graphes", grapheRoutes);
 app.use("/api/heatmaps", heatmapRoutes);
-
-
-// Create an HTTP server using Express
-const server = app.listen(PORT, () =>
-  console.log(`Server is connected on ${PORT}`)
-);
-
 
 app.post('/api/events',auth.checkAppId, (req, res) => {
     const { eventName, eventData } = req.body;

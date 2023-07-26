@@ -17,7 +17,7 @@
                             style="width: 100% !important; height: 40px !important; border-radius: 0.5rem; border: 1px solid #d2d6dc;" />
                     </div>
                     <div class="d-block col-2" style="margin-left: 2rem !important;">
-                        <label style="margin: 0.5rem 0 0 0; width: 30%;">Date de fin</label>
+                        <label style="margin: 0.5rem 0 0 0; width: 70%;">Date de fin</label>
                         <input type="date"
                             style="width: 100% !important; height: 40px !important; border-radius: 0.5rem; border: 1px solid #d2d6dc;" />
                     </div>
@@ -54,6 +54,13 @@
                 <BarChart style="margin-left: 2rem;" :chart-data="chartData" :chart-options="chartOptions"></BarChart>
             </div>
 
+            <div class="d-flex mt-4 justify-content-between py-3 px-4"
+                style="margin-left: 2rem !important; background-color: #f8fafb; border-radius: 1rem;">
+                <li v-for="item in tagList">
+                    {{ item.comment }}
+                </li>
+            </div>
+
         </div>
     </div>
 </template>
@@ -75,6 +82,7 @@ export default {
     },
     data() {
         return {
+            tagList: null,
             piechartDate: null,
             data: {
                 labels: ['Red', 'Blue', 'Yellow'],
@@ -114,8 +122,22 @@ export default {
         };
     },
     mounted() {
+        fetch('http://localhost:8080/api/tags/');
+        this.tagList  = this.data.tagList;
         this.$tracker.trackPageView('/example-page', 'Example Page');
     },
+    async onMounted() {
+        const response = await fetch('http://localhost:8080/api/tags/', {
+            headers: {
+                "Content-type": 'application/json',
+                Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNjkwMzYwNzE0LCJleHAiOjE3NzY3NjA3MTR9.u53jYBfU7uVtF3Qgax1_GPoJlmqhQn_rj1dJbTBAsHo'
+            }
+        });
+        console.log("response: "+response);
+        const data = await response.json();
+        tags.push(...data);
+        
+    }
 };
 </script>
 
