@@ -32,19 +32,19 @@
                 <ErrorMessage name="description" class="error-feedback" />
               </div>
               <div class="form-group">
-                  <label for="event_type">Type d'événement :</label>
-                  <Field name="event_type" v-model="kpiData.event_type" as="select" class="form-control">
-                      <option v-for="eventType in eventTypes" :key="eventType" :value="eventType">{{ eventType }}</option>
-                  </Field>
-                  <ErrorMessage name="event_type" class="error-feedback" />
+                <label for="event_type">Type d'événement :</label>
+                <Field name="event_type" v-model="kpiData.event_type" as="select" class="form-control">
+                  <option v-for="eventType in eventTypes" :key="eventType" :value="eventType">{{ eventType }}</option>
+                </Field>
+                <ErrorMessage name="event_type" class="error-feedback" />
               </div>
-              <div class="form-group" v-if="kpiData.event_type !== 'new_visitor' && kpiData.event_type !== '' ">
-                  <label for="tag_id">Tag :</label>
-                  <Field name="tag_id" v-model="kpiData.tag_id" as="select" class="form-control">
-                      <option :value="null">Aucun</option>
-                      <option v-for="tag in tags" :key="tag" :value="tag">{{ tag }}</option>
-                  </Field>
-                  <ErrorMessage name="tag_id" class="error-feedback" />
+              <div class="form-group" v-if="kpiData.event_type !== 'new_visitor' && kpiData.event_type !== ''">
+                <label for="tag_id">Tag :</label>
+                <Field name="tag_id" v-model="kpiData.tag_id" as="select" class="form-control">
+                  <option :value="null">Aucun</option>
+                  <option v-for="tag in tags" :key="tag" :value="tag">{{ tag }}</option>
+                </Field>
+                <ErrorMessage name="tag_id" class="error-feedback" />
               </div>
               <div class="form-group">
                 <label for="value">value:</label>
@@ -52,43 +52,33 @@
                 <ErrorMessage name="value" class="error-feedback" />
               </div>
               <div class="form-group">
-                  <label for="value_type">Type de value :</label>
-                  <Field name="value_type" v-model="kpiData.value_type" as="select" class="form-control">
-                      <!-- Generating options based on this.eventTypes -->
-                      <option value="taux">Taux</option>
-                      <option value="number">Number</option>
-                  </Field>
-                  <ErrorMessage name="value_type" class="error-feedback" />
+                <label for="value_type">Type de value :</label>
+                <Field name="value_type" v-model="kpiData.value_type" as="select" class="form-control">
+                  <!-- Generating options based on this.eventTypes -->
+                  <option value="taux">Taux</option>
+                  <option value="number">Number</option>
+                </Field>
+                <ErrorMessage name="value_type" class="error-feedback" />
               </div>
               <div class="form-group">
-                  <label for="start">Start Date :</label>
-                  <Field name="start" v-model="kpiData.start" type="date" class="form-control" />
-                  <ErrorMessage name="start" class="error-feedback" />
+                <label for="start">Start Date :</label>
+                <Field name="start" v-model="kpiData.start" type="date" class="form-control" />
+                <ErrorMessage name="start" class="error-feedback" />
               </div>
               <div class="form-group">
 
                 <label for="value">Valeur:</label>
-                <Field
-                  name="value"
-                  v-model="kpiData.value"
-                  type="text"
-                  class="form-control"
-                />
+                <Field name="value" v-model="kpiData.value" type="text" class="form-control" />
                 <ErrorMessage name="value" class="error-feedback" />
               </div>
               <div class="form-group">
                 <label for="page_url">Valeur:</label>
-                <Field
-                  name="page_url"
-                  v-model="kpiData.page_url"
-                  type="text"
-                  class="form-control"
-                />
+                <Field name="page_url" v-model="kpiData.page_url" type="text" class="form-control" />
                 <ErrorMessage name="page_url" class="error-feedback" />
 
-                  <label for="end">End Date :</label>
-                  <Field name="end" v-model="kpiData.end" type="date" class="form-control" />
-                  <ErrorMessage name="end" class="error-feedback" />
+                <label for="end">End Date :</label>
+                <Field name="end" v-model="kpiData.end" type="date" class="form-control" />
+                <ErrorMessage name="end" class="error-feedback" />
 
               </div>
             </div>
@@ -103,50 +93,47 @@
       </div>
 
       <div class="mt-4 col-12"
-                style="background-color: #f8fafb; height: 50px !important; width: 95%; margin-left: 2rem !important; border-radius: 1rem;">
-                <div class="d-flex">
-                    <div class="pagination pr-4 py-auto my-auto align-items-center d-flex justify-content-between">
-                        <div class="d-flex">
-                            <span style="width: 100px; padding-top: 14px;">Page <b>
-                                    {{ currentPage }}
-                                </b> of {{ nbPageMax }}
-                            </span>
-                            <div class="pl-4 d-flex" style="width: 250px;">
-                                <button class="btn btn-primary" @click="navigatePage('backward')"
-                                    :disabled="currentPage === 1">
-                                    <font-awesome-icon icon="step-backward" />
-                                </button>
-                                <button class="btn ml-1 mr-2 btn-primary" @click="navigatePage('prev')"
-                                    :disabled="currentPage === 1">
-                                    <font-awesome-icon icon="chevron-left" />
-                                </button>
-                                <b style="padding-top: 14px;">{{ currentPage }}</b>
-                                <button class="btn ml-2 mr-1 btn-primary" @click="navigatePage('next')"
-                                    :disabled="currentPage === nbPageMax">
-                                    <font-awesome-icon icon="chevron-right" />
-                                </button>
-                                <button class="btn ml-1 btn-primary" @click="navigatePage('forward')"
-                                    :disabled="currentPage === nbPageMax">
-                                    <font-awesome-icon icon="step-forward" />
-                                </button>
-                            </div>
-                            <div style="width: 250px;">
-                                <p style="padding-top: 10px;">
-                                    Total tags:
-                                    <span class="chips chips_purple py-2">
-                                        {{ totalKpis }}
-                                    </span>
-                                </p>
-                            </div>
-                        </div>
-                        <div>
-                            <input type="text" class="form-control" placeholder="Recherche" aria-label="Search"
-                                aria-describedby="basic-addon1" v-model="search"
-                                style="border-radius: 1rem; width: 300px !important;" />
-                        </div>
-                    </div>
-                </div>
+        style="background-color: #f8fafb; height: 50px !important; width: 95%; margin-left: 2rem !important; border-radius: 1rem;">
+        <div class="d-flex">
+          <div class="pagination pr-4 py-auto my-auto align-items-center d-flex justify-content-between">
+            <div class="d-flex">
+              <span style="width: 100px; padding-top: 14px;">Page <b>
+                  {{ currentPage }}
+                </b> of {{ nbPageMax }}
+              </span>
+              <div class="pl-4 d-flex" style="width: 250px;">
+                <button class="btn btn-primary" @click="navigatePage('backward')" :disabled="currentPage === 1">
+                  <font-awesome-icon icon="step-backward" />
+                </button>
+                <button class="btn ml-1 mr-2 btn-primary" @click="navigatePage('prev')" :disabled="currentPage === 1">
+                  <font-awesome-icon icon="chevron-left" />
+                </button>
+                <b style="padding-top: 14px;">{{ currentPage }}</b>
+                <button class="btn ml-2 mr-1 btn-primary" @click="navigatePage('next')"
+                  :disabled="currentPage === nbPageMax">
+                  <font-awesome-icon icon="chevron-right" />
+                </button>
+                <button class="btn ml-1 btn-primary" @click="navigatePage('forward')"
+                  :disabled="currentPage === nbPageMax">
+                  <font-awesome-icon icon="step-forward" />
+                </button>
+              </div>
+              <div style="width: 250px;">
+                <p style="padding-top: 10px;">
+                  Total tags:
+                  <span class="chips chips_purple py-2">
+                    {{ totalKpis }}
+                  </span>
+                </p>
+              </div>
             </div>
+            <div>
+              <input type="text" class="form-control" placeholder="Recherche" aria-label="Search"
+                aria-describedby="basic-addon1" v-model="search" style="border-radius: 1rem; width: 300px !important;" />
+            </div>
+          </div>
+        </div>
+      </div>
 
 
       <div class="d-flex mt-4 justify-content-between py-3 px-4"
@@ -185,19 +172,19 @@
           </div>
           <div style="width: 25%;" class="d-flex justify-content-center border-right">
 
-              <span class="cursor-pointer">
-                  {{ kpi.name?? 'Not available' }}
-              </span>
+            <span class="cursor-pointer">
+              {{ kpi.name ?? 'Not available' }}
+            </span>
           </div>
           <div style="width: 25%;" class="d-flex justify-content-center border-right">
-              <span class="cursor-pointer">
-                  {{ kpi.description?? 'Not available' }}
-              </span>
+            <span class="cursor-pointer">
+              {{ kpi.description ?? 'Not available' }}
+            </span>
           </div>
           <div style="width: 25%;" class="d-flex justify-content-center ">
-              <span class="cursor-pointer">
-                  {{ kpi.event_type?? 'Not available' }}
-              </span>
+            <span class="cursor-pointer">
+              {{ kpi.event_type ?? 'Not available' }}
+            </span>
 
           </div>
 
@@ -247,20 +234,8 @@ export default {
         .number("La valeur doit être renseignée")
         .required()
     });
-      tag_id: yup
-        .string(),
-      value_type: yup
-        .string()
-        .required("Le type de value doit être renseigné"),
-      start: yup
-        .date()
-        .required("La date de début doit être renseigné"),
-      end: yup
-        .date()
-        .required("La date de fin doit être renseigné"),
-    });
     return {
-      kpiList: null,
+      kpiList: [],
       tags: [],
       eventTypes: [],
       components: {
@@ -275,34 +250,34 @@ export default {
       kpiData: {
         name: "",
         description: "",
-        event_type:"",
-        value:""
+        event_type: "",
+        value: "",
         tag_id: "",
         value_type: "",
         start: "",
         end: "",
       },
       currentPage: 1,
-     pageLimit: 10,
+      pageLimit: 10,
     };
   },
   computed: {
-        nbPageMax() {
-            return Math.ceil(this.kpiList.length / this.pageLimit);
-        },
-        totalKpis() {
-            return this.filteredKpi.length
-        },
-        filteredKpi() {
-            return this.search
-                ? this.kpiList.filter(el => {
-                    return el.name?.toString().toLowerCase().includes(this.search.toString().toLowerCase())
-                }).slice((this.currentPage - 1) * this.pageLimit, this.currentPage * this.pageLimit)
-                : this.kpiList.slice((this.currentPage - 1) * this.pageLimit, this.currentPage * this.pageLimit)
-
-            // return this.webMasterList.slice((this.currentPage - 1) * this.pageLimit, this.currentPage * this.pageLimit)
-        }
+    nbPageMax() {
+      return Math.ceil(this.kpiList.length / this.pageLimit);
     },
+    totalKpis() {
+      return this.filteredKpi.length
+    },
+    filteredKpi() {
+      return this.search
+        ? this.kpiList.filter(el => {
+          return el.name?.toString().toLowerCase().includes(this.search.toString().toLowerCase())
+        }).slice((this.currentPage - 1) * this.pageLimit, this.currentPage * this.pageLimit)
+        : this.kpiList.slice((this.currentPage - 1) * this.pageLimit, this.currentPage * this.pageLimit)
+
+      // return this.webMasterList.slice((this.currentPage - 1) * this.pageLimit, this.currentPage * this.pageLimit)
+    }
+  },
   async mounted() {
     this.getKpis();
     this.getEventTypes();
@@ -336,25 +311,24 @@ export default {
       this.kpiData.value_type - "";
       this.kpiData.start - "";
       this.kpiData.end - "";
-      console.log(requestOptions.body);
 
-      // fetch("http://localhost:8080/api/kpis/create", requestOptions)
-      //   .then(async (response) => {
-      //     const data = await response.json();
+      fetch("http://localhost:8080/api/kpis/create", requestOptions)
+        .then(async (response) => {
+          const data = await response.json();
 
-      //     // check for error response
-      //     if (!response.ok) {
-      //       // get error message from body or default to response status
-      //       const error = (data && data.message) || response.status;
-      //       return Promise.reject(error);
-      //     }
+          // check for error response
+          if (!response.ok) {
+            // get error message from body or default to response status
+            const error = (data && data.message) || response.status;
+            return Promise.reject(error);
+          }
 
-      //     this.getKpis();
-      //   })
-      //   .catch((error) => {
-      //     this.errorMessage = error;
-      //     console.error("There was an error!", error);
-      //   });
+          this.getKpis();
+        })
+        .catch((error) => {
+          this.errorMessage = error;
+          console.error("There was an error!", error);
+        });
     },
 
     async getKpis() {
@@ -451,23 +425,23 @@ export default {
 }
 
 .btn-primary {
-    background-color: #f8fafb !important;
-    border-color: #f8fafb !important;
-    border-radius: 2rem;
-    color: black;
+  background-color: #f8fafb !important;
+  border-color: #f8fafb !important;
+  border-radius: 2rem;
+  color: black;
 }
 
 .btn-primary:hover {
-    background-color: #e6e8ea !important;
-    border-color: #e6e8ea !important;
-    border-radius: 2rem;
-    color: black;
+  background-color: #e6e8ea !important;
+  border-color: #e6e8ea !important;
+  border-radius: 2rem;
+  color: black;
 }
 
 .btn-primary:disabled {
-    background-color: #f8fafb !important;
-    border-color: #f8fafb !important;
-    border-radius: 2rem;
-    color: rgb(61, 61, 61);
+  background-color: #f8fafb !important;
+  border-color: #f8fafb !important;
+  border-radius: 2rem;
+  color: rgb(61, 61, 61);
 }
 </style>
