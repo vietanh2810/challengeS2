@@ -5,15 +5,20 @@ const Kpi = db.kpis;
 const createKpi = async (req, res) => {
   try {
     // Get the KPI data from the request body
-    const { name, value, description, event_type } = req.body;
+    const { name, value, value_type, description, event_type, start, end, conversionId } = req.body;
     const { dataValues } = req.user;
     const userId = dataValues.id;
+
     // Save the user data to the database
     const newKpi = await Kpi.create({
       name: name,
       value: value,
+      value_type: value_type,
       description: description,
       event_type: event_type,
+      start: start,
+      end: end,
+      conversionId: conversionId,
       userId: userId,
     });
 
@@ -21,7 +26,7 @@ const createKpi = async (req, res) => {
     return res.status(201).json(newKpi);
   } catch (error) {
     // Handle errors
-    console.log("message d'erreur", error);
+    console.log("Error creating KPI:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 };

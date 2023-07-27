@@ -1,8 +1,9 @@
 const db = require("../models");
+const { v4: uuidv4 } = require("uuid");
 
 // Assigning tags to the variable Tag
 const Tag = db.tags;
-
+const User = db.users;
 const getAllTags = async (req, res) => {
     try {
         const { dataValues } = req.user;
@@ -33,13 +34,31 @@ const createTag = async (req, res) => {
 
         const tag = await Tag.create({
             comment: comment,
-            userId: userId
+            userId: userId,
+            tag_uid: uuidv4()
         });
 
         return res.status(201).json(tag);
     } catch (error) {
         console.error('Error during signup:', error);
         return res.status(500).send('Internal Server Error');
+    }
+};
+
+const createDefaultTag = async (tagUid,userID) => {
+    try {
+        console.log(userID)
+
+        const tag = await Tag.create({
+            comment: "Default tag",
+            userId: userID,
+            tag_uid: tagUid
+        });
+
+        return tag;
+    } catch (error) {
+        console.error('Error during signup:', error);
+        return null;
     }
 };
 
@@ -65,5 +84,6 @@ const updateTag = async (req, res) => {
 module.exports = {
     getAllTags,
     createTag,
-    updateTag
+    updateTag,
+    createDefaultTag
 }

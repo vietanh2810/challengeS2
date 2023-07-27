@@ -5,7 +5,7 @@ const Graphe = db.graphes;
 const createGraphe = async (req, res) => {
   try {
     // Get the Graphe data from the request body
-    const { name, event_type, graphe_type } = req.body;
+    const { name, event_type, graphe_type, tag_id } = req.body;
     const { dataValues } = req.user;
     const userId = dataValues.id;
     // Save the user data to the database
@@ -14,12 +14,14 @@ const createGraphe = async (req, res) => {
       name: name,
       userId: userId,
       event_type: event_type,
+      tag_id: tag_id,
     });
 
     // Respond with the saved Graphe
     return res.status(201).json(newGraphe);
   } catch (error) {
     // Handle errors
+    console.error("Error creating Graphe:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 };
