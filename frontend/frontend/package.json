@@ -29,6 +29,7 @@
     "vue-pdf": "^4.3.0",
     "vue-pdf-embed": "^1.1.6",
     "vue-router": "^4.2.4",
+    "vuedraggable": "^4.1.0",
     "vuex": "^4.1.0",
     "yup": "^1.2.0"
   },

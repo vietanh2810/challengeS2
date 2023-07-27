@@ -5,6 +5,7 @@ import Dashboard from "./components/Dashboard.vue";
 import Signup from "./components/SignUp.vue";
 import Admin from "./components/Admin.vue";
 import Tag from "./components/Tag.vue";
+import ConversionTunnel from "./components/ConversionTunnel.vue";
 // import Register from "./components/Register.vue";
 // lazy-loaded
 // const Profile = () => import("./components/Profile.vue")
@@ -24,6 +25,14 @@ const routes = [
     {
         path: "/signup",
         component: Signup
+    },
+    {
+        path: "/tags",
+        component: Tag
+    },
+    {
+        path: "/conversiontunnel",
+        component: ConversionTunnel
     },
     // {
     //     path: "/profile",
