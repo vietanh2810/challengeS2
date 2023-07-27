@@ -7,15 +7,12 @@
                 <label style="margin: 1.5rem 0 0 2rem; font-size: 21px; font-weight: 500;">Tunnels de conversion</label>
                 
                 <Modal>
-
                     <template #activator="{ openModal }">
                         <button class="btn btn-info btn-newTag" @click="openModal">Ajouter un tunnel de conversion</button>
                     </template>
-
                     <template v-slot:actions="{ closeModal }">
                         <button class="btn btn-danger" title="Fermer" @click="closeModal">Fermer</button>
                     </template>
-
                     <Form @submit="createConvTunnel" :validation-schema="schema" style="padding: 1.5em;">
                             <div class="form-group">
                                 <label for="comment">Commentaire:</label>
@@ -65,7 +62,6 @@
                                     </div>
                                     </template>
                                 </draggable>
-                                <!--<ErrorMessage name="newTags" class="error-feedback" />-->
                             </div>
 
                             <rawDisplayer class="col-6" :value="tagList" title="List 1" />
@@ -84,7 +80,7 @@
                         
                     
                         <template #close-icon="{ closeModal }">
-                            <button class="btn btn-default" title="Fermer" @click="closeModal"><i class='bx bx-x'></i></button>
+                            <button class="btn btn-default" title="Fermer" @click="closeModal">x</button>
                         </template>
                 </Modal>
             </div>
@@ -196,10 +192,6 @@ export default {
                 .string()
                 .required("Le commentaire doit être renseigné")
                 .min(2, "Le commentaire doit avoir au moins 2 caractères"),
-            newTag: yup
-                .array()
-                .required("La liste des tags doit en contenir au moins 1")
-                .min(1,"Vous devez mettre au moins un tag dans la liste")
         });
         return {
             enabled: true,
@@ -220,7 +212,7 @@ export default {
             schema,
             convTunnelData: {
                 comment: "",
-                newTags: []
+                tags: []
             },
             currentPage: 1,
             pageLimit: 10,
@@ -253,9 +245,9 @@ export default {
     },
     methods: {
         
-        log: function(evt) {
-            //window.console.log(evt);
-        },
+    log: function(evt) {
+      window.console.log(evt);
+    },
         createConvTunnel() {
 
             const listTags =  new Array();
@@ -268,7 +260,7 @@ export default {
                 body: JSON.stringify({ comment: this.convTunnelData.comment, tags: listTags})
             };
             this.convTunnelData.comment - '';
-            this.convTunnelData.newTags - [];
+            this.convTunnelData.tags - [];
             fetch('http://localhost:8080/api/convTunnel/create', requestOptions)
             .then(async response => {
                 const data = await response.json();
