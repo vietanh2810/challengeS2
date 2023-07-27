@@ -225,6 +225,7 @@ export default {
         handleShowPdf(path) {
             this.showFile = true;
             this.showedFile = 'http://localhost:8080/uploads/' + path;
+            console.log(import.meta.env.VITE_API_ENDPOINT)
         },
         handleClosePdf(){
             this.showFile = false;

@@ -19,6 +19,10 @@ const customEventSchema = new mongoose.Schema({
     tdate: { type: Date, required: true },
     visitor_id: { type: String, required: true },
     session_id: { type: String, required: true },
+    app_id: { type: String, required: true },
+    url: { type: String, required: false },
+    location: { type: String, required: false },
+    screen_resolution: { type: String, required: false },
 });
 
 // Create models from the schemas

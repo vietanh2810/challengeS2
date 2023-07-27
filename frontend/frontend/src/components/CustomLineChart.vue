@@ -4,7 +4,7 @@
             <label>{{ label }}</label>
         </div>
         <hr style="margin: 5px 0 !important;" />
-        <Line class="line-chart" :data="data" :options="options" />
+        <Line class="line-chart" :data="dataGraph" :options="options" />
     </div>
 </template>
   
@@ -29,7 +29,7 @@ export default {
     },
     data() {
         return {
-            data: {
+            dataGraph: {
                 labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
                 datasets: [
                     {
@@ -58,10 +58,15 @@ export default {
             type: String,
             default: '350px',
         },
+        data: {
+            type: Object,
+            default: () => {},
+        },
     },
     mounted() {
         this.chartWidth = this.width;
         this.chartHeight = this.height;
+        this.dataGraph = this.data;
     },
     computed: {
         cssVars() {

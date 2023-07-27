@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
             }
         },
         tagId: {
-            type: DataTypes.UUID,
+            type: DataTypes.STRING,
             allowNull: false,
             references: {
                 model: 'tags',

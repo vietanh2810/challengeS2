@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const User = db.users;
 const Company = db.companies;
 const Website = db.websites;
+const tagController = require("./tagController");
 
 const signup = async (req, res) => {
     try {
@@ -34,11 +35,6 @@ const signup = async (req, res) => {
         });
         res.cookie('jwt', token, { maxAge: 1 * 24 * 60 * 60 * 1000, httpOnly: true });
 
-        console.log('User:', JSON.stringify(user, null, 2));
-        console.log('Company:', JSON.stringify(company, null, 2));
-        console.log('Website:', JSON.stringify(website, null, 2));
-        console.log('Token:', token);
-
         return res.status(201).json(user);
     } catch (error) {
         console.error('Error during signup:', error);
@@ -53,7 +49,7 @@ const login = async (req, res) => {
         const { email, password } = req.body;
 
         //find a user by their email
-        const user = await User.findOne({
+        let user = await User.findOne({
             where: {
                 email: email,
             },
@@ -77,6 +73,16 @@ const login = async (req, res) => {
                     return res
                         .status(401)
                         .send("Authentication failed, Your account is not validated yet");
+                }
+
+                const tmpCompany = await Company.findOne({ where: { userId: user.id } });
+
+                if (tmpCompany && tmpCompany.kbis !== null) {
+                    const rawData = user.get();
+
+                    rawData.appId = tmpCompany.appId;
+
+                    user = rawData;
                 }
 
                 //send user data
@@ -202,10 +208,14 @@ const createDefaultWebmaster = async () => {
             isValidated: true, // Got validated
         });
 
-        console.log("Default webmaster user created.");
+        const user = await User.findOne({ where: { userName: "user" } });
+        return user.dataValues;
     } catch (error) {
         console.error("Error creating default webmaster :", error);
+        return null;
     }
+
+    
 };
 
 module.exports = {

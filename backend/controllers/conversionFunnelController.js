@@ -40,7 +40,6 @@ const createConvFunn = async (req, res) => {
 
         for (let index = 0; index < tab_tags.length; index++) {
             const myID = tab_tags[index];
-            console.log("uid:" + myID);
             const tag = await Tag.findOne({ 
                 where : {tag_uid: myID} 
             });

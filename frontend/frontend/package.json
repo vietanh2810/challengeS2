@@ -26,6 +26,7 @@
     "vee-validate": "^4.10.8",
     "vue": "^3.3.4",
     "vue-chartjs": "^5.2.0",
+    "vue-code-highlight": "^0.7.8",
     "vue-pdf": "^4.3.0",
     "vue-pdf-embed": "^1.1.6",
     "vue-router": "^4.2.4",

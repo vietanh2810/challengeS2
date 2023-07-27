@@ -26,6 +26,12 @@
                         </router-link>
                     </li>
                     <li>
+                        <router-link to="/sdk"> 
+                            <i class="bx bx-code-alt" />
+                            <span class="links_name">SDK</span>
+                        </router-link>
+                    </li>
+                    <li>
                         <router-link to="/web-param">
                             <i class="bx bx-folder" />
                             <span class="links_name">Site Manager</span>
@@ -37,7 +43,7 @@
                             <span class="links_name">My Profile</span>
                         </router-link>
                     </li>
-                    <li>
+                    <li v-if="role === 'admin'">
                         <router-link to="/admin">
                             <i class="bx bx-cog" />
                             <span class="links_name">Settings</span>
@@ -160,10 +166,12 @@ export default {
         return {
             isOpened: false,
             user: {},
+            role: '',
         }
     },
     mounted() {
         this.user = JSON.parse(localStorage.getItem('user'))
+        this.role = this.user.user.role
         this.isOpened = this.isMenuOpen
         this.tooltipAttached()
     },
