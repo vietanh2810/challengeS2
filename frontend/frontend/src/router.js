@@ -6,7 +6,7 @@ import Signup from "./components/SignUp.vue";
 import Admin from "./components/Admin.vue";
 import Graphe from "./components/Graphe.vue";
 import Heatmap from "./components/Heatmap.vue";
-// import Kpi from "./components/Kpi.vue";
+import Kpi from "./components/Kpi.vue";
 import Tag from "./components/Tag.vue";
 import ConversionTunnel from "./components/ConversionTunnel.vue";
 // import Register from "./components/Register.vue";
