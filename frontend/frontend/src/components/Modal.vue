@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 
 defineProps({
-  title: { type: String, default: 'Modal Title' }
+  title: { type: String, default: 'Formulaire' }
 });
 
 const openModal = ref(false);
@@ -22,7 +22,7 @@ function toggleModal() {
       <div class="modal-title">
         {{ title }}<slot name="close-icon" :closeModal="toggleModal"></slot>
       </div>
-      <div class="modal-content"><slot>Content</slot></div>
+      <div class="modal-content" style="border: 0;"><slot>Content</slot></div>
       <div class="modal-actions">
         <slot name="actions" :closeModal="toggleModal"
           ><button @click="toggleModal">Close</button></slot

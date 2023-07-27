@@ -12,11 +12,67 @@
           border-radius: 1rem;
         "
       >
-        <label
-          style="margin: 1.5rem 0 0 2rem; font-size: 21px; font-weight: 500"
-          >Kpis</label
-        >
+        <label style="margin: 1.5rem 0 0 2rem; font-size: 21px; font-weight: 500">Kpis</label>
         <!-- <button><i class="bi bi-2-square"></i>Nouveau Kpi</button> -->
+        <Modal>
+          <template #activator="{ openModal }">
+              <button class="btn btn-info btn-newKpi" @click="openModal">Ajouter un tunnel de conversion</button>
+          </template>
+          <template v-slot:actions="{ closeModal }">
+              
+              <button class="btn btn-danger" title="Fermer" @click="closeModal">Fermer</button>
+          </template>
+          <Form @submit="createKpi" :validation-schema="schema" style="padding: 1.5em;">
+            <div class="form-group">
+              <div class="form-group">
+                <label for="name">Nom :</label>
+                <Field
+                  name="name"
+                  v-model="kpiData.name"
+                  type="text"
+                  class="form-control"
+                />
+                <ErrorMessage name="name" class="error-feedback" />
+              </div>
+              <div class="form-group">
+                <label for="description">Description :</label>
+                <Field
+                  name="description"
+                  v-model="kpiData.description"
+                  type="text"
+                  class="form-control"
+                />
+                <ErrorMessage name="description" class="error-feedback" />
+              </div>
+              <div class="form-group">
+                <label for="event_type">Type d'évenement :</label>
+                <Field
+                  name="event_type"
+                  v-model="kpiData.event_type"
+                  type="text"
+                  class="form-control"
+                />
+                <ErrorMessage name="event_type" class="error-feedback" />
+              </div>
+              <div class="form-group">
+                <label for="page_url">Valeur:</label>
+                <Field
+                  name="page_url"
+                  v-model="kpiData.page_url"
+                  type="text"
+                  class="form-control"
+                />
+                <ErrorMessage name="page_url" class="error-feedback" />
+              </div>
+            </div>
+
+            <button type="submit">Valider</button>
+          </Form>
+              
+          <template #close-icon="{ closeModal }">
+              <button class="btn btn-default" title="Fermer" @click="closeModal">x</button>
+          </template>
+      </Modal>
       </div>
 
       <div
@@ -55,37 +111,64 @@
           ></div>
         </div>
 
-        <div class="card text-bg-dark text-center w-100">
-          <div class="card-body">
-            <Form @submit="createKpi" :validation-schema="schema">
-              <div class="form-group">
-                <div class="form-group">
-                  <label for="name">Nom :</label>
-                  <Field
-                    name="name"
-                    v-model="kpiData.name"
-                    type="text"
-                    class="form-control"
-                  />
-                  <ErrorMessage name="name" class="error-feedback" />
-                </div>
-                <div class="form-group">
-                  <label for="page_url">Lien de la page:</label>
-                  <Field
-                    name="page_url"
-                    v-model="kpiData.page_url"
-                    type="text"
-                    class="form-control"
-                  />
-                  <ErrorMessage name="page_url" class="error-feedback" />
-                </div>
-              </div>
 
-              <button type="submit">submit Kpi</button>
-            </Form>
+      </div>
+
+      <div class="d-flex mt-4 justify-content-between py-3 px-4"
+      style="margin-left: 32px !important; padding-left:38px !important; background-color: #f8fafb; border-radius: 1rem; width: 95%; height: 60px;">
+        <div class="row col-12">
+          <div style="width: 25%;" class="d-flex justify-content-center border-right">
+            <span class="cursor-pointer" @click="orderListBy('id', 'String')">
+              <b class="mr-2">Id</b>
+            </span>
+          </div>
+          <div style="width: 25%;" class="d-flex justify-content-center border-right">
+            <span class="cursor-pointer" @click="orderListBy('name', 'String')">
+              <b class="mr-2">Nom</b>
+            </span>
+          </div>
+          <div style="width: 25%;" class="d-flex justify-content-center border-right">
+            <span class="cursor-pointer" @click="orderListBy('comment', 'String')">
+              <b class="mr-2">Description</b>
+            </span>
+          </div>
+          <div style="width:25%;" class="d-flex justify-content-center">
+            <span class="cursor-pointer" @click="orderListBy('tags', 'String')">
+              <b class="mr-2">Type d'évenement</b>
+            </span>
           </div>
         </div>
       </div>
+
+      <div v-for="(kpi, index) in filteredKpi" :key="index"
+          class="d-flex mt-4 justify-content-between py-3 px-4"
+          style="margin:0.5rem 0 0 2rem !important; background-color: #f8fafb; border-radius: 1rem; width: 95%; height: 80px;">
+        <div class="row px-3 col-12" :id="'dupli-row-' + kpi.id">
+          <div style="width: 25%;" class="d-flex justify-content-center border-right">
+              <span class="cursor-pointer">
+                  {{ kpi.id?? 'Not available' }}
+              </span>
+          </div>
+          <div style="width: 25%;" class="d-flex justify-content-center border-right">
+              <span class="cursor-pointer">
+                  {{ kpi.id?? 'Not available' }}
+              </span>
+          </div>
+          <div style="width: 25%;" class="d-flex justify-content-center border-right">
+              <span class="cursor-pointer">
+                  {{ kpi.id?? 'Not available' }}
+              </span>
+          </div>
+          <div style="width: 25%;" class="d-flex justify-content-center ">
+              <span class="cursor-pointer">
+                  {{ kpi.id?? 'Not available' }}
+              </span>
+          </div>
+          
+        </div>
+      </div>
+
+
     </div>
   </div>
 </template>
@@ -96,6 +179,7 @@ import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap";
 import { Form, Field, ErrorMessage } from "vee-validate";
 import * as yup from "yup";
+import Modal from './Modal.vue';
 
 export default {
   components: {
@@ -103,6 +187,7 @@ export default {
     Form,
     Field,
     ErrorMessage,
+    Modal
   },
   data() {
     const schema = yup.object().shape({
@@ -116,18 +201,21 @@ export default {
         .min(2, "Le description doit avoir au moins 2 caractères"),
       event_type: yup
         .string()
-        .required("Le event_type doit être renseigné")
-        .min(2, "Le event_type doit avoir au moins 2 caractères"),
+        .required("Le type d'évenement doit être renseigné")
+        .min(2, "Le type d'évenement doit avoir au moins 2 caractères"),
+      page_url: yup
+        .number()
+        .required("La valeur doit être renseigné"),
     });
     return {
       kpiList: null,
-      piechartDate: null,
+      //piechartDate: null,
       components: {
         Form,
         Field,
         ErrorMessage,
       },
-      data: {
+      /*data: {
         labels: ["Red", "Blue", "Yellow"],
         datasets: [
           {
@@ -136,11 +224,11 @@ export default {
             hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
           },
         ],
-      },
+      },*/
       options: {
         responsive: true,
       },
-      chartData: {
+      /*chartData: {
         labels: [
           "Monday",
           "Tuesday",
@@ -169,27 +257,18 @@ export default {
             max: 300, // Maximum value on the y-axis
           },
         },
-      },
+      },*/
       schema,
       kpiData: {
         name: "",
         page_url: "",
+        description: "",
+        event_type:""
       },
     };
   },
   async mounted() {
-    const response = await fetch("http://localhost:8080/api/kpis/", {
-      method: "Get",
-      headers: {
-        "Content-type": "application/json",
-        Authorization:
-          "Bearer " + JSON.parse(localStorage.getItem("user")).token,
-      },
-    })
-      .then((response) => response.json())
-      .then((responseJSON) => {
-        this.kpiList = responseJSON;
-      });
+    this.getKpis();
     //this.$tracker.trackPageView('/example-page', 'Example Page');
   },
   methods: {
@@ -202,11 +281,16 @@ export default {
             "Bearer " + JSON.parse(localStorage.getItem("user")).token,
         },
         body: JSON.stringify({
-          page_url: this.kpiData.page_url,
+          description: this.kpiData.description,
           name: this.kpiData.name,
+          event_type: this.kpiData.event_type,
+          value: this.kpiData.page_url
         }),
       };
-      this.kpiData.comment - "";
+      this.kpiData.name - "";
+      this.kpiData.description - "";
+      this.kpiData.event_type - "";
+      this.kpiData.page_url- "";
       fetch("http://localhost:8080/api/kpis/create", requestOptions)
         .then(async (response) => {
           const data = await response.json();
@@ -218,8 +302,7 @@ export default {
             return Promise.reject(error);
           }
 
-          console.log(data);
-          //this.postId = data.id;
+          this.getKpis();
         })
         .catch((error) => {
           this.errorMessage = error;
@@ -227,7 +310,20 @@ export default {
         });
     },
 
-    getKpis() {},
+    async getKpis() {
+      const response = await fetch("http://localhost:8080/api/kpis/", {
+      method: "Get",
+      headers: {
+        "Content-type": "application/json",
+        Authorization:
+          "Bearer " + JSON.parse(localStorage.getItem("user")).token,
+      },
+    })
+      .then((response) => response.json())
+      .then((responseJSON) => {
+        this.kpiList = responseJSON;
+      });
+    },
   },
 };
 </script>
@@ -246,5 +342,29 @@ export default {
   bottom: 0;
   background-color: #e6e8ea;
   /* Add other styles for the content */
+}
+
+.btn-newKpi {
+    background-color: #84a3b3 !important;
+    border-color: #f8fafb !important;
+    border-radius: 2rem;
+    color: black;
+    position: absolute;
+    top: 5%;
+	right: 5%;
+}
+
+.btn-newKpi:hover {
+    background-color: #6f8d9d !important;
+    border-color: #e6e8ea !important;
+    border-radius: 2rem;
+    color: black;
+}
+
+.btn-newKpi:disabled {
+    background-color: #9ec1d4 !important;
+    border-color: #f8fafb !important;
+    border-radius: 2rem;
+    color: rgb(61, 61, 61);
 }
 </style>

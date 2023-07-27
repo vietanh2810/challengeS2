@@ -25,7 +25,6 @@ const getAllConvFunns = async (req, res) => {
                     },
                 ],
             });
-            console.log(conversion_funnels);
             return res.status(200).json(conversion_funnels);
         } else {
             // If the user is not an admin, return tags associated with the user's ID
@@ -41,7 +40,6 @@ const getAllConvFunns = async (req, res) => {
                 }
             ], }, 
             );
-            console.log("conversion: "+JSON.stringify(conversion_funnels));
             return res.status(200).json(conversion_funnels);
         }
     } catch (error) {

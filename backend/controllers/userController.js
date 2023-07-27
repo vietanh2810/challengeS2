@@ -11,45 +11,46 @@ const Website = db.websites;
 const tagController = require("./tagController");
 
 const signup = async (req, res) => {
-    try {
-        const { userName, email, password, companyName, contactInfo, websiteUrl } =
-            req.body;
 
-        const hashedPassword = await bcrypt.hash(password, 10);
+  try {
+    const { userName, email, password, companyName, contactInfo, websiteUrl } =
+      req.body;
 
-        const user = await User.create({
-            userName,
-            email,
-            password: hashedPassword,
-            role: userName === "admin" ? "admin" : "user",
-            contactInfo,
-        });
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-        const company = await Company.create({
-            companyName,
-            kbis: req.file.filename,
-            userId: user.id,
-        });
-        const website = await Website.create({
-            baseUrl: websiteUrl,
-            userId: user.id,
-        });
+    const user = await User.create({
+      userName,
+      email,
+      password: hashedPassword,
+      role: userName === "admin" ? "admin" : "user",
+      contactInfo,
+    });
 
-        const token = jwt.sign({ id: user.id }, process.env.jwtSecret, {
-            expiresIn: "1d",
-        });
-        res.cookie("jwt", token, {
-            maxAge: 1 * 24 * 60 * 60 * 1000,
-            httpOnly: true,
-        });
+    const company = await Company.create({
+      companyName,
+      kbis: req.file.filename,
+      userId: user.id,
+    });
+    const website = await Website.create({
+      baseUrl: websiteUrl,
+      userId: user.id,
+    });
 
-        console.log("User:", JSON.stringify(user, null, 2));
-        console.log("Company:", JSON.stringify(company, null, 2));
-        console.log("Website:", JSON.stringify(website, null, 2));
-        console.log("Token:", token);
-        //emailing
-        const toEmail = user.email;
-        const content = `
+    const token = jwt.sign({ id: user.id }, process.env.jwtSecret, {
+      expiresIn: "1d",
+    });
+    res.cookie("jwt", token, {
+      maxAge: 1 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+    });
+
+    /*console.log("User:", JSON.stringify(user, null, 2));
+    console.log("Company:", JSON.stringify(company, null, 2));
+    console.log("Website:", JSON.stringify(website, null, 2));
+    console.log("Token:", token);*/
+    //emailing
+    const toEmail = user.email;
+    const content = `
         <h1>Bonjour ${userName}</h1>
         <p>Voici une Confirmation que vous êtes bien inscrit !</p>
         `;
@@ -168,25 +169,25 @@ const validateUser = async (req, res) => {
                 .json({ error: "Unauthorized. Only admin users can validate users." });
         }
 
-        // Generate a uuid for the user
-        const uuid = uuidv4();
+    // Generate a uuid for the user
+    const uuid = uuidv4();
 
-        // Update the user's validation status to true
-        user.isValidated = true;
-        await user.save();
+    // Update the user's validation status to true
+    user.isValidated = true;
+    await user.save();
 
-        // Update the linked Company's appId with the generated uuid
-        company.appId = uuid;
-        await company.save();
-        console.log(company);
+    // Update the linked Company's appId with the generated uuid
+    company.appId = uuid;
+    await company.save();
+    //console.log(company);
 
-        res.json({ message: "User validated successfully." });
-    } catch (error) {
-        console.error("Error during user validation:", error); // Add the error log to the console
-        res
-            .status(500)
-            .json({ error: "An error occurred during user validation." });
-    }
+    res.json({ message: "User validated successfully." });
+  } catch (error) {
+    console.error("Error during user validation:", error); // Add the error log to the console
+    res
+      .status(500)
+      .json({ error: "An error occurred during user validation." });
+  }
 };
 
 const getAllUsers = async (req, res) => {
@@ -207,7 +208,7 @@ const getAllUsers = async (req, res) => {
             }
         }
 
-        console.log(users);
+    //console.log(users);
 
         return res.status(200).json(users);
     } catch (error) {
