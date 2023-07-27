@@ -14,7 +14,7 @@
                         
                         <button class="btn btn-danger" title="Fermer" @click="closeModal">Fermer</button>
                     </template>
-                    <Form @submit="createConvTunnel" :validation-schema="schema">
+                    <Form @submit="createConvTunnel" :validation-schema="schema" style="padding: 1.5em;">
                             <div class="form-group">
                                 <label for="comment">Commentaire:</label>
                                 <Field name="comment" v-model="convTunnelData.comment" type="text" class="form-control" />
@@ -134,13 +134,13 @@
 
             <div class="d-flex mt-4 justify-content-between py-3 px-4"
                 style="margin-left: 32px !important; padding-left:38px !important; background-color: #f8fafb; border-radius: 1rem; width: 95%; height: 60px;">
-                <div class="row">
-                    <div style="width: 450px;" class="d-flex justify-content-center border-right">
+                <div class="row col-12">
+                    <div style="width: 50%;" class="d-flex justify-content-center border-right">
                         <span class="cursor-pointer" @click="orderListBy('comment', 'String')">
                             <b class="mr-2">Commentaire</b>
                         </span>
                     </div>
-                    <div style="width: 650px;" class="d-flex justify-content-center">
+                    <div style="width:50%;" class="d-flex justify-content-center">
                         <span class="cursor-pointer" @click="orderListBy('tags', 'String')">
                             <b class="mr-2">Tags</b>
                         </span>
@@ -150,16 +150,16 @@
 
             <div v-for="(convtunnel, index) in filteredConvTunnel" :key="index"
                 class="d-flex mt-4 justify-content-between py-3 px-4"
-                style="margin:0.5rem 0 0 2rem !important; background-color: #f8fafb; border-radius: 1rem; width: 95%; height: 60px;">
-                <div class="row px-3" :id="'dupli-row-' + convtunnel.id">
-                    <div style="width: 450px;" class="d-flex justify-content-center border-right">
+                style="margin:0.5rem 0 0 2rem !important; background-color: #f8fafb; border-radius: 1rem; width: 95%; height: 80px;">
+                <div class="row px-3 col-12" :id="'dupli-row-' + convtunnel.id">
+                    <div style="width: 50%;" class="d-flex justify-content-center border-right">
                         <span class="cursor-pointer">
                             {{ convtunnel.comment?? 'Not available' }}
                         </span>
                     </div>
-                    <div style="width: 650px;" class="d-flex justify-content-center">
+                    <div style="max-width: 50%; overflow:scroll;" class="d-flex justify-content-center">
                         <span class="cursor-pointer" v-for="(tag, index) in convtunnel.tags" :key="index">
-                            <span class="badge rounded-pill badge-dark">tag {{tag.tag_uid ?? 'Not available' }}</span>
+                            <span class="badge rounded-pill badge-info">tag {{tag.tag_uid ?? 'Not available' }}</span>
                         </span>
                     </div>
                 </div>

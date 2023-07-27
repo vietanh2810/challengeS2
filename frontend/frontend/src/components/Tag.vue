@@ -14,7 +14,7 @@
                         
                         <button class="btn btn-danger" title="Fermer" @click="closeModal">Fermer</button>
                     </template>
-                    <Form @submit="createTag" :validation-schema="schema">
+                    <Form @submit="createTag" :validation-schema="schema" style="padding: 1.5em;">
                         <div class="form-group">
                             <label for="comment">Commentaire:</label>
                             <Field name="comment" v-model="tagData.comment" type="text" class="form-control" />
@@ -26,7 +26,7 @@
                         
                     
                         <template #close-icon="{ closeModal }">
-                            <button class="btn btn-sm btn-danger" title="Fermer" @click="closeModal">x</button>
+                            <button class="btn btn-default" title="Fermer" @click="closeModal">x</button>
                         </template>
                 </Modal>
             </div>
@@ -99,7 +99,9 @@
                 <div class="row px-3" :id="'dupli-row-' + tag.tag_uid">
                     <div style="width: 450px;" class="d-flex justify-content-center border-right">
                         <span class="cursor-pointer">
-                            {{ tag.tag_uid ?? 'Not available' }}
+                            <span class="badge rounded-pill badge-info">
+                                {{ tag.tag_uid ?? 'Not available' }}
+                            </span>
                         </span>
                     </div>
                     <div style="width: 750px;" class="d-flex justify-content-center">
