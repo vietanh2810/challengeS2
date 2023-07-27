@@ -9,7 +9,7 @@ const sequelize = new Sequelize({
   port: 5432,
   database: "acpostgresdb",
   username: "honzikoi",
-  password: "fP4nPtvwM6dzuNMDRhRE0niKhaU5pUq",
+  password: "fP4nPtvwM6dzuNMDRhRE0niKhaU5pUqt",
   dialect: "postgres",
   pool: {
     max: 10,
