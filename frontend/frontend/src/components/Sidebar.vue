@@ -32,7 +32,7 @@
                         </router-link>
                     </li>
                     <li>
-                        <router-link to="/graph">
+                        <router-link to="/graphe">
                             <i class='bx bx-chart'></i>
                             <span class="links_name">Graphe</span>
                         </router-link>
@@ -48,9 +48,7 @@
                             <i class="bx bx-code-alt" />
                             <span class="links_name">SDK</span>
                         </router-link>
-                    </li>
-         
-                        
+                    </li>                    
                     <li>
                         <router-link to="/tags">
                             <i class='bx bx-tag' ></i>
