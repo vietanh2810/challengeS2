@@ -55,6 +55,16 @@
                 <ErrorMessage name="event_type" class="error-feedback" />
               </div>
               <div class="form-group">
+                <label for="value">Valeur:</label>
+                <Field
+                  name="value"
+                  v-model="kpiData.value"
+                  type="text"
+                  class="form-control"
+                />
+                <ErrorMessage name="value" class="error-feedback" />
+              </div>
+              <div class="form-group">
                 <label for="page_url">Valeur:</label>
                 <Field
                   name="page_url"
@@ -75,44 +85,51 @@
       </Modal>
       </div>
 
-      <div
-        class="d-flex mt-4 justify-content-between py-3 px-4"
-        style="
-          margin-left: 2rem !important;
-          background-color: #f8fafb;
-          border-radius: 1rem;
-        "
-      >
-        <div class="card text-bg-dark text-center w-100">
-          <div class="card-header border-light bg-transparent"></div>
-          <div class="card-body">
-            <table class="table table-borderless">
-              <thead>
-                <tr>
-                  <th>id</th>
-                  <th>Nom</th>
-                  <th>Description</th>
-                  <th>Type d'évenement</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="item in kpiList">
-                  <td>{{ item.id }}</td>
-                  <td>{{ item.name }}</td>
-                  <td>{{ item.description }}</td>
-                  <td>{{ item.event_type }}</td>
-                </tr>
-              </tbody>
-            </table>
-            <a href="#" class="btn btn-primary">Add a new kpi</a>
-          </div>
-          <div
-            class="card-footer border-light text-body-secondary bg-transparent"
-          ></div>
-        </div>
-
-
-      </div>
+      <div class="mt-4 col-12"
+                style="background-color: #f8fafb; height: 50px !important; width: 95%; margin-left: 2rem !important; border-radius: 1rem;">
+                <div class="d-flex">
+                    <div class="pagination pr-4 py-auto my-auto align-items-center d-flex justify-content-between">
+                        <div class="d-flex">
+                            <span style="width: 100px; padding-top: 14px;">Page <b>
+                                    {{ currentPage }}
+                                </b> of {{ nbPageMax }}
+                            </span>
+                            <div class="pl-4 d-flex" style="width: 250px;">
+                                <button class="btn btn-primary" @click="navigatePage('backward')"
+                                    :disabled="currentPage === 1">
+                                    <font-awesome-icon icon="step-backward" />
+                                </button>
+                                <button class="btn ml-1 mr-2 btn-primary" @click="navigatePage('prev')"
+                                    :disabled="currentPage === 1">
+                                    <font-awesome-icon icon="chevron-left" />
+                                </button>
+                                <b style="padding-top: 14px;">{{ currentPage }}</b>
+                                <button class="btn ml-2 mr-1 btn-primary" @click="navigatePage('next')"
+                                    :disabled="currentPage === nbPageMax">
+                                    <font-awesome-icon icon="chevron-right" />
+                                </button>
+                                <button class="btn ml-1 btn-primary" @click="navigatePage('forward')"
+                                    :disabled="currentPage === nbPageMax">
+                                    <font-awesome-icon icon="step-forward" />
+                                </button>
+                            </div>
+                            <div style="width: 250px;">
+                                <p style="padding-top: 10px;">
+                                    Total tags:
+                                    <span class="chips chips_purple py-2">
+                                        {{ totalKpis }}
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                        <div>
+                            <input type="text" class="form-control" placeholder="Recherche" aria-label="Search"
+                                aria-describedby="basic-addon1" v-model="search"
+                                style="border-radius: 1rem; width: 300px !important;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
 
       <div class="d-flex mt-4 justify-content-between py-3 px-4"
       style="margin-left: 32px !important; padding-left:38px !important; background-color: #f8fafb; border-radius: 1rem; width: 95%; height: 60px;">
@@ -151,17 +168,17 @@
           </div>
           <div style="width: 25%;" class="d-flex justify-content-center border-right">
               <span class="cursor-pointer">
-                  {{ kpi.id?? 'Not available' }}
+                  {{ kpi.name?? 'Not available' }}
               </span>
           </div>
           <div style="width: 25%;" class="d-flex justify-content-center border-right">
               <span class="cursor-pointer">
-                  {{ kpi.id?? 'Not available' }}
+                  {{ kpi.description?? 'Not available' }}
               </span>
           </div>
           <div style="width: 25%;" class="d-flex justify-content-center ">
               <span class="cursor-pointer">
-                  {{ kpi.id?? 'Not available' }}
+                  {{ kpi.event_type?? 'Not available' }}
               </span>
           </div>
           
@@ -204,11 +221,13 @@ export default {
         .required("Le type d'évenement doit être renseigné")
         .min(2, "Le type d'évenement doit avoir au moins 2 caractères"),
       page_url: yup
-        .number()
-        .required("La valeur doit être renseigné"),
+        .string(),
+      value: yup
+        .number("La valeur doit être renseignée")
+        .required()
     });
     return {
-      kpiList: null,
+      kpiList: [],
       //piechartDate: null,
       components: {
         Form,
@@ -263,10 +282,30 @@ export default {
         name: "",
         page_url: "",
         description: "",
-        event_type:""
+        event_type:"",
+        value:""
       },
+      currentPage: 1,
+     pageLimit: 10,
     };
   },
+  computed: {
+        nbPageMax() {
+            return Math.ceil(this.kpiList.length / this.pageLimit);
+        },
+        totalKpis() {
+            return this.filteredKpi.length
+        },
+        filteredKpi() {
+            return this.search
+                ? this.kpiList.filter(el => {
+                    return el.name?.toString().toLowerCase().includes(this.search.toString().toLowerCase())
+                }).slice((this.currentPage - 1) * this.pageLimit, this.currentPage * this.pageLimit)
+                : this.kpiList.slice((this.currentPage - 1) * this.pageLimit, this.currentPage * this.pageLimit)
+
+            // return this.webMasterList.slice((this.currentPage - 1) * this.pageLimit, this.currentPage * this.pageLimit)
+        }
+    },
   async mounted() {
     this.getKpis();
     //this.$tracker.trackPageView('/example-page', 'Example Page');
@@ -284,7 +323,8 @@ export default {
           description: this.kpiData.description,
           name: this.kpiData.name,
           event_type: this.kpiData.event_type,
-          value: this.kpiData.page_url
+          value: this.kpiData.value,
+          value_type: "number"
         }),
       };
       this.kpiData.name - "";
@@ -363,6 +403,27 @@ export default {
 
 .btn-newKpi:disabled {
     background-color: #9ec1d4 !important;
+    border-color: #f8fafb !important;
+    border-radius: 2rem;
+    color: rgb(61, 61, 61);
+}
+
+.btn-primary {
+    background-color: #f8fafb !important;
+    border-color: #f8fafb !important;
+    border-radius: 2rem;
+    color: black;
+}
+
+.btn-primary:hover {
+    background-color: #e6e8ea !important;
+    border-color: #e6e8ea !important;
+    border-radius: 2rem;
+    color: black;
+}
+
+.btn-primary:disabled {
+    background-color: #f8fafb !important;
     border-color: #f8fafb !important;
     border-radius: 2rem;
     color: rgb(61, 61, 61);
