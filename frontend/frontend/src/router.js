@@ -4,6 +4,9 @@ import Login from "./components/Login.vue";
 import Dashboard from "./components/Dashboard.vue";
 import Signup from "./components/SignUp.vue";
 import Admin from "./components/Admin.vue";
+import Graphe from "./components/Graphe.vue";
+import Heatmap from "./components/Heatmap.vue";
+// import Kpi from "./components/Kpi.vue";
 import Tag from "./components/Tag.vue";
 import ConversionTunnel from "./components/ConversionTunnel.vue";
 // import Register from "./components/Register.vue";
@@ -58,11 +61,29 @@ const routes = [
     //     // lazy-loaded
     //     component: BoardUser,
     // },
+  {
+    path: "/graphe",
+    component: Graphe,
+  },
+  {
+    path: "/heatmap",
+    component: Heatmap,
+  },
+  {
+    path: "/kpi",
+    component: Kpi,
+  },
+  // {
+  //     path: "/profile",
+  //     name: "profile",
+  //     // lazy-loaded
+  //     component: Profile,
+  // },
 ];
 
 const router = createRouter({
-    history: createWebHistory(),
-    routes,
+  history: createWebHistory(),
+  routes,
 });
 
 export default router;
