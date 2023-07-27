@@ -1,4 +1,5 @@
 const db = require("../models");
+const { v4: uuidv4 } = require("uuid");
 
 // Assigning tags to the variable Tag
 const Tag = db.tags;
