@@ -1,6 +1,6 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
-const path = require('path');
+const path = require("path");
 const db = require("./models");
 const userRoutes = require("./routes/userRoutes");
 const tagRoutes = require("./routes/tagRoutes");
@@ -24,12 +24,9 @@ const PORT = process.env.PORT || 8080;
 const app = express();
 
 // Middleware
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(bodyParser.json());
 app.use(cors()); // Use the cors middleware
 
 // Synchronizing the database and forcing it to false so we don't lose data

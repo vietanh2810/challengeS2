@@ -38,6 +38,18 @@
                         </router-link>
                     </li>
                     <li>
+                        <router-link to="/tags">
+                            <i class='bx bx-tag' ></i>
+                            <span class="links_name">Tags</span>
+                        </router-link>
+                    </li>
+                    <li>
+                        <router-link to="/conversiontunnel">
+                            <i class='bx bx-filter' ></i>
+                            <span class="links_name">Tunnel de conversion</span>
+                        </router-link>
+                    </li>
+                    <li>
                         <router-link to="/web-param">
                             <i class="bx bx-user" />
                             <span class="links_name">My Profile</span>

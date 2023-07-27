@@ -1,6 +1,10 @@
 const bcrypt = require("bcrypt");
 const db = require("../models");
 const jwt = require("jsonwebtoken");
+const mailer = require("../mailer/mailer");
+const nodeMailer = require("nodemailer");
+
+// Assigning users to the variable User
 const User = db.users;
 const Company = db.companies;
 const Website = db.websites;
@@ -8,7 +12,8 @@ const tagController = require("./tagController");
 
 const signup = async (req, res) => {
     try {
-        const { userName, email, password, companyName, contactInfo, websiteUrl } = req.body;
+        const { userName, email, password, companyName, contactInfo, websiteUrl } =
+            req.body;
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -16,7 +21,7 @@ const signup = async (req, res) => {
             userName,
             email,
             password: hashedPassword,
-            role: userName === 'admin' ? 'admin' : 'user',
+            role: userName === "admin" ? "admin" : "user",
             contactInfo,
         });
 
@@ -31,14 +36,55 @@ const signup = async (req, res) => {
         });
 
         const token = jwt.sign({ id: user.id }, process.env.jwtSecret, {
-            expiresIn: '1d',
+            expiresIn: "1d",
         });
-        res.cookie('jwt', token, { maxAge: 1 * 24 * 60 * 60 * 1000, httpOnly: true });
+        res.cookie("jwt", token, {
+            maxAge: 1 * 24 * 60 * 60 * 1000,
+            httpOnly: true,
+        });
 
+        console.log("User:", JSON.stringify(user, null, 2));
+        console.log("Company:", JSON.stringify(company, null, 2));
+        console.log("Website:", JSON.stringify(website, null, 2));
+        console.log("Token:", token);
+        //emailing
+        const toEmail = user.email;
+        const content = `
+        <h1>Bonjour ${userName}</h1>
+        <p>Voici une Confirmation que vous êtes bien inscrit !</p>
+        `;
+
+        const transporter = nodeMailer.createTransport({
+            host: "smtp.seznam.cz",
+            port: 465,
+            secure: true,
+            auth: {
+                user: "vutony@seznam.cz",
+                pass: "Test1234test",
+            },
+        });
+
+        const message = {
+            from: "Trio Challange <vutony@seznam.cz>",
+            to: toEmail,
+            subject: "Confirmation Message",
+            html: content,
+        };
+
+        // Call the mailer function
+        try {
+            await mailer.mailer(toEmail, content);
+            console.log("Message sent");
+            console.log(message);
+            console.log(content);
+        } catch (error) {
+            console.error("Error sending confirmation email:", error);
+        }
+        console.log("User created");
         return res.status(201).json(user);
     } catch (error) {
-        console.error('Error during signup:', error);
-        return res.status(500).send('Internal Server Error');
+        console.error("Error during signup:", error);
+        return res.status(500).send("Internal Server Error");
     }
 };
 
@@ -161,7 +207,7 @@ const getAllUsers = async (req, res) => {
             }
         }
 
-        console.log(users)
+        console.log(users);
 
         return res.status(200).json(users);
     } catch (error) {
@@ -214,8 +260,6 @@ const createDefaultWebmaster = async () => {
         console.error("Error creating default webmaster :", error);
         return null;
     }
-
-    
 };
 
 module.exports = {

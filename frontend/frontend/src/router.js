@@ -1,17 +1,14 @@
 import { createWebHistory, createRouter } from "vue-router";
-// import Home from "./components/Home.vue";
 import Login from "./components/Login.vue";
 import Dashboard from "./components/Dashboard.vue";
 import Signup from "./components/SignUp.vue";
 import Admin from "./components/Admin.vue";
 import Sdk from "./components/SDK.vue"
+import Graphe from "./components/Graphe.vue";
+import Heatmap from "./components/Heatmap.vue";
+import Kpi from "./components/Kpi.vue";
 import Tag from "./components/Tag.vue";
-// import Register from "./components/Register.vue";
-// lazy-loaded
-// const Profile = () => import("./components/Profile.vue")
-// const BoardAdmin = () => import("./components/BoardAdmin.vue")
-// const BoardModerator = () => import("./components/BoardModerator.vue")
-// const BoardUser = () => import("./components/BoardUser.vue")
+import ConversionTunnel from "./components/ConversionTunnel.vue";
 
 const routes = [
     {
@@ -31,21 +28,29 @@ const routes = [
         component: Sdk
     },
     {
+        path: "/conversiontunnel",
+        component: ConversionTunnel
+    },
+    {
         path: "/admin",
         component: Admin,
     },
-    // {
-    //     path: "/mod",
-    //     name: "moderator",
-    //     // lazy-loaded
-    //     component: BoardModerator,
-    // },
-    // {
-    //     path: "/user",
-    //     name: "user",
-    //     // lazy-loaded
-    //     component: BoardUser,
-    // },
+    {
+        path: "/graphe",
+        component: Graphe,
+    },
+    {
+        path: "/heatmap",
+        component: Heatmap,
+    },
+    {
+        path: "/kpi",
+        component: Kpi,
+    },
+    {   
+        path: "/tags",
+        component: Tag
+    },
 ];
 
 const router = createRouter({
@@ -59,13 +64,9 @@ router.beforeEach((to, from, next) => {
     const loggedIn = localStorage.getItem('user');
     const userRole = loggedIn ? JSON.parse(loggedIn).user.role : null;
 
-    // trying to access a restricted page + not logged in
-    // redirect to login page
     if (authRequired && !loggedIn) {
         next('/login');
     } else if (to.path === '/admin' && userRole !== 'admin') {
-        // trying to access /admin without admin role
-        // redirect to dashboard or another route
         next(from.path);
     } else {
         next();
