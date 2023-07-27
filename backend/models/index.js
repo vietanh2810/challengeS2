@@ -42,7 +42,18 @@ db.kpis = require("./kpiModel")(sequelize, DataTypes);
 db.graphes = require("./grapheModel")(sequelize, DataTypes);
 db.heatmaps = require("./heatmapModel")(sequelize, DataTypes);
 db.conversionFunnel = require('./conversionFunnelModel')(sequelize, DataTypes)
-// db.conversionFunnelTag = require('./conversionFunnelTagModel')(sequelize, DataTypes)
+//db.conversionFunnelTag = require('./conversionFunnelTagModel')(sequelize, DataTypes);
+
+db.tags.belongsToMany(db.conversionFunnel, {
+  through: "conversionFunnel_tags",
+  as: "convFunnels",
+  foreignKey: "tag_id",
+});
+db.conversionFunnel.belongsToMany(db.tags, {
+  through: "conversionFunnel_tags",
+  as: "tags",
+  foreignKey: "convFunnel_id",
+});
 
 
 //exporting the module

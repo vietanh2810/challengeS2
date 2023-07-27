@@ -8,6 +8,7 @@ import Graphe from "./components/Graphe.vue";
 import Heatmap from "./components/Heatmap.vue";
 // import Kpi from "./components/Kpi.vue";
 import Tag from "./components/Tag.vue";
+import ConversionTunnel from "./components/ConversionTunnel.vue";
 // import Register from "./components/Register.vue";
 // lazy-loaded
 // const Profile = () => import("./components/Profile.vue")
@@ -16,18 +17,50 @@ import Tag from "./components/Tag.vue";
 // const BoardUser = () => import("./components/BoardUser.vue")
 
 const routes = [
-  {
-    path: "/login",
-    component: Login,
-  },
-  {
-    path: "/dashboard",
-    component: Dashboard,
-  },
-  {
-    path: "/signup",
-    component: Signup,
-  },
+    {
+        path: "/login",
+        component: Login,
+    },
+    {
+        path: "/dashboard",
+        component: Dashboard,
+    },
+    {
+        path: "/signup",
+        component: Signup
+    },
+    {
+        path: "/tags",
+        component: Tag
+    },
+    {
+        path: "/conversiontunnel",
+        component: ConversionTunnel
+    },
+    // {
+    //     path: "/profile",
+    //     name: "profile",
+    //     // lazy-loaded
+    //     component: Profile,
+    // },
+    {
+        path: "/admin",
+        name: "admin",
+        // lazy-loaded
+        component: Admin,
+    },
+    // {
+    //     path: "/mod",
+    //     name: "moderator",
+    //     // lazy-loaded
+    //     component: BoardModerator,
+    // },
+    // {
+    //     path: "/user",
+    //     name: "user",
+    //     // lazy-loaded
+    //     component: BoardUser,
+    // },
   {
     path: "/graphe",
     component: Graphe,
@@ -45,24 +78,6 @@ const routes = [
   //     name: "profile",
   //     // lazy-loaded
   //     component: Profile,
-  // },
-  {
-    path: "/admin",
-    name: "admin",
-    // lazy-loaded
-    component: Admin,
-  },
-  // {
-  //     path: "/mod",
-  //     name: "moderator",
-  //     // lazy-loaded
-  //     component: BoardModerator,
-  // },
-  // {
-  //     path: "/user",
-  //     name: "user",
-  //     // lazy-loaded
-  //     component: BoardUser,
   // },
 ];
 

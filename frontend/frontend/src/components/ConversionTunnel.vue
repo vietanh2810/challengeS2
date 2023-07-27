@@ -4,24 +4,79 @@
         <div class="content">
             <div class="mt-4"
                 style="background-color: #f8fafb; height: 80px !important; width: 95%; margin-left: 2rem !important; border-radius: 1rem;">
-                <label style="margin: 1.5rem 0 0 2rem; font-size: 21px; font-weight: 500;">Liste des tags</label>
-
+                <label style="margin: 1.5rem 0 0 2rem; font-size: 21px; font-weight: 500;">Tunnels de conversion</label>
+                
                 <Modal>
                     <template #activator="{ openModal }">
-                        <button class="btn btn-info btn-newTag" @click="openModal">Nouveau tag</button>
+                        <button class="btn btn-info btn-newTag" @click="openModal">Ajouter un tunnel de conversion</button>
                     </template>
                     <template v-slot:actions="{ closeModal }">
                         
                         <button class="btn btn-danger" title="Fermer" @click="closeModal">Fermer</button>
                     </template>
-                    <Form @submit="createTag" :validation-schema="schema" style="padding: 1.5em;">
-                        <div class="form-group">
-                            <label for="comment">Commentaire:</label>
-                            <Field name="comment" v-model="tagData.comment" type="text" class="form-control" />
-                            <ErrorMessage name="comment" class="error-feedback" />
-                        </div>
-                        <button class="btn btn-primary" type="submit">Ajouter un tag</button>
-                    </Form>
+                    <Form @submit="createConvTunnel" :validation-schema="schema" style="padding: 1.5em;">
+                            <div class="form-group">
+                                <label for="comment">Commentaire:</label>
+                                <Field name="comment" v-model="convTunnelData.comment" type="text" class="form-control" />
+                                <ErrorMessage name="comment" class="error-feedback" />
+                            </div>
+
+                            <div class="form-group d-flex" style="overflow:scroll; height:400px;">
+                                <div class="col-6">
+                                <label for="tags">Tags:</label>
+                                    <draggable
+                                        :list="tagList"
+                                        :disabled="!enabled"
+                                        class="list-group"
+                                        ghost-class="ghost"
+                                        :move="checkMove"
+                                        @start="dragging = true"
+                                        @end="dragging = false"
+                                        @change="log"
+                                        group="tags"
+                                        style="overflow:scroll; height:400px;"
+                                    >
+                                        <template #item="{ element }">
+                                        <div class="list-group-item" :class="{ 'not-draggable': !enabled }" :key="element.tag_uid">
+                                            {{ element.tag_uid }} {{ element.comment }}
+                                        </div>
+                                        </template>
+                                    </draggable>
+                                </div>
+
+                                <div class="col-6">
+                                <label for="newTags">Tag(s) choisi(s):</label>
+                                <draggable
+                                    :list="newTagList"
+                                    :disabled="!enabled2"
+                                    class="list-group"
+                                    ghost-class="ghost"
+                                    :move="checkMove"
+                                    @start="dragging = true"
+                                    @end="dragging = false"
+                                    @change="log"
+                                    group="tags"
+                                >
+                                    <template #item="{ element }" >
+                                    <div class="list-group-item" :class="{ 'not-draggable': !enabled2 }" :key="element.tag_uid">
+                                        {{ element.tag_uid }} {{ element.comment }}
+                                    </div>
+                                    </template>
+                                </draggable>
+                            </div>
+
+                            <rawDisplayer class="col-6" :value="tagList" title="List 1" />
+
+                            <rawDisplayer class="col-6" :value="newTagList" title="List 2" />
+
+                                <!--
+                                    <Field name="comment" v-model="convTunnelData.comment" type="text" class="form-control" />
+                                    <ErrorMessage name="comment" class="error-feedback" />
+                                -->
+                            </div>
+                            
+                            <button type="submit">ajouter une conversion de tunnels</button>
+                        </Form>
                         
                         
                     
@@ -61,9 +116,9 @@
                             </div>
                             <div style="width: 250px;">
                                 <p style="padding-top: 10px;">
-                                    Total tags:
+                                    Total tunnels de conversion:
                                     <span class="chips chips_purple py-2">
-                                        {{ totalTags }}
+                                        {{ totalConvTunnels }}
                                     </span>
                                 </p>
                             </div>
@@ -79,34 +134,32 @@
 
             <div class="d-flex mt-4 justify-content-between py-3 px-4"
                 style="margin-left: 32px !important; padding-left:38px !important; background-color: #f8fafb; border-radius: 1rem; width: 95%; height: 60px;">
-                <div class="row">
-                    <div style="width: 450px;" class="d-flex justify-content-center border-right">
-                        <span class="cursor-pointer" @click="orderListBy('tag_uid', 'String')">
-                            <b class="mr-2">Id</b>
-                        </span>
-                    </div>
-                    <div style="width: 750px;" class="d-flex justify-content-center">
+                <div class="row col-12">
+                    <div style="width: 50%;" class="d-flex justify-content-center border-right">
                         <span class="cursor-pointer" @click="orderListBy('comment', 'String')">
                             <b class="mr-2">Commentaire</b>
+                        </span>
+                    </div>
+                    <div style="width:50%;" class="d-flex justify-content-center">
+                        <span class="cursor-pointer" @click="orderListBy('tags', 'String')">
+                            <b class="mr-2">Tags</b>
                         </span>
                     </div>
                 </div>
             </div>
 
-            <div v-for="(tag, index) in filteredTag" :key="index"
+            <div v-for="(convtunnel, index) in filteredConvTunnel" :key="index"
                 class="d-flex mt-4 justify-content-between py-3 px-4"
-                style="margin:0.5rem 0 0 2rem !important; background-color: #f8fafb; border-radius: 1rem; width: 95%; height: 60px;">
-                <div class="row px-3" :id="'dupli-row-' + tag.tag_uid">
-                    <div style="width: 450px;" class="d-flex justify-content-center border-right">
+                style="margin:0.5rem 0 0 2rem !important; background-color: #f8fafb; border-radius: 1rem; width: 95%; height: 80px;">
+                <div class="row px-3 col-12" :id="'dupli-row-' + convtunnel.id">
+                    <div style="width: 50%;" class="d-flex justify-content-center border-right">
                         <span class="cursor-pointer">
-                            <span class="badge rounded-pill badge-info">
-                                {{ tag.tag_uid ?? 'Not available' }}
-                            </span>
+                            {{ convtunnel.comment?? 'Not available' }}
                         </span>
                     </div>
-                    <div style="width: 750px;" class="d-flex justify-content-center">
-                        <span class="cursor-pointer">
-                            {{ tag.comment ?? 'Not available' }}
+                    <div style="max-width: 50%; overflow:scroll;" class="d-flex justify-content-center">
+                        <span class="cursor-pointer" v-for="(tag, index) in convtunnel.tags" :key="index">
+                            <span class="badge rounded-pill badge-info">tag {{tag.tag_uid ?? 'Not available' }}</span>
                         </span>
                     </div>
                 </div>
@@ -118,11 +171,12 @@
   
 <script>
 import Sidebar from './Sidebar.vue';
-import Modal from './Modal.vue';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap';
 import { Form, Field, ErrorMessage } from "vee-validate";
 import * as yup from "yup";
+import Draggable from 'vuedraggable';
+import Modal from './Modal.vue';
 
 export default {
     components: {
@@ -130,6 +184,7 @@ export default {
         Form,
         Field,
         ErrorMessage,
+        Draggable,
         Modal
     },
     data() {
@@ -140,18 +195,25 @@ export default {
                 .min(2, "Le commentaire doit avoir au moins 2 caractères"),
         });
         return {
-            tagList: [],
+            enabled: true,
+            enabled2: true,
+            dragging: false,
+            convTunnelList: [],
             components: {
                 Form,
                 Field,
                 ErrorMessage,
+                Draggable
             },
+            tagList: [],
+            newTagList: [],
             options: {
                 responsive: true,
             },
             schema,
-            tagData: {
-                comment: ""
+            convTunnelData: {
+                comment: "",
+                tags: []
             },
             currentPage: 1,
             pageLimit: 10,
@@ -159,36 +221,48 @@ export default {
     },
     computed: {
         nbPageMax() {
-            return Math.ceil(this.tagList.length / this.pageLimit);
+            return Math.ceil(this.convTunnelList.length / this.pageLimit);
         },
-        totalTags() {
-            return this.filteredTag.length
+        totalConvTunnels() {
+            return this.filteredConvTunnel.length
         },
-        filteredTag() {
+        filteredConvTunnel() {
             return this.search
-                ? this.tagList.filter(el => {
-                    return el.comment?.toString().toLowerCase().includes(this.search.toString().toLowerCase()) ||
-                        el.tag_uid?.toString().toLowerCase().includes(this.search.toString().toLowerCase())
+                ? this.convTunnelList.filter(el => {
+                    return el.comment?.toString().toLowerCase().includes(this.search.toString().toLowerCase()) 
                 }).slice((this.currentPage - 1) * this.pageLimit, this.currentPage * this.pageLimit)
-                : this.tagList.slice((this.currentPage - 1) * this.pageLimit, this.currentPage * this.pageLimit)
+                : this.convTunnelList.slice((this.currentPage - 1) * this.pageLimit, this.currentPage * this.pageLimit)
 
             // return this.webMasterList.slice((this.currentPage - 1) * this.pageLimit, this.currentPage * this.pageLimit)
+        },
+        draggingInfo() {
+            return this.dragging ? "under drag" : "";
         }
     },
     async mounted() {
+        this.fetchConvTunnel();
         this.fetchTag();
         //this.$tracker.trackPageView('/example-page', 'Example Page');
     },
     methods: {
-        createTag() {
+        
+    log: function(evt) {
+      window.console.log(evt);
+    },
+        createConvTunnel() {
 
+            const listTags =  new Array();
+            this.newTagList.forEach(element => {
+                listTags.push(element.tag_uid)
+            });
             const requestOptions = {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('user')).token},
-                body: JSON.stringify({ comment: this.tagData.comment })
+                body: JSON.stringify({ comment: this.convTunnelData.comment, tags: listTags})
             };
-            this.tagData.comment - '';
-            fetch('http://localhost:8080/api/tags/create', requestOptions)
+            this.convTunnelData.comment - '';
+            this.convTunnelData.tags - [];
+            fetch('http://localhost:8080/api/convTunnel/create', requestOptions)
             .then(async response => {
                 const data = await response.json();
 
@@ -198,11 +272,15 @@ export default {
                     const error = (data && data.message) || response.status;
                     return Promise.reject(error);
                 }
+                this.fetchConvTunnel();
                 this.fetchTag();
+                this.newTagList = [];
+                //console.log(data)
+                //this.postId = data.id;
             }).catch(error => {
-                    this.errorMessage = error;
-                    console.error('There was an error!', error);
-                });
+                this.errorMessage = error;
+                console.error('There was an error!', error);
+            });
         },
         navigatePage(direction) {
             if (direction === 'forward' && this.currentPage < this.nbPageMax) {
@@ -216,6 +294,18 @@ export default {
                 this.currentPage--;
             }
         },
+        async fetchConvTunnel() {
+            const response = await fetch('http://localhost:8080/api/convTunnel/', {
+                method: "Get",
+                headers: {
+                    "Content-type": 'application/json',
+                    Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('user')).token
+                }
+            }).then((response) => response.json())
+            .then((responseJSON) => {
+                this.convTunnelList= responseJSON;
+            });
+        },
         async fetchTag() {
             const response = await fetch('http://localhost:8080/api/tags/', {
                 method: "Get",
@@ -226,7 +316,6 @@ export default {
             }).then((response) => response.json())
             .then((responseJSON) => {
                 this.tagList= responseJSON;
-                console.log(this.tagList);
             });
         }
     },
@@ -270,6 +359,15 @@ export default {
     color: rgb(61, 61, 61);
 }
 
+.ghost {
+  opacity: 0.5;
+  background: #c8ebfb;
+}
+
+.not-draggable {
+  cursor: no-drop;
+}
+
 .btn-newTag {
     background-color: #84a3b3 !important;
     border-color: #f8fafb !important;
@@ -293,5 +391,6 @@ export default {
     border-radius: 2rem;
     color: rgb(61, 61, 61);
 }
+
 </style>
   

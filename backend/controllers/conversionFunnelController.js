@@ -13,12 +13,35 @@ const getAllConvFunns = async (req, res) => {
 
         if (role === "admin") {
             // If the user is an admin, return all tags
-            const conversion_funnels = await ConversionFunnel.findAll();
+            const conversion_funnels = await ConversionFunnel.findAll({
+                include: [
+                    {
+                      model: Tag,
+                      as: "tags",
+                      attributes: ["tag_uid", "comment"],
+                      through: {
+                        attributes: [],
+                      }
+                    },
+                ],
+            });
+            console.log(conversion_funnels);
             return res.status(200).json(conversion_funnels);
         } else {
             // If the user is not an admin, return tags associated with the user's ID
             const userId = dataValues.id;
-            const conversion_funnels = await ConversionFunnel.findAll({ where: { userId } });
+            const conversion_funnels = await ConversionFunnel.findAll({ where: { userId }, include: [
+                {
+                    model: Tag,
+                    as: "tags",
+                    attributes: ["tag_uid", "comment"],
+                    through: {
+                        attributes: [],
+                    }
+                }
+            ], }, 
+            );
+            console.log("conversion: "+JSON.stringify(conversion_funnels));
             return res.status(200).json(conversion_funnels);
         }
     } catch (error) {
@@ -31,27 +54,34 @@ const createConvFunn = async (req, res) => {
     try {
         const tab_tags = req.body.tags;
         const comment = req.body.comment;
+        const { dataValues } = req.user;
 
         const conversion_funnel = await ConversionFunnel.create({
-            comment
+            comment,
+            userId: dataValues.id
         });
 
         let tagsList = new Array();
 
-        for (let index = 0; index < tab_tags.length; index++) {
+        /*for (let index = 0; index < tab_tags.length; index++) {
             const myID = tab_tags[index];
             console.log("uid:" + myID);
             const tag = await Tag.findOne({ 
                 where : {tag_uid: myID} 
             });
-            await ConversionFunnelTag.create({funnelId: conversion_funnel.id, tagId: tag.tag_uid });
+            await ConversionFunnelTag.create({funnelId: conversion_funnel.id, tagId: tag.tag_uid, userId: dataValues.id});
         }
 
-        const table_tags = await ConversionFunnelTag.findAll({where: {funnelId: conversion_funnel.id}, order: [['createdAt', 'ASC']]})
+        const table_tags = await ConversionFunnelTag.findAll({where: {funnelId: conversion_funnel.id}, order: [['createdAt', 'ASC']]})*/
+
+        for (let index = 0; index < tab_tags.length; index++) {
+            const myID = tab_tags[index];
+            conversion_funnel.addTag(myID);
+        }
         
-        return res.status(201).json([conversion_funnel, table_tags]);
+        return res.status(201).json(conversion_funnel);
     } catch (error) {
-        console.error('Error during signup:', error);
+        console.error('Error during creation:', error);
         return res.status(500).send('Internal Server Error');
     }
 };
