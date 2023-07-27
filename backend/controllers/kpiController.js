@@ -43,7 +43,7 @@ const getAllKpis = async (req, res) => {
       return res.status(200).json(AllKpis);
     } else {
       const userId = dataValues.id;
-      const AllKpis = await Kpi.findAll({ where: { id: id, userid: userId } });
+      const AllKpis = await Kpi.findAll({ where: {  userId: userId } });
       return res.status(200).json(AllKpis);
     }
   } catch (error) {

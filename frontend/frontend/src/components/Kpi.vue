@@ -66,9 +66,30 @@
                   <ErrorMessage name="start" class="error-feedback" />
               </div>
               <div class="form-group">
+
+                <label for="value">Valeur:</label>
+                <Field
+                  name="value"
+                  v-model="kpiData.value"
+                  type="text"
+                  class="form-control"
+                />
+                <ErrorMessage name="value" class="error-feedback" />
+              </div>
+              <div class="form-group">
+                <label for="page_url">Valeur:</label>
+                <Field
+                  name="page_url"
+                  v-model="kpiData.page_url"
+                  type="text"
+                  class="form-control"
+                />
+                <ErrorMessage name="page_url" class="error-feedback" />
+
                   <label for="end">End Date :</label>
                   <Field name="end" v-model="kpiData.end" type="date" class="form-control" />
                   <ErrorMessage name="end" class="error-feedback" />
+
               </div>
             </div>
 
@@ -81,39 +102,52 @@
         </Modal>
       </div>
 
-      <div class="d-flex mt-4 justify-content-between py-3 px-4" style="
-          margin-left: 2rem !important;
-          background-color: #f8fafb;
-          border-radius: 1rem;
-        ">
-        <div class="card text-bg-dark text-center w-100">
-          <div class="card-header border-light bg-transparent"></div>
-          <div class="card-body">
-            <table class="table table-borderless">
-              <thead>
-                <tr>
-                  <th>id</th>
-                  <th>Nom</th>
-                  <th>Description</th>
-                  <th>Type d'évenement</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(item,index) in kpiList" :key="index">
-                  <td>{{ item.id }}</td>
-                  <td>{{ item.name }}</td>
-                  <td>{{ item.description }}</td>
-                  <td>{{ item.event_type }}</td>
-                </tr>
-              </tbody>
-            </table>
-            <a href="#" class="btn btn-primary">Add a new kpi</a>
-          </div>
-          <div class="card-footer border-light text-body-secondary bg-transparent"></div>
-        </div>
+      <div class="mt-4 col-12"
+                style="background-color: #f8fafb; height: 50px !important; width: 95%; margin-left: 2rem !important; border-radius: 1rem;">
+                <div class="d-flex">
+                    <div class="pagination pr-4 py-auto my-auto align-items-center d-flex justify-content-between">
+                        <div class="d-flex">
+                            <span style="width: 100px; padding-top: 14px;">Page <b>
+                                    {{ currentPage }}
+                                </b> of {{ nbPageMax }}
+                            </span>
+                            <div class="pl-4 d-flex" style="width: 250px;">
+                                <button class="btn btn-primary" @click="navigatePage('backward')"
+                                    :disabled="currentPage === 1">
+                                    <font-awesome-icon icon="step-backward" />
+                                </button>
+                                <button class="btn ml-1 mr-2 btn-primary" @click="navigatePage('prev')"
+                                    :disabled="currentPage === 1">
+                                    <font-awesome-icon icon="chevron-left" />
+                                </button>
+                                <b style="padding-top: 14px;">{{ currentPage }}</b>
+                                <button class="btn ml-2 mr-1 btn-primary" @click="navigatePage('next')"
+                                    :disabled="currentPage === nbPageMax">
+                                    <font-awesome-icon icon="chevron-right" />
+                                </button>
+                                <button class="btn ml-1 btn-primary" @click="navigatePage('forward')"
+                                    :disabled="currentPage === nbPageMax">
+                                    <font-awesome-icon icon="step-forward" />
+                                </button>
+                            </div>
+                            <div style="width: 250px;">
+                                <p style="padding-top: 10px;">
+                                    Total tags:
+                                    <span class="chips chips_purple py-2">
+                                        {{ totalKpis }}
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                        <div>
+                            <input type="text" class="form-control" placeholder="Recherche" aria-label="Search"
+                                aria-describedby="basic-addon1" v-model="search"
+                                style="border-radius: 1rem; width: 300px !important;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-
-      </div>
 
       <div class="d-flex mt-4 justify-content-between py-3 px-4"
         style="margin-left: 32px !important; padding-left:38px !important; background-color: #f8fafb; border-radius: 1rem; width: 95%; height: 60px;">
@@ -150,19 +184,21 @@
             </span>
           </div>
           <div style="width: 25%;" class="d-flex justify-content-center border-right">
-            <span class="cursor-pointer">
-              {{ kpi.id ?? 'Not available' }}
-            </span>
+
+              <span class="cursor-pointer">
+                  {{ kpi.name?? 'Not available' }}
+              </span>
           </div>
           <div style="width: 25%;" class="d-flex justify-content-center border-right">
-            <span class="cursor-pointer">
-              {{ kpi.id ?? 'Not available' }}
-            </span>
+              <span class="cursor-pointer">
+                  {{ kpi.description?? 'Not available' }}
+              </span>
           </div>
           <div style="width: 25%;" class="d-flex justify-content-center ">
-            <span class="cursor-pointer">
-              {{ kpi.id ?? 'Not available' }}
-            </span>
+              <span class="cursor-pointer">
+                  {{ kpi.event_type?? 'Not available' }}
+              </span>
+
           </div>
 
         </div>
@@ -203,12 +239,16 @@ export default {
         .min(2, "Le description doit avoir au moins 2 caractères"),
       event_type: yup
         .string()
-        .required("Le type d'évenement doit être renseigné"), 
-      tag_id: yup
+        .required("Le type d'évenement doit être renseigné")
+        .min(2, "Le type d'évenement doit avoir au moins 2 caractères"),
+      page_url: yup
         .string(),
       value: yup
-        .number()
-        .required("La value doit être renseigné"),
+        .number("La valeur doit être renseignée")
+        .required()
+    });
+      tag_id: yup
+        .string(),
       value_type: yup
         .string()
         .required("Le type de value doit être renseigné"),
@@ -235,15 +275,34 @@ export default {
       kpiData: {
         name: "",
         description: "",
-        event_type: "",
+        event_type:"",
+        value:""
         tag_id: "",
-        value: "",
         value_type: "",
         start: "",
         end: "",
       },
+      currentPage: 1,
+     pageLimit: 10,
     };
   },
+  computed: {
+        nbPageMax() {
+            return Math.ceil(this.kpiList.length / this.pageLimit);
+        },
+        totalKpis() {
+            return this.filteredKpi.length
+        },
+        filteredKpi() {
+            return this.search
+                ? this.kpiList.filter(el => {
+                    return el.name?.toString().toLowerCase().includes(this.search.toString().toLowerCase())
+                }).slice((this.currentPage - 1) * this.pageLimit, this.currentPage * this.pageLimit)
+                : this.kpiList.slice((this.currentPage - 1) * this.pageLimit, this.currentPage * this.pageLimit)
+
+            // return this.webMasterList.slice((this.currentPage - 1) * this.pageLimit, this.currentPage * this.pageLimit)
+        }
+    },
   async mounted() {
     this.getKpis();
     this.getEventTypes();
@@ -389,5 +448,26 @@ export default {
   border-color: #f8fafb !important;
   border-radius: 2rem;
   color: rgb(61, 61, 61);
+}
+
+.btn-primary {
+    background-color: #f8fafb !important;
+    border-color: #f8fafb !important;
+    border-radius: 2rem;
+    color: black;
+}
+
+.btn-primary:hover {
+    background-color: #e6e8ea !important;
+    border-color: #e6e8ea !important;
+    border-radius: 2rem;
+    color: black;
+}
+
+.btn-primary:disabled {
+    background-color: #f8fafb !important;
+    border-color: #f8fafb !important;
+    border-radius: 2rem;
+    color: rgb(61, 61, 61);
 }
 </style>
