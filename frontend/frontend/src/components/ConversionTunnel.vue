@@ -212,7 +212,8 @@ export default {
             },
             schema,
             convTunnelData: {
-                comment: ""
+                comment: "",
+                tags: []
             },
             currentPage: 1,
             pageLimit: 10,
@@ -260,6 +261,7 @@ export default {
                 body: JSON.stringify({ comment: this.convTunnelData.comment, tags: listTags})
             };
             this.convTunnelData.comment - '';
+            this.convTunnelData.tags - [];
             fetch('http://localhost:8080/api/convTunnel/create', requestOptions)
             .then(async response => {
                 const data = await response.json();
@@ -271,6 +273,8 @@ export default {
                     return Promise.reject(error);
                 }
                 this.fetchConvTunnel();
+                this.fetchTag();
+                this.newTagList = [];
                 //console.log(data)
                 //this.postId = data.id;
             }).catch(error => {
