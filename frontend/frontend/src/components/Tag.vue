@@ -226,7 +226,7 @@ export default {
             }).then((response) => response.json())
             .then((responseJSON) => {
                 this.tagList= responseJSON;
-                console.log(this.tagList);
+                //console.log(this.tagList);
             });
         }
     },

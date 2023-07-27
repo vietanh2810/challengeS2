@@ -42,10 +42,10 @@ const signup = async (req, res) => {
       httpOnly: true,
     });
 
-    console.log("User:", JSON.stringify(user, null, 2));
+    /*console.log("User:", JSON.stringify(user, null, 2));
     console.log("Company:", JSON.stringify(company, null, 2));
     console.log("Website:", JSON.stringify(website, null, 2));
-    console.log("Token:", token);
+    console.log("Token:", token);*/
     //emailing
     const toEmail = user.email;
     const content = `
@@ -167,7 +167,7 @@ const validateUser = async (req, res) => {
     // Update the linked Company's appId with the generated uuid
     company.appId = uuid;
     await company.save();
-    console.log(company);
+    //console.log(company);
 
     res.json({ message: "User validated successfully." });
   } catch (error) {
@@ -196,7 +196,7 @@ const getAllUsers = async (req, res) => {
       }
     }
 
-    console.log(users);
+    //console.log(users);
 
     return res.status(200).json(users);
   } catch (error) {

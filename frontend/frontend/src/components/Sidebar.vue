@@ -26,9 +26,21 @@
                         </router-link>
                     </li>
                     <li>
-                        <router-link to="/web-param">
-                            <i class="bx bx-folder" />
-                            <span class="links_name">Site Manager</span>
+                        <router-link to="/kpi">
+                            <i class='bx bx-tachometer' ></i>
+                            <span class="links_name">KPI</span>
+                        </router-link>
+                    </li>
+                    <li>
+                        <router-link to="/graph">
+                            <i class='bx bx-chart'></i>
+                            <span class="links_name">Graphe</span>
+                        </router-link>
+                    </li>
+                    <li>
+                        <router-link to="/heatmap">
+                            <i class='bx bx-map' ></i>
+                            <span class="links_name">Heatmap</span>
                         </router-link>
                     </li>
                     <li>

@@ -230,7 +230,7 @@ export default {
             return Promise.reject(error);
           }
 
-          console.log(data);
+          //console.log(data);
           //this.postId = data.id;
         })
         .catch((error) => {
