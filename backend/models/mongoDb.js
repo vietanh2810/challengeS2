@@ -17,11 +17,15 @@ const sessionEventSchema = new mongoose.Schema({
 
 // Define the schema for CustomEvent
 const customEventSchema = new mongoose.Schema({
-  event_types: { type: String, required: true },
-  tag_id: { type: String, required: false },
-  tdate: { type: Date, required: true },
-  visitor_id: { type: String, required: true },
-  session_id: { type: String, required: true },
+    event_types: { type: String, required: true },
+    tag_id: { type: String, required: false},
+    tdate: { type: Date, required: true },
+    visitor_id: { type: String, required: true },
+    session_id: { type: String, required: true },
+    app_id: { type: String, required: true },
+    url: { type: String, required: false },
+    location: { type: String, required: false },
+    screen_resolution: { type: String, required: false },
 });
 
 // Create models from the schemas

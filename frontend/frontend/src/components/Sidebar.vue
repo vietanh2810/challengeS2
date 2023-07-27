@@ -26,9 +26,41 @@
                         </router-link>
                     </li>
                     <li>
-                        <router-link to="/web-param">
-                            <i class="bx bx-folder" />
-                            <span class="links_name">Site Manager</span>
+                        <router-link to="/kpi">
+                            <i class='bx bx-tachometer' ></i>
+                            <span class="links_name">KPI</span>
+                        </router-link>
+                    </li>
+                    <li>
+                        <router-link to="/graph">
+                            <i class='bx bx-chart'></i>
+                            <span class="links_name">Graphe</span>
+                        </router-link>
+                    </li>
+                    <li>
+                        <router-link to="/heatmap">
+                            <i class='bx bx-map' ></i>
+                            <span class="links_name">Heatmap</span>
+                        </router-link>
+                    </li>
+                    <li>
+                        <router-link to="/sdk"> 
+                            <i class="bx bx-code-alt" />
+                            <span class="links_name">SDK</span>
+                        </router-link>
+                    </li>
+         
+                        
+                    <li>
+                        <router-link to="/tags">
+                            <i class='bx bx-tag' ></i>
+                            <span class="links_name">Tags</span>
+                        </router-link>
+                    </li>
+                    <li>
+                        <router-link to="/conversiontunnel">
+                            <i class='bx bx-filter' ></i>
+                            <span class="links_name">Tunnel de conversion</span>
                         </router-link>
                     </li>
                     <li>
@@ -37,7 +69,7 @@
                             <span class="links_name">My Profile</span>
                         </router-link>
                     </li>
-                    <li>
+                    <li v-if="role === 'admin'">
                         <router-link to="/admin">
                             <i class="bx bx-cog" />
                             <span class="links_name">Settings</span>
@@ -160,10 +192,12 @@ export default {
         return {
             isOpened: false,
             user: {},
+            role: '',
         }
     },
     mounted() {
         this.user = JSON.parse(localStorage.getItem('user'))
+        this.role = this.user.user.role
         this.isOpened = this.isMenuOpen
         this.tooltipAttached()
     },

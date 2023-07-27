@@ -10,17 +10,13 @@ let tmp_session_id = null;
 let pagesVisited = [];
 
 const trackEvent = (eventName, eventData) => {
-    console.log(`Event tracked: ${eventName}`);
-    console.log(eventData);
-
-    // Send the event data to the backend (server) using a POST request
-    // You can use Axios or any other HTTP library to make the request
-    // Replace 'http://localhost:8080/api/events' with your backend API URL
+    // console.log(`Event tracked: ${eventName}`);
+    // console.log(eventData);
     fetch(socketUrl, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'App-Id': APP_ID, // Include the APP_ID in the request headers
+            'App-Id': APP_ID, 
         },
         body: JSON.stringify({ eventName, eventData }),
     })
@@ -39,9 +35,8 @@ const detectNewVisitor = () => {
 
     if (!visitorId) {
         const newVisitorId = generateUniqueVisitorId();
-        console.log('New visitor detected. Visitor ID:', newVisitorId);
 
-        setCookie('visitor_id', newVisitorId, 365); // Set a cookie that expires in 365 days
+        setCookie('visitor_id', newVisitorId, 365); 
 
         tmp_session_id == null ? startNewSession() : null;
 
@@ -52,9 +47,9 @@ const detectNewVisitor = () => {
             tdate: new Date().toLocaleString(),
             visitor_id: newVisitorId,
             session_id: tmp_session_id,
+            app_id: APP_ID,
         });
     } else {
-        // The visitor already has a cookie, so you can use their existing visitorId for tracking
         tmp_session_id == null ? startNewSession() : null;
         startNewSession();
         trackEvent('custom_event', {
@@ -63,6 +58,7 @@ const detectNewVisitor = () => {
             tdate: new Date().toLocaleString(),
             visitor_id: visitorId,
             session_id: tmp_session_id,
+            app_id: APP_ID,
         });
     }
 };
@@ -96,16 +92,13 @@ const detectSession = () => {
         const lastActivityTimestamp = parseInt(lastActivityTime);
         const sessionDuration = currentTime - lastActivityTimestamp;
 
-        const sessionTimeout = 15 * 60 * 1000; // 15 minutes in milliseconds
-        // const sessionTimeout = 10 * 1000; 
+        const sessionTimeout = 15 * 60 * 1000; 
 
         if (sessionDuration > sessionTimeout) {
             const visitorId = sessionStorage.getItem('visitor_id');
             const tdate = new Date().toLocaleString();
             const app_id = APP_ID;
             const pagesVisitedList = pagesVisited;
-
-            console.log('Session expired. Tracking session_event.');
 
             trackEvent('session_event', {
                 session_duration: sessionDuration,
@@ -131,7 +124,6 @@ const startNewSession = () => {
 
 const generateUniqueVisitorId = () => {
     const visitorId = Math.floor(Math.random() * 1000000).toString();
-    console.log('Generated unique visitor ID:', visitorId);
     return visitorId;
 };
 
@@ -158,6 +150,7 @@ const trackerDirective = {
                     tdate: new Date().toLocaleString(),
                     visitor_id: visitorId,
                     session_id: tmp_session_id,
+                    app_id: APP_ID,
                 });
         });
     },
@@ -165,7 +158,7 @@ const trackerDirective = {
 
 // Create the SDK plugin
 const vueTracker = {
-    install(Vue, options) {
+    install(Vue) {
         Vue.directive('tracker', trackerDirective);
 
         Vue.mixin({
