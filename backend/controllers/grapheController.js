@@ -1,6 +1,7 @@
 const db = require("../models");
 
 const Graphe = db.graphes;
+const Tag = db.tags;
 
 const createGraphe = async (req, res) => {
   try {
@@ -8,14 +9,29 @@ const createGraphe = async (req, res) => {
     const { name, event_type, graphe_type, tag_id } = req.body;
     const { dataValues } = req.user;
     const userId = dataValues.id;
-    // Save the user data to the database
-    const newGraphe = await Graphe.create({
-      graphe_type: graphe_type,
-      name: name,
-      userId: userId,
-      event_type: event_type,
-      tag_id: tag_id,
-    });
+
+    let newGraphe = null;
+    if (tag_id !== '') {
+      const tag = await Tag.findAll({ where: { tag_uid: tag_id } });
+      if (tag.length === 0) {
+        return res.status(400).json({ error: "Tag not found" });
+      }
+        newGraphe = await Graphe.create({
+        graphe_type: graphe_type,
+        name: name,
+        userId: userId,
+        event_type: event_type,
+        tag_id: tag_id,
+      });
+    } else {
+      newGraphe = await Graphe.create({
+        graphe_type: graphe_type,
+        name: name,
+        userId: userId,
+        event_type: event_type,
+      });
+    }
+    
 
     // Respond with the saved Graphe
     return res.status(201).json(newGraphe);
@@ -23,6 +39,23 @@ const createGraphe = async (req, res) => {
     // Handle errors
     console.error("Error creating Graphe:", error);
     return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
+const createDefaultGraph = async (userId,type,name,event_type,tag_id) => {
+  try {
+      await Graphe.create({
+        graphe_type: type,
+        name: name,
+        userId: userId,
+        event_type: event_type,
+        tag_id: tag_id, // Assuming default admin is already validated
+      });
+
+      console.log("Default graph created.");
+  } catch (error) {
+      console.error("Error creating default admin user:", error);
   }
 };
 
@@ -160,6 +193,7 @@ module.exports = {
   createGraphe,
   getAllGraphes,
   getGrapheById,
+  createDefaultGraph,
   updateGrapheById,
   deleteGrapheById,
 };

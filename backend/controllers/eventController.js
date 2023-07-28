@@ -39,6 +39,8 @@ const createEvent = (eventName, eventData) => {
 
 const getEventTypes = async (req, res) => {
 
+  console.log(req.user)
+
   const { dataValues } = req.user;
   const userId = dataValues.id;
 
@@ -61,6 +63,33 @@ const getEventTypes = async (req, res) => {
       return res.status(500).send('Internal Server Error');
     });
 };
+
+const getAllUrl = async (res,req) => {
+
+    console.log(req.user)
+
+    const { dataValues } = req.user;
+    const userId = dataValues.id;
+
+    const tmpCompany = await Company.findOne({ where: { userId: userId } });
+    let appId = null;
+    if (tmpCompany) {
+      appId = tmpCompany.appId;
+    } else {
+      appId = 'test';
+    }
+
+    return CustomEvent.find({ app_id: appId })
+    .distinct('url')
+    .exec()
+    .then((urls) => {
+      return res.status(200).json(urls);
+    })
+    .catch((error) => {
+      console.error('Error fetching eventTypes:', error);
+      return res.status(500).send('Internal Server Error');
+    });
+}
 
 const getNbOfEventsByDate = (appId, eventType, tagId, start, end) => {
 
@@ -170,27 +199,18 @@ const getHeatMapByDate = (appUrl, start, end) => {
 }
 
 const getGrapheByDate = (start, end, eventType, tagId, graphType, step, stepType, appId) => {
-  console.log('start', start);
-  console.log('end', end);
-  console.log('eventType', eventType);
-  console.log('tagId', tagId);
-  console.log('graphType', graphType);
-  console.log('step', step);
-  console.log('stepType', stepType);
-  console.log('appId', appId);
   const altTagId = tagId === null ? 'core-docs-tags' : tagId;
 
   let groupByStep = {};
-  if (stepType === 'minute') {
-    groupByStep = { $mod: [{ $toLong: { $toDate: '$tdate' } }, 1000 * 60 * step] };
-  } else if (stepType === 'hour') {
+  if (stepType === 'hour') {
     groupByStep = { $mod: [{ $toLong: { $toDate: '$tdate' } }, 1000 * 60 * 60 * step] };
   } else if (stepType === 'day') {
     groupByStep = { $mod: [{ $toLong: { $toDate: '$tdate' } }, 1000 * 60 * 60 * 24 * step] };
   } else if (stepType === 'week') {
-    // Calculate the start of the week by subtracting the day of the week from the timestamp
     groupByStep = { $subtract: [{ $toLong: { $toDate: '$tdate' } }, { $mod: [{ $toLong: { $toDate: '$tdate' } }, 1000 * 60 * 60 * 24 * 7] }] };
-  }
+  } else if (stepType === 'month') {
+    groupByStep = { $subtract: [{ $toLong: { $toDate: '$tdate' } }, { $mod: [{ $toLong: { $toDate: '$tdate' } }, 1000 * 60 * 60 * 24 * 30] }] };
+  } 
 
   // Get the events from the database and perform aggregation
   if (graphType === 'all_time') {
@@ -198,6 +218,7 @@ const getGrapheByDate = (start, end, eventType, tagId, graphType, step, stepType
       return CustomEvent.aggregate([
         {
           $match: {
+            event_types: eventType,
             app_id: appId,
             tdate: {
               $gte: new Date(start),
@@ -239,6 +260,7 @@ const getGrapheByDate = (start, end, eventType, tagId, graphType, step, stepType
         {
           $match: {
             app_id: appId,
+            event_types: eventType,
             tdate: {
               $gte: new Date(start),
               $lt: new Date(end),
@@ -315,8 +337,9 @@ const getGrapheByDate = (start, end, eventType, tagId, graphType, step, stepType
 module.exports = {
   createEvent,
   getEventTypes,
+  getAllUrl,
   getNbOfEventsByDate,
   getCustomEventsByDate,
   getHeatMapByDate,
-  getGrapheByDate
+  getGrapheByDate,
 };
