@@ -249,6 +249,7 @@ export default {
         }
     },
   async mounted() {
+    this.getHeatmaps();
     
     //this.$tracker.trackPageView('/example-page', 'Example Page');
   },
@@ -280,6 +281,7 @@ export default {
 
           this.getHeatmaps();
           //this.postId = data.id;
+          this.closeModal();
         })
         .catch((error) => {
           this.errorMessage = error;
