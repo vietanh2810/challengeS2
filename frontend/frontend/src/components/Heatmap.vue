@@ -39,10 +39,12 @@
               
               <div class="form-group">
                 <label for="page_url">Page URL:</label>
-                <Field name="page_url" v-model="heatmapData.page_url" as="select" class="form-control">
-                  <option :value="null">Aucun</option>
-                  <option v-for="url in urls" :key="url" :value="url">{{ url }}</option>
-                </Field>
+                <Field
+                  name="page_url"
+                  v-model="heatmapData.page_url"
+                  type="text"
+                  class="form-control"
+                />
                 <ErrorMessage name="page_url" class="error-feedback" />
               </div>
             </div>
@@ -250,7 +252,6 @@ export default {
     },
   async mounted() {
     this.getHeatmaps();
-    this.getUrls();
     
     //this.$tracker.trackPageView('/example-page', 'Example Page');
   },
