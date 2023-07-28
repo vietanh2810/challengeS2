@@ -5,7 +5,7 @@ const API_URL = import.meta.env.VITE_API_ENDPOINT;
 
 class EventsService {
     getEventTypes() {
-        return axios.get(API_URL + '/event/types', { headers: authHeader() });
+        return axios.get(API_URL + '/api/event/types', { headers: authHeader() });
     }
 }
 

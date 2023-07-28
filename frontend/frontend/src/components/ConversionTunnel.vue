@@ -176,6 +176,7 @@ import { Form, Field, ErrorMessage } from "vee-validate";
 import * as yup from "yup";
 import Draggable from 'vuedraggable';
 import Modal from './Modal.vue';
+const API_URL = import.meta.env.VITE_API_ENDPOINT;
 
 export default {
     components: {
@@ -261,7 +262,7 @@ export default {
             };
             this.convTunnelData.comment - '';
             this.convTunnelData.tags - [];
-            fetch('http://localhost:8080/api/convTunnel/create', requestOptions)
+            fetch( API_URL + '/convTunnel/create', requestOptions)
             .then(async response => {
                 const data = await response.json();
 
@@ -294,7 +295,7 @@ export default {
             }
         },
         async fetchConvTunnel() {
-            const response = await fetch('http://localhost:8080/api/convTunnel/', {
+            const response = await fetch( API_URL + '/api/convTunnel/', {
                 method: "Get",
                 headers: {
                     "Content-type": 'application/json',
@@ -306,7 +307,7 @@ export default {
             });
         },
         async fetchTag() {
-            const response = await fetch('http://localhost:8080/api/tags/', {
+            const response = await fetch(API_URL + '/api/tags/', {
                 method: "Get",
                 headers: {
                     "Content-type": 'application/json',

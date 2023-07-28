@@ -191,6 +191,7 @@ import "bootstrap";
 import { Form, Field, ErrorMessage } from "vee-validate";
 import * as yup from "yup";
 import Modal from './Modal.vue';
+const API_URL = import.meta.env.VITE_API_ENDPOINT;
 
 export default {
   components: {
@@ -316,7 +317,7 @@ export default {
         }),
       };
       this.grapheData.comment - "";
-      fetch("http://localhost:8080/api/graphes/create", requestOptions)
+      fetch(API_URL + "/api/graphes/create", requestOptions)
         .then(async (response) => {
           const data = await response.json();
 
@@ -338,7 +339,7 @@ export default {
     },
 
     async getGraphes() {
-      const response = await fetch("http://localhost:8080/api/graphes/", {
+      const response = await fetch(API_URL + "/api/graphes/", {
       method: "Get",
       headers: {
         "Content-type": "application/json",

@@ -169,6 +169,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap';
 import UserService from "../services/user.service";
 import VuePdfEmbed from 'vue-pdf-embed'
+const API_URL = import.meta.env.VITE_API_ENDPOINT;
 
 
 export default {
@@ -224,7 +225,7 @@ export default {
         },
         handleShowPdf(path) {
             this.showFile = true;
-            this.showedFile = 'http://localhost:8080/uploads/' + path;
+            this.showedFile = API_URL + '/uploads/' + path;
             console.log(import.meta.env.VITE_API_ENDPOINT)
         },
         handleClosePdf(){

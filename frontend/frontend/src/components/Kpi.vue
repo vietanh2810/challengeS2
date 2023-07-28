@@ -205,6 +205,7 @@ import EventService from "../services/events.service";
 import TagService from "../services/tag.service";
 import * as yup from "yup";
 import Modal from './Modal.vue';
+const API_URL = import.meta.env.VITE_API_ENDPOINT;
 
 export default {
   components: {
@@ -312,7 +313,7 @@ export default {
       this.kpiData.start - "";
       this.kpiData.end - "";
 
-      fetch("http://localhost:8080/api/kpis/create", requestOptions)
+      fetch(API_URL + "/api/kpis/create", requestOptions)
         .then(async (response) => {
           const data = await response.json();
 
@@ -332,7 +333,7 @@ export default {
     },
 
     async getKpis() {
-      const response = await fetch("http://localhost:8080/api/kpis/", {
+      const response = await fetch(API_URL + "/api/kpis/", {
         method: "Get",
         headers: {
           "Content-type": "application/json",

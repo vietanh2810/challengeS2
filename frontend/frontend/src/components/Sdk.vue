@@ -119,10 +119,11 @@
                             </div>
                             <pre class="code" :class="{ 'show-full-code': showFullCode }">
                                 <code> 
-                                    import Cookies from 'js-cookie';
+import Cookies from 'js-cookie';
 import { v4 as uuidv4 } from 'uuid';
+const API_URL = import.meta.env.VITE_API_ENDPOINT;
 
-const socketUrl = 'http://localhost:8080/api/events';
+const socketUrl = API_URL + '/api/events';
 
 const APP_ID = 'test';
 

@@ -1,13 +1,13 @@
 import axios from 'axios';
 //get the API_URL from the .env file
-const API_URL = 'http://localhost:8080/api';
+const API_URL = import.meta.env.VITE_API_ENDPOINT;
 
 // const API_URL = import.meta.env.VUE_APP_API_ENDPOINT;
 
 class AuthService {
     login(user) {
         return axios
-            .post(API_URL + '/users/login', {
+            .post(API_URL + '/api/users/login', {
                 email: user.email,
                 password: user.password
             })
@@ -33,7 +33,7 @@ class AuthService {
         formData.append('websiteUrl', user.websiteUrl);
         formData.append('kbis', user.kbis);
 
-        return axios.post(`${API_URL}/users/signup`, formData, {
+        return axios.post(`${API_URL}/api/users/signup`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data', // Set the content type to multipart/form-data
             },

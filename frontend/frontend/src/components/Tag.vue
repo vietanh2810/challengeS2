@@ -123,6 +123,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap';
 import { Form, Field, ErrorMessage } from "vee-validate";
 import * as yup from "yup";
+const API_URL = import.meta.env.VITE_API_ENDPOINT;
 
 export default {
     components: {
@@ -188,7 +189,7 @@ export default {
                 body: JSON.stringify({ comment: this.tagData.comment })
             };
             this.tagData.comment - '';
-            fetch('http://localhost:8080/api/tags/create', requestOptions)
+            fetch(API_URL + '/api/tags/create', requestOptions)
             .then(async response => {
                 const data = await response.json();
 
@@ -217,7 +218,7 @@ export default {
             }
         },
         async fetchTag() {
-            const response = await fetch('http://localhost:8080/api/tags/', {
+            const response = await fetch(API_URL + '/api/tags/', {
                 method: "Get",
                 headers: {
                     "Content-type": 'application/json',
