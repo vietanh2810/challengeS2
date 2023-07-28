@@ -217,11 +217,18 @@ export default {
         .string()
         .required("Le type d'évenement doit être renseigné")
         .min(2, "Le type d'évenement doit avoir au moins 2 caractères"),
-      page_url: yup
-        .string(),
       value: yup
         .number("La valeur doit être renseignée")
-        .required()
+        .required(),
+      tag_id: yup
+        .string(),
+      value_type: yup
+        .string()
+        .required("Le type de valeur doit être renseigné"),
+      start: yup
+        .date(),
+      end: yup
+        .date(),
     });
     return {
       kpiList: [],

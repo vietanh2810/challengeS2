@@ -22,6 +22,7 @@
     "popper.js": "^1.16.1",
     "socket.io-client": "^4.7.1",
     "sse": "^0.0.8",
+    "uglifyjs-webpack-plugin": "^2.2.0",
     "uuid": "^9.0.0",
     "vee-validate": "^4.10.8",
     "vue": "^3.3.4",
