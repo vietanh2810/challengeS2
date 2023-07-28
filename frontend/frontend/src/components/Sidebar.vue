@@ -61,12 +61,12 @@
                             <span class="links_name">Tunnel de conversion</span>
                         </router-link>
                     </li>
-                    <li>
+                    <!-- <li>
                         <router-link to="/web-param">
                             <i class="bx bx-user" />
                             <span class="links_name">My Profile</span>
                         </router-link>
-                    </li>
+                    </li> -->
                     <li v-if="role === 'admin'">
                         <router-link to="/admin">
                             <i class="bx bx-cog" />
