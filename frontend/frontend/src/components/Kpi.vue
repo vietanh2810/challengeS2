@@ -2,120 +2,142 @@
   <div class="dashboard">
     <Sidebar />
     <div class="content">
-      <div
-        class="mt-4"
-        style="
+      <div class="mt-4" style="
           background-color: #f8fafb;
           height: 80px !important;
           width: 100%;
           margin-left: 2rem !important;
           border-radius: 1rem;
-        "
-      >
+        ">
         <label style="margin: 1.5rem 0 0 2rem; font-size: 21px; font-weight: 500">Kpis</label>
         <!-- <button><i class="bi bi-2-square"></i>Nouveau Kpi</button> -->
         <Modal>
           <template #activator="{ openModal }">
-              <button class="btn btn-info btn-newKpi" @click="openModal">Ajouter un tunnel de conversion</button>
+            <button class="btn btn-info btn-newKpi" @click="openModal">Ajouter un kpi</button>
           </template>
           <template v-slot:actions="{ closeModal }">
-              
-              <button class="btn btn-danger" title="Fermer" @click="closeModal">Fermer</button>
+
+            <button class="btn btn-danger" title="Fermer" @click="closeModal">Fermer</button>
           </template>
           <Form @submit="createKpi" :validation-schema="schema" style="padding: 1.5em;">
             <div class="form-group">
               <div class="form-group">
                 <label for="name">Nom :</label>
-                <Field
-                  name="name"
-                  v-model="kpiData.name"
-                  type="text"
-                  class="form-control"
-                />
+                <Field name="name" v-model="kpiData.name" type="text" class="form-control" />
                 <ErrorMessage name="name" class="error-feedback" />
               </div>
               <div class="form-group">
                 <label for="description">Description :</label>
-                <Field
-                  name="description"
-                  v-model="kpiData.description"
-                  type="text"
-                  class="form-control"
-                />
+                <Field name="description" v-model="kpiData.description" type="text" class="form-control" />
                 <ErrorMessage name="description" class="error-feedback" />
               </div>
               <div class="form-group">
-                <label for="event_type">Type d'évenement :</label>
-                <Field
-                  name="event_type"
-                  v-model="kpiData.event_type"
-                  type="text"
-                  class="form-control"
-                />
+                <label for="event_type">Type d'événement :</label>
+                <Field name="event_type" v-model="kpiData.event_type" as="select" class="form-control">
+                  <option v-for="eventType in eventTypes" :key="eventType" :value="eventType">{{ eventType }}</option>
+                </Field>
                 <ErrorMessage name="event_type" class="error-feedback" />
+              </div>
+              <div class="form-group" v-if="kpiData.event_type !== 'new_visitor' && kpiData.event_type !== ''">
+                <label for="tag_id">Tag :</label>
+                <Field name="tag_id" v-model="kpiData.tag_id" as="select" class="form-control">
+                  <option :value="null">Aucun</option>
+                  <option v-for="tag in tags" :key="tag" :value="tag">{{ tag }}</option>
+                </Field>
+                <ErrorMessage name="tag_id" class="error-feedback" />
+              </div>
+              <div class="form-group">
+                <label for="value">value:</label>
+                <Field name="value" v-model="kpiData.value" type="text" class="form-control" />
+                <ErrorMessage name="value" class="error-feedback" />
+              </div>
+              <div class="form-group">
+                <label for="value_type">Type de value :</label>
+                <Field name="value_type" v-model="kpiData.value_type" as="select" class="form-control">
+                  <!-- Generating options based on this.eventTypes -->
+                  <option value="taux">Taux</option>
+                  <option value="number">Number</option>
+                </Field>
+                <ErrorMessage name="value_type" class="error-feedback" />
+              </div>
+              <div class="form-group">
+                <label for="start">Start Date :</label>
+                <Field name="start" v-model="kpiData.start" type="date" class="form-control" />
+                <ErrorMessage name="start" class="error-feedback" />
+              </div>
+              <div class="form-group">
+
+                <label for="value">Valeur:</label>
+                <Field name="value" v-model="kpiData.value" type="text" class="form-control" />
+                <ErrorMessage name="value" class="error-feedback" />
               </div>
               <div class="form-group">
                 <label for="page_url">Valeur:</label>
-                <Field
-                  name="page_url"
-                  v-model="kpiData.page_url"
-                  type="text"
-                  class="form-control"
-                />
+                <Field name="page_url" v-model="kpiData.page_url" type="text" class="form-control" />
                 <ErrorMessage name="page_url" class="error-feedback" />
+
+                <label for="end">End Date :</label>
+                <Field name="end" v-model="kpiData.end" type="date" class="form-control" />
+                <ErrorMessage name="end" class="error-feedback" />
+
               </div>
             </div>
 
             <button type="submit">Valider</button>
           </Form>
-              
+
           <template #close-icon="{ closeModal }">
-              <button class="btn btn-default" title="Fermer" @click="closeModal">x</button>
+            <button class="btn btn-default" title="Fermer" @click="closeModal">x</button>
           </template>
-      </Modal>
+        </Modal>
       </div>
 
-      <div
-        class="d-flex mt-4 justify-content-between py-3 px-4"
-        style="
-          margin-left: 2rem !important;
-          background-color: #f8fafb;
-          border-radius: 1rem;
-        "
-      >
-        <div class="card text-bg-dark text-center w-100">
-          <div class="card-header border-light bg-transparent"></div>
-          <div class="card-body">
-            <table class="table table-borderless">
-              <thead>
-                <tr>
-                  <th>id</th>
-                  <th>Nom</th>
-                  <th>Description</th>
-                  <th>Type d'évenement</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="item in kpiList">
-                  <td>{{ item.id }}</td>
-                  <td>{{ item.name }}</td>
-                  <td>{{ item.description }}</td>
-                  <td>{{ item.event_type }}</td>
-                </tr>
-              </tbody>
-            </table>
-            <a href="#" class="btn btn-primary">Add a new kpi</a>
+      <div class="mt-4 col-12"
+        style="background-color: #f8fafb; height: 50px !important; width: 95%; margin-left: 2rem !important; border-radius: 1rem;">
+        <div class="d-flex">
+          <div class="pagination pr-4 py-auto my-auto align-items-center d-flex justify-content-between">
+            <div class="d-flex">
+              <span style="width: 100px; padding-top: 14px;">Page <b>
+                  {{ currentPage }}
+                </b> of {{ nbPageMax }}
+              </span>
+              <div class="pl-4 d-flex" style="width: 250px;">
+                <button class="btn btn-primary" @click="navigatePage('backward')" :disabled="currentPage === 1">
+                  <font-awesome-icon icon="step-backward" />
+                </button>
+                <button class="btn ml-1 mr-2 btn-primary" @click="navigatePage('prev')" :disabled="currentPage === 1">
+                  <font-awesome-icon icon="chevron-left" />
+                </button>
+                <b style="padding-top: 14px;">{{ currentPage }}</b>
+                <button class="btn ml-2 mr-1 btn-primary" @click="navigatePage('next')"
+                  :disabled="currentPage === nbPageMax">
+                  <font-awesome-icon icon="chevron-right" />
+                </button>
+                <button class="btn ml-1 btn-primary" @click="navigatePage('forward')"
+                  :disabled="currentPage === nbPageMax">
+                  <font-awesome-icon icon="step-forward" />
+                </button>
+              </div>
+              <div style="width: 250px;">
+                <p style="padding-top: 10px;">
+                  Total tags:
+                  <span class="chips chips_purple py-2">
+                    {{ totalKpis }}
+                  </span>
+                </p>
+              </div>
+            </div>
+            <div>
+              <input type="text" class="form-control" placeholder="Recherche" aria-label="Search"
+                aria-describedby="basic-addon1" v-model="search" style="border-radius: 1rem; width: 300px !important;" />
+            </div>
           </div>
-          <div
-            class="card-footer border-light text-body-secondary bg-transparent"
-          ></div>
         </div>
-
-
       </div>
+
 
       <div class="d-flex mt-4 justify-content-between py-3 px-4"
-      style="margin-left: 32px !important; padding-left:38px !important; background-color: #f8fafb; border-radius: 1rem; width: 95%; height: 60px;">
+        style="margin-left: 32px !important; padding-left:38px !important; background-color: #f8fafb; border-radius: 1rem; width: 95%; height: 60px;">
         <div class="row col-12">
           <div style="width: 25%;" class="d-flex justify-content-center border-right">
             <span class="cursor-pointer" @click="orderListBy('id', 'String')">
@@ -140,31 +162,32 @@
         </div>
       </div>
 
-      <div v-for="(kpi, index) in filteredKpi" :key="index"
-          class="d-flex mt-4 justify-content-between py-3 px-4"
-          style="margin:0.5rem 0 0 2rem !important; background-color: #f8fafb; border-radius: 1rem; width: 95%; height: 80px;">
+      <div v-for="(kpi, index) in filteredKpi" :key="index" class="d-flex mt-4 justify-content-between py-3 px-4"
+        style="margin:0.5rem 0 0 2rem !important; background-color: #f8fafb; border-radius: 1rem; width: 95%; height: 80px;">
         <div class="row px-3 col-12" :id="'dupli-row-' + kpi.id">
           <div style="width: 25%;" class="d-flex justify-content-center border-right">
-              <span class="cursor-pointer">
-                  {{ kpi.id?? 'Not available' }}
-              </span>
+            <span class="cursor-pointer">
+              {{ kpi.id ?? 'Not available' }}
+            </span>
           </div>
           <div style="width: 25%;" class="d-flex justify-content-center border-right">
-              <span class="cursor-pointer">
-                  {{ kpi.id?? 'Not available' }}
-              </span>
+
+            <span class="cursor-pointer">
+              {{ kpi.name ?? 'Not available' }}
+            </span>
           </div>
           <div style="width: 25%;" class="d-flex justify-content-center border-right">
-              <span class="cursor-pointer">
-                  {{ kpi.id?? 'Not available' }}
-              </span>
+            <span class="cursor-pointer">
+              {{ kpi.description ?? 'Not available' }}
+            </span>
           </div>
           <div style="width: 25%;" class="d-flex justify-content-center ">
-              <span class="cursor-pointer">
-                  {{ kpi.id?? 'Not available' }}
-              </span>
+            <span class="cursor-pointer">
+              {{ kpi.event_type ?? 'Not available' }}
+            </span>
+
           </div>
-          
+
         </div>
       </div>
 
@@ -178,6 +201,8 @@ import Sidebar from "./Sidebar.vue";
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap";
 import { Form, Field, ErrorMessage } from "vee-validate";
+import EventService from "../services/events.service";
+import TagService from "../services/tag.service";
 import * as yup from "yup";
 import Modal from './Modal.vue';
 
@@ -204,72 +229,59 @@ export default {
         .required("Le type d'évenement doit être renseigné")
         .min(2, "Le type d'évenement doit avoir au moins 2 caractères"),
       page_url: yup
-        .number()
-        .required("La valeur doit être renseigné"),
+        .string(),
+      value: yup
+        .number("La valeur doit être renseignée")
+        .required()
     });
     return {
-      kpiList: null,
-      //piechartDate: null,
+      kpiList: [],
+      tags: [],
+      eventTypes: [],
       components: {
         Form,
         Field,
         ErrorMessage,
       },
-      /*data: {
-        labels: ["Red", "Blue", "Yellow"],
-        datasets: [
-          {
-            data: [300, 50, 100],
-            backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
-            hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
-          },
-        ],
-      },*/
       options: {
         responsive: true,
       },
-      /*chartData: {
-        labels: [
-          "Monday",
-          "Tuesday",
-          "Wednesday",
-          "Thursday",
-          "Friday",
-          "Saturday",
-          "Sunday",
-        ],
-        datasets: [
-          {
-            label: "Page Views",
-            data: [120, 180, 150, 200, 250, 220, 180],
-            backgroundColor: "rgba(54, 162, 235, 0.2)", // Background color of the line chart
-            borderColor: "rgba(54, 162, 235, 1)", // Border color of the line
-            borderWidth: 2, // Border width of the line
-          },
-        ],
-      },
-      chartOptions: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          y: {
-            beginAtZero: true,
-            max: 300, // Maximum value on the y-axis
-          },
-        },
-      },*/
       schema,
       kpiData: {
         name: "",
-        page_url: "",
         description: "",
-        event_type:""
+        event_type: "",
+        value: "",
+        tag_id: "",
+        value_type: "",
+        start: "",
+        end: "",
       },
+      currentPage: 1,
+      pageLimit: 10,
     };
+  },
+  computed: {
+    nbPageMax() {
+      return Math.ceil(this.kpiList.length / this.pageLimit);
+    },
+    totalKpis() {
+      return this.filteredKpi.length
+    },
+    filteredKpi() {
+      return this.search
+        ? this.kpiList.filter(el => {
+          return el.name?.toString().toLowerCase().includes(this.search.toString().toLowerCase())
+        }).slice((this.currentPage - 1) * this.pageLimit, this.currentPage * this.pageLimit)
+        : this.kpiList.slice((this.currentPage - 1) * this.pageLimit, this.currentPage * this.pageLimit)
+
+      // return this.webMasterList.slice((this.currentPage - 1) * this.pageLimit, this.currentPage * this.pageLimit)
+    }
   },
   async mounted() {
     this.getKpis();
-    //this.$tracker.trackPageView('/example-page', 'Example Page');
+    this.getEventTypes();
+    this.getTags();
   },
   methods: {
     createKpi() {
@@ -284,13 +296,22 @@ export default {
           description: this.kpiData.description,
           name: this.kpiData.name,
           event_type: this.kpiData.event_type,
-          value: this.kpiData.page_url
+          tag_id: this.kpiData.tag_id,
+          value: parseInt(this.kpiData.value),
+          value_type: this.kpiData.value_type,
+          start: this.kpiData.start,
+          end: this.kpiData.end,
         }),
       };
       this.kpiData.name - "";
       this.kpiData.description - "";
       this.kpiData.event_type - "";
-      this.kpiData.page_url- "";
+      this.kpiData.tag_id - "";
+      this.kpiData.value - "";
+      this.kpiData.value_type - "";
+      this.kpiData.start - "";
+      this.kpiData.end - "";
+
       fetch("http://localhost:8080/api/kpis/create", requestOptions)
         .then(async (response) => {
           const data = await response.json();
@@ -312,18 +333,53 @@ export default {
 
     async getKpis() {
       const response = await fetch("http://localhost:8080/api/kpis/", {
-      method: "Get",
-      headers: {
-        "Content-type": "application/json",
-        Authorization:
-          "Bearer " + JSON.parse(localStorage.getItem("user")).token,
-      },
-    })
-      .then((response) => response.json())
-      .then((responseJSON) => {
-        this.kpiList = responseJSON;
-      });
+        method: "Get",
+        headers: {
+          "Content-type": "application/json",
+          Authorization:
+            "Bearer " + JSON.parse(localStorage.getItem("user")).token,
+        },
+      })
+        .then((response) => response.json())
+        .then((responseJSON) => {
+          this.kpiList = responseJSON;
+        });
     },
+    getEventTypes() {
+      EventService.getEventTypes().then(
+        (response) => {
+          this.eventTypes = response.data;
+        },
+        (error) => {
+          this.content =
+            (error.response &&
+              error.response.data &&
+              error.response.data.message) ||
+            error.message ||
+            error.toString();
+        }
+      );
+    },
+    getTags() {
+      TagService.getTags().then(
+        (response) => {
+          let res = [];
+          const tagList = response.data;
+          tagList.forEach((tag) => {
+            res.push(tag.tag_uid);
+          });
+          this.tags = res;
+        },
+        (error) => {
+          this.content =
+            (error.response &&
+              error.response.data &&
+              error.response.data.message) ||
+            error.message ||
+            error.toString();
+        }
+      );
+    }
   },
 };
 </script>
@@ -345,26 +401,47 @@ export default {
 }
 
 .btn-newKpi {
-    background-color: #84a3b3 !important;
-    border-color: #f8fafb !important;
-    border-radius: 2rem;
-    color: black;
-    position: absolute;
-    top: 5%;
-	right: 5%;
+  background-color: #84a3b3 !important;
+  border-color: #f8fafb !important;
+  border-radius: 2rem;
+  color: black;
+  position: absolute;
+  top: 5%;
+  right: 5%;
 }
 
 .btn-newKpi:hover {
-    background-color: #6f8d9d !important;
-    border-color: #e6e8ea !important;
-    border-radius: 2rem;
-    color: black;
+  background-color: #6f8d9d !important;
+  border-color: #e6e8ea !important;
+  border-radius: 2rem;
+  color: black;
 }
 
 .btn-newKpi:disabled {
-    background-color: #9ec1d4 !important;
-    border-color: #f8fafb !important;
-    border-radius: 2rem;
-    color: rgb(61, 61, 61);
+  background-color: #9ec1d4 !important;
+  border-color: #f8fafb !important;
+  border-radius: 2rem;
+  color: rgb(61, 61, 61);
+}
+
+.btn-primary {
+  background-color: #f8fafb !important;
+  border-color: #f8fafb !important;
+  border-radius: 2rem;
+  color: black;
+}
+
+.btn-primary:hover {
+  background-color: #e6e8ea !important;
+  border-color: #e6e8ea !important;
+  border-radius: 2rem;
+  color: black;
+}
+
+.btn-primary:disabled {
+  background-color: #f8fafb !important;
+  border-color: #f8fafb !important;
+  border-radius: 2rem;
+  color: rgb(61, 61, 61);
 }
 </style>

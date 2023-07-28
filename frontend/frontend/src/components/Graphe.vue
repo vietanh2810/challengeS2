@@ -7,57 +7,25 @@
         style="
           background-color: #f8fafb;
           height: 80px !important;
-          width: 100%;
+          width: 95%;
           margin-left: 2rem !important;
           border-radius: 1rem;
         "
       >
         <label
           style="margin: 1.5rem 0 0 2rem; font-size: 21px; font-weight: 500"
-          >Graphes</label
-        >
-        <!-- <button><i class="bi bi-2-square"></i>Nouveau Graphe</button> -->
-      </div>
+          >Graphes</label>
+        
+          <Modal>
+              <template #activator="{ openModal }">
+                  <button class="btn btn-info btn-newTag" @click="openModal">Nouveau Graphe</button>
+              </template>
+              <template v-slot:actions="{ closeModal }">
+                  
+                  <button class="btn btn-danger" title="Fermer" @click="closeModal">Fermer</button>
+              </template>
 
-      <div
-        class="d-flex mt-4 justify-content-between py-3 px-4"
-        style="
-          margin-left: 2rem !important;
-          background-color: #f8fafb;
-          border-radius: 1rem;
-        "
-      >
-        <div class="card text-bg-dark text-center w-100">
-          <div class="card-header border-light bg-transparent"></div>
-          <div class="card-body">
-            <table class="table table-borderless">
-              <thead>
-                <tr>
-                  <th>id</th>
-                  <th>Nom</th>
-                  <th>Type de graphe</th>
-                  <th>Type d'évenement</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="item in grapheList">
-                  <td>{{ item.id }}</td>
-                  <td>{{ item.name }}</td>
-                  <td>{{ item.graphe_type }}</td>
-                  <td>{{ item.event_type }}</td>
-                </tr>
-              </tbody>
-            </table>
-            <a href="#" class="btn btn-primary">Add a new graphe</a>
-          </div>
-          <div
-            class="card-footer border-light text-body-secondary bg-transparent"
-          ></div>
-        </div>
-
-        <div class="card text-bg-dark text-center w-100">
-          <div class="card-body">
-            <Form @submit="createGraphe" :validation-schema="schema">
+              <Form @submit="createGraphe" :validation-schema="schema">
               <div class="form-group">
                 <div class="form-group">
                   <label for="name">Nom :</label>
@@ -89,13 +57,129 @@
                   />
                   <ErrorMessage name="event_type" class="error-feedback" />
                 </div>
+                <div class="form-group">
+                  <label for="page_url">URL :</label>
+                  <Field
+                    name="page_url"
+                    v-model="grapheData.page_url"
+                    type="text"
+                    class="form-control"
+                  />
+                  <ErrorMessage name="page_url" class="error-feedback" />
+                </div>
               </div>
 
               <button type="submit">submit graphe</button>
             </Form>
-          </div>
-        </div>
+                  
+                  
+              
+                  <template #close-icon="{ closeModal }">
+                      <button class="btn btn-default" title="Fermer" @click="closeModal">x</button>
+                  </template>
+          </Modal>
       </div>
+
+      <div class="mt-4 col-12"
+                style="background-color: #f8fafb; height: 50px !important; width: 95%; margin-left: 2rem !important; border-radius: 1rem;">
+                <div class="d-flex">
+                    <div class="pagination pr-4 py-auto my-auto align-items-center d-flex justify-content-between">
+                        <div class="d-flex">
+                            <span style="width: 100px; padding-top: 14px;">Page <b>
+                                    {{ currentPage }}
+                                </b> of {{ nbPageMax }}
+                            </span>
+                            <div class="pl-4 d-flex" style="width: 250px;">
+                                <button class="btn btn-primary" @click="navigatePage('backward')"
+                                    :disabled="currentPage === 1">
+                                    <font-awesome-icon icon="step-backward" />
+                                </button>
+                                <button class="btn ml-1 mr-2 btn-primary" @click="navigatePage('prev')"
+                                    :disabled="currentPage === 1">
+                                    <font-awesome-icon icon="chevron-left" />
+                                </button>
+                                <b style="padding-top: 14px;">{{ currentPage }}</b>
+                                <button class="btn ml-2 mr-1 btn-primary" @click="navigatePage('next')"
+                                    :disabled="currentPage === nbPageMax">
+                                    <font-awesome-icon icon="chevron-right" />
+                                </button>
+                                <button class="btn ml-1 btn-primary" @click="navigatePage('forward')"
+                                    :disabled="currentPage === nbPageMax">
+                                    <font-awesome-icon icon="step-forward" />
+                                </button>
+                            </div>
+                            <div style="width: 250px;">
+                                <p style="padding-top: 10px;">
+                                    Total tags:
+                                    <span class="chips chips_purple py-2">
+                                        {{ totalGraphs }}
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                        <div>
+                            <input type="text" class="form-control" placeholder="Recherche" aria-label="Search"
+                                aria-describedby="basic-addon1" v-model="search"
+                                style="border-radius: 1rem; width: 300px !important;" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+      <div class="d-flex mt-4 justify-content-between py-3 px-4"
+                style="margin-left: 32px !important; padding-left:38px !important; background-color: #f8fafb; border-radius: 1rem; width: 95%; height: 60px;">
+                <div class="row col-12">
+                    <div style="width: 25%;" class="d-flex justify-content-center border-right">
+                        <span class="cursor-pointer" @click="orderListBy('comment', 'String')">
+                            <b class="mr-2">Id</b>
+                        </span>
+                    </div>
+                    <div style="width: 25%;" class="d-flex justify-content-center border-right">
+                        <span class="cursor-pointer" @click="orderListBy('comment', 'String')">
+                            <b class="mr-2">Nom</b>
+                        </span>
+                    </div>
+                    <div style="width: 25%;" class="d-flex justify-content-center border-right">
+                        <span class="cursor-pointer" @click="orderListBy('comment', 'String')">
+                            <b class="mr-2">Type de graphe</b>
+                        </span>
+                    </div>
+                    <div style="width:25%;" class="d-flex justify-content-center">
+                        <span class="cursor-pointer" @click="orderListBy('tags', 'String')">
+                            <b class="mr-2">Type d'évenement</b>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div v-for="(graph, index) in grapheList" :key="index"
+                class="d-flex mt-4 justify-content-between py-3 px-4"
+                style="margin:0.5rem 0 0 2rem !important; background-color: #f8fafb; border-radius: 1rem; width: 95%; height: 60px;">
+                <div class="row px-3 col-12" :id="'dupli-row-' + graph.id">
+                    <div style="width: 25%;" class="d-flex justify-content-center border-right">
+                        <span class="cursor-pointer">
+                            {{ graph.id?? 'Not available' }}
+                        </span>
+                    </div>
+                    <div style="width: 25%;" class="d-flex justify-content-center border-right">
+                        <span class="cursor-pointer">
+                            {{ graph.name?? 'Not available' }}
+                        </span>
+                    </div>
+                    <div style="width: 25%;" class="d-flex justify-content-center border-right">
+                        <span class="cursor-pointer">
+                            {{ graph.graphe_type?? 'Not available' }}
+                        </span>
+                    </div>
+                    <div style="width: 25%;" class="d-flex justify-content-center">
+                        <span class="cursor-pointer">
+                            {{ graph.event_type?? 'Not available' }}
+                        </span>
+                    </div>
+                    
+                </div>
+            </div>
     </div>
   </div>
 </template>
@@ -106,6 +190,7 @@ import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap";
 import { Form, Field, ErrorMessage } from "vee-validate";
 import * as yup from "yup";
+import Modal from './Modal.vue';
 
 export default {
   components: {
@@ -113,6 +198,7 @@ export default {
     Form,
     Field,
     ErrorMessage,
+    Modal
   },
   data() {
     const schema = yup.object().shape({
@@ -128,9 +214,13 @@ export default {
         .string()
         .required("Le event_type doit être renseigné")
         .min(2, "Le event_type doit avoir au moins 2 caractères"),
+      page_url: yup
+        .string()
     });
     return {
-      grapheList: null,
+      grapheList: [],
+      currentPage: 1,
+      pageLimit: 10,
       piechartDate: null,
       components: {
         Form,
@@ -185,22 +275,29 @@ export default {
         graphe_type: "",
         name: "",
         event_type: "",
+        page_url:""
       },
     };
   },
+  computed: {
+        nbPageMax() {
+            return Math.ceil(this.grapheList.length / this.pageLimit);
+        },
+        totalGraphs() {
+            return this.filteredGraph.length
+        },
+        filteredGraph() {
+            return this.search
+                ? this.grapheList.filter(el => {
+                    return el.name?.toString().toLowerCase().includes(this.search.toString().toLowerCase()) 
+                }).slice((this.currentPage - 1) * this.pageLimit, this.currentPage * this.pageLimit)
+                : this.grapheList.slice((this.currentPage - 1) * this.pageLimit, this.currentPage * this.pageLimit)
+
+            // return this.webMasterList.slice((this.currentPage - 1) * this.pageLimit, this.currentPage * this.pageLimit)
+        }
+    },
   async mounted() {
-    const response = await fetch("http://localhost:8080/api/graphes/", {
-      method: "Get",
-      headers: {
-        "Content-type": "application/json",
-        Authorization:
-          "Bearer " + JSON.parse(localStorage.getItem("user")).token,
-      },
-    })
-      .then((response) => response.json())
-      .then((responseJSON) => {
-        this.grapheList = responseJSON;
-      });
+    this.getGraphes();
     //this.$tracker.trackPageView('/example-page', 'Example Page');
   },
   methods: {
@@ -230,6 +327,7 @@ export default {
             return Promise.reject(error);
           }
 
+          this.getGraphes();
           //console.log(data);
           //this.postId = data.id;
         })
@@ -239,7 +337,20 @@ export default {
         });
     },
 
-    getGraphes() {},
+    async getGraphes() {
+      const response = await fetch("http://localhost:8080/api/graphes/", {
+      method: "Get",
+      headers: {
+        "Content-type": "application/json",
+        Authorization:
+          "Bearer " + JSON.parse(localStorage.getItem("user")).token,
+      },
+    })
+      .then((response) => response.json())
+      .then((responseJSON) => {
+        this.grapheList = responseJSON;
+      });
+    },
   },
 };
 </script>
@@ -258,5 +369,50 @@ export default {
   bottom: 0;
   background-color: #e6e8ea;
   /* Add other styles for the content */
+}
+
+.btn-primary {
+    background-color: #f8fafb !important;
+    border-color: #f8fafb !important;
+    border-radius: 2rem;
+    color: black;
+}
+
+.btn-primary:hover {
+    background-color: #e6e8ea !important;
+    border-color: #e6e8ea !important;
+    border-radius: 2rem;
+    color: black;
+}
+
+.btn-primary:disabled {
+    background-color: #f8fafb !important;
+    border-color: #f8fafb !important;
+    border-radius: 2rem;
+    color: rgb(61, 61, 61);
+}
+
+.btn-newTag {
+    background-color: #84a3b3 !important;
+    border-color: #f8fafb !important;
+    border-radius: 2rem;
+    color: black;
+    position: absolute;
+    top: 5%;
+	right: 5%;
+}
+
+.btn-newTag:hover {
+    background-color: #6f8d9d !important;
+    border-color: #e6e8ea !important;
+    border-radius: 2rem;
+    color: black;
+}
+
+.btn-newTag:disabled {
+    background-color: #9ec1d4 !important;
+    border-color: #f8fafb !important;
+    border-radius: 2rem;
+    color: rgb(61, 61, 61);
 }
 </style>
