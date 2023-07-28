@@ -103,7 +103,7 @@ export default {
 
             this.$store.dispatch("auth/register", user).then(
                 () => {
-                    // this.$router.push("/login");
+                    this.$router.push("/login");
                     console.log("User registered successfully!")
                 },
                 (error) => {
