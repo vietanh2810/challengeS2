@@ -66,23 +66,11 @@
                 <ErrorMessage name="start" class="error-feedback" />
               </div>
               <div class="form-group">
-
-                <label for="value">Valeur:</label>
-                <Field name="value" v-model="kpiData.value" type="text" class="form-control" />
-                <ErrorMessage name="value" class="error-feedback" />
-              </div>
-              <div class="form-group">
-                <label for="page_url">Valeur:</label>
-                <Field name="page_url" v-model="kpiData.page_url" type="text" class="form-control" />
-                <ErrorMessage name="page_url" class="error-feedback" />
-
                 <label for="end">End Date :</label>
                 <Field name="end" v-model="kpiData.end" type="date" class="form-control" />
                 <ErrorMessage name="end" class="error-feedback" />
-
               </div>
             </div>
-
             <button type="submit">Valider</button>
           </Form>
 
@@ -324,6 +312,7 @@ export default {
           }
 
           this.getKpis();
+          this.closeModal();
         })
         .catch((error) => {
           this.errorMessage = error;
