@@ -17,12 +17,13 @@ const kpiController = require("./controllers/kpiController");
 const bodyParser = require("body-parser");
 const auth = require("./middlewares/userAuth");
 const conversion_funnelRoutes = require("./routes/conversionFunnelRoutes");
+const heatmapController = require("./controllers/heatmapController");
 
 require("dotenv").config();
 const cors = require("cors"); // Import the cors middleware
 const e = require("express");
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 3000;
 const app = express();
 
 // Middleware
@@ -114,7 +115,7 @@ db.sequelize.sync({ force: true }).then(async () => {
         kpiController.createDefaultKpi(webmaster.id, kpi.name, kpi.value, kpi.value_type,kpi.description, kpi.tag_id, kpi.event_type, kpi.start, kpi.end, kpi.conversionId);
     });
 
-    
+    heatmapController.createDefaultHeatmap(webmaster.id,'test-sdk-page','http://localhost:8081/')
 
 });
 
