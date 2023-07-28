@@ -25,6 +25,19 @@ const createHeatmap = async (req, res) => {
   }
 };
 
+const createDefaultHeatmap = async (userId, name, page_url) => {
+  try {
+    await Heatmap.create({
+      name: name,
+      userId: userId,
+      page_url: page_url,
+    });
+    console.log("Default Heatmap created.");
+  } catch (error) {
+    console.error("Error creating default admin user:", error);
+  }
+};
+
 // Function to get all Heatmaps
 const getAllHeatmaps = async (req, res) => {
   try {
@@ -161,4 +174,5 @@ module.exports = {
   getHeatmapById,
   updateHeatmapById,
   deleteHeatmapById,
+  createDefaultHeatmap
 };
