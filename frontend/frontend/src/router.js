@@ -3,7 +3,7 @@ import Login from "./components/Login.vue";
 import Dashboard from "./components/Dashboard.vue";
 import Signup from "./components/SignUp.vue";
 import Admin from "./components/Admin.vue";
-import Sdk from "./components/SDK.vue"
+import Sdk from "./components/Sdk.vue"
 import Graphe from "./components/Graphe.vue";
 import Heatmap from "./components/Heatmap.vue";
 import Kpi from "./components/Kpi.vue";
