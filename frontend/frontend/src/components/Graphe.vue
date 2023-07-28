@@ -50,16 +50,6 @@
                 </Field>
                 <ErrorMessage name="tag_id" class="error-feedback" />
               </div>
-              <div v-if="grapheData.graphe_type === 'time_span'" class="form-group">
-                <label for="start">Start Date :</label>
-                <Field name="start" v-model="grapheData.start" type="date" class="form-control" />
-                <ErrorMessage name="start" class="error-feedback" />
-              </div>
-              <div v-if="grapheData.graphe_type === 'time_span'" class="form-group">
-                <label for="end">End Date :</label>
-                <Field name="end" v-model="grapheData.end" type="date" class="form-control" />
-                <ErrorMessage name="end" class="error-feedback" />
-              </div>
             </div>
 
             <button type="submit">submit graphe</button>
@@ -166,17 +156,6 @@
               {{ graph.event_type ?? 'Not available' }}
             </span>
           </div>
-          <div v-if="graph.graphe_type === 'time_span'" class="form-group">
-                <label for="start">Start Date :</label>
-                <Field name="start" v-model="graph.start" type="date" class="form-control" />
-                <ErrorMessage name="start" class="error-feedback" />
-            </div>
-          <div v-if="graph.graphe_type === 'time_span'"  class="form-group">
-              <label for="end">End Date :</label>
-              <Field name="end" v-model="graph.end" type="date" class="form-control" />
-              <ErrorMessage name="end" class="error-feedback" />
-            </div>
-
         </div>
       </div>
     </div>
@@ -218,10 +197,6 @@ export default {
         .min(2, "Le event_type doit avoir au moins 2 caractères"),
       tag_id: yup
         .string(),
-      start: yup
-        .date(),
-      end: yup
-        .date()
     });
     return {
       grapheList: [],
@@ -233,8 +208,6 @@ export default {
         name: "",
         event_type: "",
         tag_id: "",
-        start: "",
-        end: "",
       },
       eventTypes: [],
       tags: [],
@@ -278,8 +251,6 @@ export default {
           name: this.grapheData.name,
           event_type: this.grapheData.event_type,
           tag_id: this.grapheData.tag_id,
-          start: this.grapheData.start,
-          end: this.grapheData.end,
         }),
       };
       this.grapheData = {

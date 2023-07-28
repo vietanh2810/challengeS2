@@ -299,14 +299,14 @@ export default {
           end: this.kpiData.end,
         }),
       };
-      this.kpiData.name - "";
-      this.kpiData.description - "";
-      this.kpiData.event_type - "";
-      this.kpiData.tag_id - "";
-      this.kpiData.value - "";
-      this.kpiData.value_type - "";
-      this.kpiData.start - "";
-      this.kpiData.end - "";
+      this.kpiData.name = "";
+      this.kpiData.description = "";
+      this.kpiData.event_type = "";
+      this.kpiData.tag_id = "";
+      this.kpiData.value = "";
+      this.kpiData.value_type = "";
+      this.kpiData.start = "";
+      this.kpiData.end = "";
 
       fetch(API_URL + "/api/kpis/create", requestOptions)
         .then(async (response) => {

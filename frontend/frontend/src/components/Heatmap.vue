@@ -39,12 +39,10 @@
               
               <div class="form-group">
                 <label for="page_url">Page URL:</label>
-                <Field
-                  name="page_url"
-                  v-model="heatmapData.page_url"
-                  type="text"
-                  class="form-control"
-                />
+                <Field name="page_url" v-model="heatmapData.page_url" as="select" class="form-control">
+                  <option :value="null">Aucun</option>
+                  <option v-for="url in urls" :key="url" :value="url">{{ url }}</option>
+                </Field>
                 <ErrorMessage name="page_url" class="error-feedback" />
               </div>
             </div>
@@ -173,6 +171,7 @@ export default {
         .min(2, "Le  doit avoir au moins 2 caractères"),
     });
     return {
+      urls: [],
       heatmapList: [],
       piechartDate: null,
       components: {
@@ -251,6 +250,7 @@ export default {
     },
   async mounted() {
     this.getHeatmaps();
+    this.getUrls();
     
     //this.$tracker.trackPageView('/example-page', 'Example Page');
   },
@@ -289,7 +289,21 @@ export default {
           console.error("There was an error!", error);
         });
     },
-
+    getUrls() {
+      EventService.getUrls().then(
+        (response) => {
+          this.urls = response.data;
+        },
+        (error) => {
+          this.content =
+            (error.response &&
+              error.response.data &&
+              error.response.data.message) ||
+            error.message ||
+            error.toString();
+        }
+      );
+    },
     async getHeatmaps() {
       const response = await fetch(API_URL + "/api/heatmaps/", {
       method: "Get",

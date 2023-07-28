@@ -1,35 +1,35 @@
-        <template>
-            <div class="sdk">
-                <Sidebar />
-                <div class="content">
-                    <div class="mt-4"
-                        style="background-color: #f8fafb; height: 80px !important; width: 95%; margin-left: 2rem !important; border-radius: 1rem;">
-                        <label style="margin: 1.5rem 0 0 2rem; font-size: 21px; font-weight: 500;width: 95%;">SDK</label>
-                    </div>
-                    <!-- Dashboard content goes here -->
-                    <div class="d-flex mt-4 justify-content-between py-3 px-4"
-                        style="margin-left: 2rem !important; background-color: #f8fafb; border-radius: 1rem; width: 95%; height: max-content;">
-                        <div class="how-to-use" style="max-width: 650px; margin: 1rem 2rem 0 0;">
-                            <h2>How to Use the vueTracker Plugin</h2>
-                            <p>
-                                To use the <code>vueTracker</code> plugin in your Vue.js application, follow these steps:
-                            </p>
-                            <ol>
-                                <li>Install the required dependencies (js-cookie and uuid) using npm or yarn:</li>
-                                <br>
-                                <pre><code>     
+<template>
+    <div class="sdk">
+        <Sidebar />
+        <div class="content">
+            <div class="mt-4"
+                style="background-color: #f8fafb; height: 80px !important; width: 95%; margin-left: 2rem !important; border-radius: 1rem;">
+                <label style="margin: 1.5rem 0 0 2rem; font-size: 21px; font-weight: 500;width: 95%;">SDK</label>
+            </div>
+            <!-- Dashboard content goes here -->
+            <div class="d-flex mt-4 justify-content-between py-3 px-4"
+                style="margin-left: 2rem !important; background-color: #f8fafb; border-radius: 1rem; width: 95%; height: max-content;">
+                <div class="how-to-use" style="max-width: 650px; margin: 1rem 2rem 0 0;">
+                    <h2>How to Use the vueTracker Plugin</h2>
+                    <p>
+                        To use the <code>vueTracker</code> plugin in your Vue.js application, follow these steps:
+                    </p>
+                    <ol>
+                        <li>Install the required dependencies (js-cookie and uuid) using npm or yarn:</li>
+                        <br>
+                        <pre><code>     
         npm install js-cookie uuid
                                 </code></pre>
-                                <li>
-                                    Create a file for the plugin, e.g., <code>vueTracker.js</code>, and copy the content of the
-                                    <code>vueTracker</code> plugin to it.
-                                </li>
-                                <br>
-                                <li>
-                                    Import and install the plugin in your main Vue app file (usually <code>main.js</code>):
-                                </li>
-                                <br>
-                                <pre>
+                        <li>
+                            Create a file for the plugin, e.g., <code>vueTracker.js</code>, and copy the content of the
+                            <code>vueTracker</code> plugin to it.
+                        </li>
+                        <br>
+                        <li>
+                            Import and install the plugin in your main Vue app file (usually <code>main.js</code>):
+                        </li>
+                        <br>
+                        <pre>
                 <code>
         import Vue from 'vue';
         import App from './App.vue';
@@ -42,11 +42,11 @@
         }).$mount('#app');
                 </code>
                 </pre>
-                                <li>
-                                    Add the <code>async mounted</code> part to your <code>App.vue</code> file:
-                                </li>
-                                <br>
-                                <pre>
+                        <li>
+                            Add the <code>async mounted</code> part to your <code>App.vue</code> file:
+                        </li>
+                        <br>
+                        <pre>
                                     <code> 
     export default {
         name: 'App',
@@ -70,12 +70,12 @@
     }
                                     </code>
                                 </pre>
-                                <li>
-                                    Now you can create your our event tracker. Here's an example of how to
-                                    use the directives to change in the plugin
-                                </li>
-                                <br>
-                                <pre>
+                        <li>
+                            Now you can create your our event tracker. Here's an example of how to
+                            use the directives to change in the plugin
+                        </li>
+                        <br>
+                        <pre>
                 <code>
     const trackerDirectiveForClick = {
         mounted(el, binding) {
@@ -102,28 +102,29 @@
             Vue.directive('tracker-click', trackerDirectiveForClick);
         },
     };
+    <code>&lt;button v-tracker-hover=&quot;{ tag: 'vvue-router' }&quot; v-tracker-click=&quot;{ tag: 'vvue-router' }&quot;&gt;vvue-router&lt;/button&gt;</code>
+
                 </code>
                 </pre>
-                            </ol>
+                    </ol>
+                </div>
+                <div class="code-container ml-2">
+                    <div class="code-header d-flex justify-content-between">
+                        <div class="code-header-title">
+                            <h3>vueTracker.js</h3>
                         </div>
-                        <div class="code-container ml-2">
-                            <div class="code-header d-flex justify-content-between">
-                                <div class="code-header-title">
-                                    <h3>vueTracker.js</h3>
-                                </div>
-                                <div class="code-header-buttons">
-                                    <button class="btn btn-primary" @click="copyCode">
-                                        <font-awesome-icon icon="copy" />
-                                        Copy</button>
-                                </div>
-                            </div>
-                            <pre class="code" :class="{ 'show-full-code': showFullCode }">
+                        <div class="code-header-buttons">
+                            <button class="btn btn-primary" @click="copyCode">
+                                <font-awesome-icon icon="copy" />
+                                Copy</button>
+                        </div>
+                    </div>
+                    <pre class="code" :class="{ 'show-full-code': showFullCode }">
                                 <code> 
 import Cookies from 'js-cookie';
 import { v4 as uuidv4 } from 'uuid';
-const API_URL = import.meta.env.VITE_API_ENDPOINT;
 
-const socketUrl = API_URL + '/api/events';
+const socketUrl = 'http://localhost:8080/api/events';
 
 const APP_ID = 'test';
 
@@ -193,7 +194,7 @@ const setCookie = (name, value, days) => {
 // Function to get a cookie value by name
 const getCookie = (name) => {
     const cookieArr = document.cookie.split(';');
-    for (let i = 0; i &lt; cookieArr.length; i++) {
+    for (let i = 0; i %lt; cookieArr.length; i++) {
         const cookiePair = cookieArr[i].split('=');
         const cookieName = cookiePair[0].trim();
         if (cookieName === name) {
@@ -334,124 +335,124 @@ const vueTracker = {
 export default vueTracker;
 
 
-                                </code>>
+                                </code>
                             </pre>
-                            <div class="code-footer d-flex justify-content-center">
-                                <button class="btn btn-link" @click="toggleFullCode">
-                                    <font-awesome-icon :icon="showFullCode ? 'chevron-up' : 'chevron-down'" />
-                                </button>
-                            </div>
-                        </div>
+                    <div class="code-footer d-flex justify-content-center">
+                        <button class="btn btn-link" @click="toggleFullCode">
+                            <font-awesome-icon :icon="showFullCode ? 'chevron-up' : 'chevron-down'" />
+                        </button>
                     </div>
                 </div>
             </div>
-        </template>
+        </div>
+    </div>
+</template>
             
             
-        <script>
-        import Sidebar from './Sidebar.vue';
-        import 'bootstrap/dist/css/bootstrap.css';
-        import 'bootstrap';
+<script>
+import Sidebar from './Sidebar.vue';
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap';
 
-        export default {
-            components: {
-                Sidebar,
-            },
-            data() {
-                return {
-                    showFullCode: false,
-                };
-            },
-            mounted() {
-                // this.$tracker.trackPageView('/example-page', 'Example Page');
-            },
-            methods: {
-                copyCode() {
-                    const el = document.createElement('textarea');
-                    el.value = document.querySelector('.code').innerText;
-                    document.body.appendChild(el);
-                    el.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(el);
-                },
-                toggleFullCode() {
-                    this.showFullCode = !this.showFullCode;
-                },
-            },
+export default {
+    components: {
+        Sidebar,
+    },
+    data() {
+        return {
+            showFullCode: false,
         };
-        </script>
-        <style scoped>
-        .sdk {
-            display: flex;
-        }
+    },
+    mounted() {
+        // this.$tracker.trackPageView('/example-page', 'Example Page');
+    },
+    methods: {
+        copyCode() {
+            const el = document.createElement('textarea');
+            el.value = document.querySelector('.code').innerText;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+        },
+        toggleFullCode() {
+            this.showFullCode = !this.showFullCode;
+        },
+    },
+};
+</script>
+<style scoped>
+.sdk {
+    display: flex;
+}
 
-        .content {
-            flex: 1;
-            overflow: auto;
-            /* Add the overflow property to enable scrolling */
-            padding-bottom: 20px;
-            margin-left: 60px;
-            /* Add some padding to the bottom to prevent content from getting cut off */
-            /* Other styles for the content */
-        }
+.content {
+    flex: 1;
+    overflow: auto;
+    /* Add the overflow property to enable scrolling */
+    padding-bottom: 20px;
+    margin-left: 60px;
+    /* Add some padding to the bottom to prevent content from getting cut off */
+    /* Other styles for the content */
+}
 
-        .code-container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+.code-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
 
-        .code {
-            background-color: #f1f1f1;
-            font-family: "Courier New", monospace;
-            white-space: pre-wrap;
-            overflow-x: auto;
-            padding: 20px;
-            max-height: 500px;
-            /* Set a maximum height for the code */
-            overflow-y: hidden;
-            transition: max-height 0.3s ease;
-            /* Add smooth transition animation */
-        }
+.code {
+    background-color: #f1f1f1;
+    font-family: "Courier New", monospace;
+    white-space: pre-wrap;
+    overflow-x: auto;
+    padding: 20px;
+    max-height: 500px;
+    /* Set a maximum height for the code */
+    overflow-y: hidden;
+    transition: max-height 0.3s ease;
+    /* Add smooth transition animation */
+}
 
-        .show-full-code {
-            max-height: none;
-            /* Show full code when the class is applied */
-        }
+.show-full-code {
+    max-height: none;
+    /* Show full code when the class is applied */
+}
 
-        .code-footer {
-            padding: 0.5rem;
-        }
+.code-footer {
+    padding: 0.5rem;
+}
 
-        pre {
-            background-color: #a2a2a2 !important;
-        }
+pre {
+    background-color: #a2a2a2 !important;
+}
 
-        .btn-link {
-            background-color: transparent;
-            border: none;
-            color: #007bff;
-            cursor: pointer;
-        }
+.btn-link {
+    background-color: transparent;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+}
 
-        .btn-primary {
-            background-color: #f8fafb !important;
-            border-color: #f8fafb !important;
-            border-radius: 2rem;
-            color: black;
-        }
+.btn-primary {
+    background-color: #f8fafb !important;
+    border-color: #f8fafb !important;
+    border-radius: 2rem;
+    color: black;
+}
 
-        .btn-primary:hover {
-            background-color: #e6e8ea !important;
-            border-color: #e6e8ea !important;
-            border-radius: 2rem;
-            color: black;
-        }
+.btn-primary:hover {
+    background-color: #e6e8ea !important;
+    border-color: #e6e8ea !important;
+    border-radius: 2rem;
+    color: black;
+}
 
-        .btn-primary:focus {
-            background-color: #e6e8ea !important;
-            border-color: #e6e8ea !important;
-            border-radius: 2rem;
-            color: black;
-        }
-        </style>
+.btn-primary:focus {
+    background-color: #e6e8ea !important;
+    border-color: #e6e8ea !important;
+    border-radius: 2rem;
+    color: black;
+}
+</style>
