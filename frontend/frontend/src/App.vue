@@ -2,7 +2,7 @@
 <script>
 import { watch } from "vue";
 import { useRoute } from "vue-router";
-import DashBoard from './components/DashBoard.vue'
+import DashBoard from './components/Dashboard.vue'
 import Login from './components/Login.vue'
 import Signup from './components/SignUp.vue'
 import Cookies from 'js-cookie';
