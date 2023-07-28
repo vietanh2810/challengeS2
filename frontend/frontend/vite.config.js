@@ -12,4 +12,7 @@ export default defineConfig({
     },
     extensions: ['.js', '.ts'],
   },
+  build: {
+    sourcemap: false,
+  },
 });
