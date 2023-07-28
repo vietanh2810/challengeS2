@@ -5,7 +5,7 @@ const Kpi = db.kpis;
 const createKpi = async (req, res) => {
   try {
     // Get the KPI data from the request body
-    const { name, value, value_type, description, event_type, start, end, conversionId } = req.body;
+    const { name, value, value_type, description, event_type, tag_id, start, end, conversionId } = req.body;
     const { dataValues } = req.user;
     const userId = dataValues.id;
 
@@ -18,6 +18,7 @@ const createKpi = async (req, res) => {
       event_type: event_type,
       start: start,
       end: end,
+      tag_id: tag_id,
       conversionId: conversionId,
       userId: userId,
     });
@@ -28,6 +29,27 @@ const createKpi = async (req, res) => {
     // Handle errors
     console.log("Error creating KPI:", error);
     return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+const createDefaultKpi = async (userId, name, value, value_type, description, tag_id, event_type, start, end, conversionId) => {
+  try {
+    await Kpi.create({
+      name: name,
+      value: value,
+      value_type: value_type,
+      description: description,
+      event_type: event_type,
+      tag_id: tag_id,
+      start: start,
+      end: end,
+      conversionId: conversionId,
+      userId: userId,
+    });
+
+    console.log("Default KPI created.");
+  } catch (error) {
+    console.error("Error creating default admin user:", error);
   }
 };
 
@@ -169,6 +191,7 @@ const deleteKpiById = async (req, res) => {
 module.exports = {
   createKpi,
   getAllKpis,
+  createDefaultKpi,
   getKpiById,
   updateKpiById,
   deleteKpiById,
