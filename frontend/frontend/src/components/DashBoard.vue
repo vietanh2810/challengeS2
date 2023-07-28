@@ -43,27 +43,62 @@
                     </div>
                 </div>
             </div>
-            <div class="d-flex mt-4 justify-content-between py-3 px-4"
+            <div class="d-block mt-4 justify-content-between py-3 px-4"
                 style="margin-left: 2rem !important; background-color: #f8fafb; border-radius: 1rem;">
-                <label style="margin: 1rem 0 0 2rem; font-weight: 500;">My KPIs</label>
-            </div>
-            <div class="d-flex mt-4 justify-content-between py-3 px-4"
+                <label style="margin: 0 0 0 2rem; font-weight: 500;">My graphs</label>
+                <hr v-if="graphs.length === 0">
+                <div  v-if="graphs.length === 0" class="d-flex" style="justify-content: space-evenly !important;">
+                    No graph found
+                    </div>              
+                </div>
+                <div class="d-flex" style="justify-content: space-evenly !important; margin-top: 1rem;">
+                    <div v-if="graphs.length > 0" class="d-flex" style="justify-content: space-evenly !important;">
+                        <div v-for="graph in graphs" :key="graph.id">
+                            <LineChart :data="graph.data" :graphe="graph.graphe" :type="graph.graphe.graphe_type"/>
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="d-block mt-4 justify-content-between py-3 px-4"
                 style="margin-left: 2rem !important; background-color: #f8fafb; border-radius: 1rem;">
-                <label style="margin: 1rem 0 0 2rem; font-weight: 500;">My Graphs</label>
-            </div>
-            <div class="d-flex mt-4 justify-content-between py-3 px-4"
+                <label style="margin: 0 0 0 2rem; font-weight: 500;">My KPIs</label>
+                <hr v-if="kpis.length === 0">
+                <div  v-if="kpis.length === 0" class="d-flex" style="justify-content: space-evenly !important;">
+                    No KPIs found
+                    </div>              
+                </div>
+                <div class="d-flex" style="justify-content: space-evenly !important; margin-top: 1rem;">
+                    <div v-if="kpis.length > 0" class="d-flex" style="justify-content: space-evenly !important;">
+                        <div v-for="kpi in kpis" :key="kpi.id">
+                            <KpiChart :name="kpi.kpi.name" :currentValue="kpi.data" :kpiValue="kpi.kpi.value" :start="kpi.kpi.start" :end="kpi.kpi.end"/>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-block mt-4 justify-content-between py-3 px-4"
                 style="margin-left: 2rem !important; background-color: #f8fafb; border-radius: 1rem;">
-                <label style="margin: 1rem 0 0 2rem; font-weight: 500;">My Headtmaps</label>
-            </div>
+                <label style="margin: 0 0 0 2rem; font-weight: 500;">My heatmaps</label>
+                <hr v-if="heatmaps.length === 0">
+                <div  v-if="heatmaps.length === 0" class="d-flex" style="justify-content: space-evenly !important;">
+                    No heatmap found
+                    </div>              
+                </div>
+                <div class="d-flex" style="justify-content: space-evenly !important; margin-top: 1rem;">
+                    <div v-if="heatmaps.length > 0" class="d-flex" style="justify-content: space-evenly !important;">
+                        <div v-for="heatmap in heatmaps" :key="heatmap.heatmap.id">
+                            <HeatMapChart :id="heatmap.heatmap.id" :screenResolution="heatmap.heatmap.resolution" :data="heatmap.data" />
+                        </div>
+                    </div>
+                </div>
         </div>
     </div>
 </template>
   
 <script>
 import Sidebar from './Sidebar.vue';
-import PieChart from './CustomPieChart.vue';
 import LineChart from './CustomLineChart.vue';
-import BarChart from './CustomBarChart.vue';
+import KpiChart from './KpiChart.vue';
+import HeatMapChart from "./HeatMapChart.vue";
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap';
 import DashboardService from '../services/dashboard.service';
@@ -71,9 +106,9 @@ import DashboardService from '../services/dashboard.service';
 export default {
     components: {
         Sidebar,
-        PieChart,
         LineChart,
-        BarChart
+        KpiChart,
+        HeatMapChart,
     },
     data() {
         return {
@@ -82,8 +117,8 @@ export default {
             // J-7
             startDate: new Date(new Date().setDate(new Date().getDate() - 7)).toISOString().substr(0, 10),
             endDate: new Date().toISOString().substr(0, 10),
-            step: 1,
-            stepType: 'day',
+            step: 6,
+            stepType: 'hour',
             kpis: {},
             heatmaps: {},
             graphs: {},
@@ -107,6 +142,13 @@ export default {
                 const { kpis, heatmaps, graphes} = response.data;
                 this.kpis = kpis;
                 this.heatmaps = heatmaps;
+                this.heatmaps.forEach((heatmap) => {
+                    heatmap.data.forEach((data) => {
+                        if (data.location === "8x248.5") {
+                            data.location = "708x248.5";
+                        }
+                    });
+                });
                 this.graphs = graphes;
             },
             (error) => {
@@ -135,6 +177,7 @@ export default {
     right: 0;
     bottom: 0;
     background-color: #e6e8ea;
+    overflow: scroll;
     /* Add other styles for the content */
 }
 </style>

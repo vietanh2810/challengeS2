@@ -67,6 +67,21 @@ const getNbOfEventsByDate = (appId, eventType, tagId, start, end) => {
   const altAppId = appId === undefined ? 'test' : appId;
   const altTagId = tagId === null ? 'core-docs-tags' : tagId;
 
+  if (eventType === 'new_visitor') {
+    return CustomEvent.find({
+      app_id: altAppId,
+      event_types: eventType,
+      tdate: {
+        $gte: new Date(start),
+        $lt: new Date(end),
+      },
+    })
+      .exec()
+      .then((events) => {
+        return events.length;
+    });    
+  }
+
   // Get the events from the database
   return CustomEvent.find({
     app_id: altAppId,
