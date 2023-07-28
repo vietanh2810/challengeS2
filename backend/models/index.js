@@ -5,11 +5,11 @@ const { Sequelize, DataTypes } = require("sequelize");
 //port for my database is 5433
 //database name is discover
 const sequelize = new Sequelize({
-  host: "localhost",
+  host: "dpg-cj199pa7l0ft7nl7lot0-a",
   port: 5432,
-  database: "postgres",
-  username: "postgres",
-  password: "123456",
+  database: "acpostgresdb",
+  username: "honzikoi",
+  password: "fP4nPtvwM6dzuNMDRhRE0niKhaU5pUqt",
   dialect: "postgres",
   pool: {
     max: 10,
