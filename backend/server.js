@@ -145,3 +145,5 @@ app.post("/api/events", auth.checkAppId, (req, res) => {
 
 // Start the server
 app.listen(PORT, () => console.log(`Server is connected on ${PORT}`));
+
+module.exports = app;
