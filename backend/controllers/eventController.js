@@ -34,8 +34,6 @@ const createEvent = async (eventName, eventData, sessionEventSaveFn = SessionEve
 
 const getEventTypes = async (req, res) => {
 
-  console.log(req.user)
-
   const { dataValues } = req.user;
   const userId = dataValues.id;
 
@@ -50,11 +48,10 @@ const getEventTypes = async (req, res) => {
   return CustomEvent.find({ app_id: appId })
     .distinct('event_types')
     .then((eventTypes) => {
-      return res.status(200).json(eventTypes);
+      res.status(200).json(eventTypes);
     })
     .catch((error) => {
-      console.error('Error fetching eventTypes:', error);
-      return res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ error: "Internal server error" });
     });
 };
 
