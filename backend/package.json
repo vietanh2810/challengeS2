@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon server.js",
-    "test": "jest --watchAll",
-    "prepare": "husky install"
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
@@ -32,7 +31,6 @@
     "ws": "^8.13.0"
   },
   "devDependencies": {
-    "husky": "^8.0.3",
     "jest": "^29.6.2",
     "supertest": "^6.3.3"
   }
