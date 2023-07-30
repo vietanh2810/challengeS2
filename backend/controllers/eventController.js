@@ -6,35 +6,30 @@ const Company = db.companies;
 const conversionFunnel = db.conversionFunnel;
 
 
-const createEvent = (eventName, eventData) => {
+const createEvent = async (eventName, eventData, sessionEventSaveFn = SessionEvent.prototype.save, customEventSaveFn = CustomEvent.prototype.save) => {
   if (eventName === 'session_event') {
-    // Create a new SessionEvent document
     const sessionEvent = new SessionEvent(eventData);
 
-    // Save the sessionEvent to the database
-    sessionEvent.save()
-      .then((savedEvent) => {
-        console.log('SessionEvent saved:', savedEvent);
-      })
-      .catch((error) => {
-        console.error('Error saving SessionEvent:', error);
-      });
+    try {
+      const savedEvent = await sessionEventSaveFn.call(sessionEvent);
+      console.log('SessionEvent saved:', savedEvent);
+    } catch (error) {
+      console.error('Error saving SessionEvent:', error);
+    }
   } else if (eventName === 'custom_event') {
-    // Create a new CustomEvent document
     const customEvent = new CustomEvent(eventData);
 
-    // Save the customEvent to the database
-    customEvent.save()
-      .then((savedEvent) => {
-        console.log('CustomEvent saved:', savedEvent);
-      })
-      .catch((error) => {
-        console.error('Error saving CustomEvent:', error);
-      });
+    try {
+      const savedEvent = await customEventSaveFn.call(customEvent);
+      console.log('CustomEvent saved:', savedEvent);
+    } catch (error) {
+      console.error('Error saving CustomEvent:', error);
+    }
   } else {
     console.error('Unknown event type:', eventName);
   }
 };
+
 
 
 const getEventTypes = async (req, res) => {
@@ -54,13 +49,12 @@ const getEventTypes = async (req, res) => {
 
   return CustomEvent.find({ app_id: appId })
     .distinct('event_types')
-    .exec()
     .then((eventTypes) => {
       return res.status(200).json(eventTypes);
     })
     .catch((error) => {
       console.error('Error fetching eventTypes:', error);
-      return res.status(500).send('Internal Server Error');
+      return res.status(500).json({ error: "Internal server error" });
     });
 };
 
@@ -81,80 +75,62 @@ const getAllUrl = async (res,req) => {
 
   return CustomEvent.find({ app_id: appId })
   .distinct('url')
-  .exec()
   .then((urls) => {
-    return res.status(200).json(urls);
+    res.status(200).json(urls);
   })
   .catch((error) => {
-    console.error('Error fetching eventTypes:', error);
-    return res.status(500).send('Internal Server Error');
+    res.status(500).json({ error: "Internal server error" });
   });
 }
 
-const getNbOfEventsByDate = (appId, eventType, tagId, start, end) => {
+const getNbOfEventsByDate = async (appId, eventType, tagId, start, end) => {
+  const altAppId = appId || 'test'; // Use a default value if appId is not provided
 
-  const altAppId = appId === undefined ? 'test' : appId;
-  const altTagId = tagId === null ? 'core-docs-tags' : tagId;
-
-  if (eventType === 'new_visitor') {
-    return CustomEvent.find({
-      app_id: altAppId,
-      event_types: eventType,
-      tdate: {
-        $gte: new Date(start),
-        $lt: new Date(end),
-      },
-    })
-      .exec()
-      .then((events) => {
-        return events.length;
-    });    
-  }
-
-  // Get the events from the database
-  return CustomEvent.find({
+  return Promise.resolve(CustomEvent.find({
     app_id: altAppId,
     event_types: eventType,
-    tag_id: altTagId,
+    tag_id: tagId,
     tdate: {
       $gte: new Date(start),
       $lt: new Date(end),
     },
-  })
-    .exec()
+  }))
     .then((events) => {
       return events.length;
-  });    
-}
+    });
+};
+
 
 const getCustomEventsByDate = async (conversionFunnelId, visitorId, tag_id) => {
   const convFunnel = await conversionFunnel.findOne({ where: { id: conversionFunnelId } });
 
   if (!convFunnel) {
-    return 0;
+      return 0;
   }
 
   const tagList = convFunnel.tagList;
 
+  console.log(tagList)
+
   const customEvents = await CustomEvent.findAll({
-    where: {
-      visitor_id: visitorId,
-      tag_id: tag_id,
-    },
-    order: [['tdate', 'ASC']],
+      where: {
+          visitor_id: visitorId,
+          tag_id: tag_id,
+      },
+      order: [['tdate', 'ASC']],
   });
 
   let tagIndex = 0;
   let count = 0;
 
   for (const event of customEvents) {
-    if (event.event_types === tagList[tagIndex]) {
-      tagIndex++;
-      if (tagIndex === tagList.length) {
-        count++;
-        tagIndex = 0;
+      if (event.event_types === tagList[tagIndex]) {
+          tagIndex++;
+          if (tagIndex === tagList.length) {
+              count++;
+              tagIndex = 0;
+          }
       }
-    }
   }
 
   return count;
@@ -163,7 +139,6 @@ const getCustomEventsByDate = async (conversionFunnelId, visitorId, tag_id) => {
 const getHeatMapByDate = (appUrl, start, end) => {
   const tmpUrl = appUrl === undefined ? 'http://localhost:8081/' : appUrl;
 
-  // Get the events from the database and perform aggregation
   return CustomEvent.aggregate([
     {
       $match: {
@@ -185,13 +160,13 @@ const getHeatMapByDate = (appUrl, start, end) => {
     },
     {
       $project: {
-        _id: 0, // Exclude the default _id field from the result
+        _id: 0, 
         location: '$_id.location',
         screen_resolution: '$_id.screen_resolution',
         count: 1,
       },
     },
-  ]).exec()
+  ])
   .then((heatmapData) => {
     console.log(heatmapData);
     return heatmapData;
@@ -212,7 +187,6 @@ const getGrapheByDate = (start, end, eventType, tagId, graphType, step, stepType
     groupByStep = { $subtract: [{ $toLong: { $toDate: '$tdate' } }, { $mod: [{ $toLong: { $toDate: '$tdate' } }, 1000 * 60 * 60 * 24 * 30] }] };
   } 
 
-  // Get the events from the database and perform aggregation
   if (graphType === 'all_time') {
     if (eventType === 'new_visitor') {
       return CustomEvent.aggregate([
@@ -229,7 +203,7 @@ const getGrapheByDate = (start, end, eventType, tagId, graphType, step, stepType
         {
           $count: 'count',
         },
-      ]).exec()
+      ])
       .then((graphData) => {
         return graphData.length > 0 ? graphData[0].count : 0;
       });
@@ -248,7 +222,7 @@ const getGrapheByDate = (start, end, eventType, tagId, graphType, step, stepType
         {
           $count: 'count',
         },
-      ]).exec()
+      ])
       .then((graphData) => {
         return graphData.length > 0 ? graphData[0].count : 0;
       });
@@ -287,7 +261,7 @@ const getGrapheByDate = (start, end, eventType, tagId, graphType, step, stepType
             count: 1,
           },
         },
-      ]).exec()
+      ])
         .then((graphData) => {
           return graphData;
         });
@@ -323,7 +297,7 @@ const getGrapheByDate = (start, end, eventType, tagId, graphType, step, stepType
             count: 1,
           },
         },
-      ]).exec()
+      ])
         .then((graphData) => {
           return graphData;
         });

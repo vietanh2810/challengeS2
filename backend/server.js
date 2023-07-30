@@ -15,7 +15,6 @@ const eventController = require("./controllers/eventController");
 const grapheController = require("./controllers/grapheController");
 const kpiController = require("./controllers/kpiController");
 const heatmapController = require("./controllers/heatmapController");
-const bodyParser = require("body-parser");
 const auth = require("./middlewares/userAuth");
 const conversion_funnelRoutes = require("./routes/conversionFunnelRoutes");
 
@@ -23,7 +22,7 @@ require("dotenv").config();
 const cors = require("cors"); // Import the cors middleware
 const e = require("express");
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 const app = express();
 
 // Middleware
@@ -33,7 +32,7 @@ app.use(cookieParser());
 app.use(cors()); // Use the cors middleware
 
 // Synchronizing the database and forcing it to false so we don't lose data
-db.sequelize.sync({ force: true }).then(async () => {
+db.sequelize.sync({ force: true }).then( async () => {
     console.log("db has been re-synced");
 
     const graphes = [
@@ -106,7 +105,7 @@ db.sequelize.sync({ force: true }).then(async () => {
     const webmaster = await userController.createDefaultWebmaster();
 
     // Now, use the created webmaster's ID to create the default tag
-    tagController.createDefaultTag("core-docs-tags", webmaster.id);
+    await tagController.createDefaultTag("core-docs-tags", webmaster.id);
 
     graphes.forEach(graphe => {
         grapheController.createDefaultGraph(webmaster.id, graphe.graphe_type, graphe.name, graphe.event_type, graphe.tag_id);
@@ -117,7 +116,6 @@ db.sequelize.sync({ force: true }).then(async () => {
     });
 
     heatmapController.createDefaultHeatmap(webmaster.id,'test-sdk-page','http://localhost:8081/')
-    
 });
 
 app.use("/api/users", userRoutes);
@@ -144,4 +142,6 @@ app.post("/api/events", auth.checkAppId, (req, res) => {
 });
 
 // Start the server
-app.listen(PORT, () => console.log(`Server is connected on ${PORT}`));
+app.listen(PORT, async () => console.log(`Server is connected on ${PORT}`));
+
+module.exports = app

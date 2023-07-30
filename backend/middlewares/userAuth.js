@@ -5,21 +5,21 @@ const Company = db.companies;
 const jwt = require("jsonwebtoken");
 const e = require("express");
 
-const checkAdminRole = (req, res, next) => {
+function checkAdminRole(req, res, next){
   const { dataValues } = req.user;
 
   const role = dataValues.role;
 
   if (role !== "admin") {
-    return res.status(403).json({
+    res.status(403).json({
       error: "Unauthorized. Only admin users can perform this action.",
     });
   }
-
+  res.send("Admin role verified"); 
   next();
 };
 
-const checkAppId = async (req, res, next) => {
+async function checkAppId(req, res, next) {
   try {
     const appId = req.headers["app-id"];
 
@@ -48,7 +48,7 @@ const checkAppId = async (req, res, next) => {
   }
 };
 
-const saveUser = async (req, res, next) => {
+async function saveUser(req, res, next) {
   try {
     const username = await User.findOne({
       where: {
@@ -56,7 +56,7 @@ const saveUser = async (req, res, next) => {
       },
     });
     if (username) {
-      return res.json(409).send("username already taken");
+      return res.status(409).json({ error: 'Username already taken' });
     }
     const emailcheck = await User.findOne({
       where: {
@@ -64,17 +64,18 @@ const saveUser = async (req, res, next) => {
       },
     });
     if (emailcheck) {
-      return res.json(409).send("Authentication failed");
+      return res.status(409).json({ error: 'Email already taken' });
     }
 
     next();
   } catch (error) {
     console.log(error);
-    res.status(500).send("User saving failed");
+    res.status(409).json({ error: 'Authentication failed' });
   }
-};
+}
 
-const authenticate = (req, res, next) => {
+
+function authenticate(req, res, next) {
   try {
     const token = req.headers.authorization;
 
@@ -95,7 +96,6 @@ const authenticate = (req, res, next) => {
       }
       const user = await User.findByPk(decoded.id);
       req.user = user;
-
       next();
     });
   } catch (error) {
