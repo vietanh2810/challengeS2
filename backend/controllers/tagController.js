@@ -41,7 +41,7 @@ const createTag = async (req, res) => {
         return res.status(201).json(tag);
     } catch (error) {
         console.error('Error during signup:', error);
-        return res.status(500).send('Internal Server Error');
+        return res.status(500)//.send('Internal Server Error');
     }
 };
 

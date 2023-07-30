@@ -59,18 +59,6 @@ const createConvFunn = async (req, res) => {
             userId: dataValues.id
         });
 
-        let tagsList = new Array();
-
-        /*for (let index = 0; index < tab_tags.length; index++) {
-            const myID = tab_tags[index];
-            const tag = await Tag.findOne({ 
-                where : {tag_uid: myID} 
-            });
-            await ConversionFunnelTag.create({funnelId: conversion_funnel.id, tagId: tag.tag_uid, userId: dataValues.id});
-        }
-
-        const table_tags = await ConversionFunnelTag.findAll({where: {funnelId: conversion_funnel.id}, order: [['createdAt', 'ASC']]})*/
-
         for (let index = 0; index < tab_tags.length; index++) {
             const myID = tab_tags[index];
             conversion_funnel.addTag(myID);
@@ -79,7 +67,7 @@ const createConvFunn = async (req, res) => {
         return res.status(201).json(conversion_funnel);
     } catch (error) {
         console.error('Error during creation:', error);
-        return res.status(500).send('Internal Server Error');
+        return res.status(500)//.send('Internal Server Error');
     }
 };
 
