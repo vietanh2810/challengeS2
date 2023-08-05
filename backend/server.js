@@ -134,7 +134,7 @@ const front_url = process.env.FRONT_URL || "http://localhost:5173";
 const server = app.listen(PORT, () => console.log(`Server is connected on ${PORT}`));
 const io = require("socket.io")(server, {
     cors: {
-        origin: "http://localhost:5173", // Replace with your Vue.js app's domain
+        origin: "https://zesty-cranachan-1bc6dc.netlify.app", // Replace with your Vue.js app's domain
         methods: ["GET", "POST"],
         credentials: true,
     },
