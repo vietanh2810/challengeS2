@@ -129,12 +129,14 @@ app.use("/api/event", eventRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-const front_url = process.env.FRONT_URL || "http://localhost:5173";
-
 const server = app.listen(PORT, () => console.log(`Server is connected on ${PORT}`));
 const io = require("socket.io")(server, {
     cors: {
+<<<<<<< HEAD
         origin: "https://zesty-cranachan-1bc6dc.netlify.app", // Replace with your Vue.js app's domain
+=======
+        origin: "https://zesty-cranachan-1bc6dc.netlify.app/", // Replace with your Vue.js app's domain
+>>>>>>> f0a31fbbf47100e89f0fd94dd845397cef6ea40d
         methods: ["GET", "POST"],
         credentials: true,
     },
