@@ -68,9 +68,9 @@ export default {
             }
             else if (this.type === 'time_span') {
                 let label = this.data.map((item) => {
-                    const tdate = new Date(item.tdate);
-                    const label = tdate.toLocaleDateString(); // Adjust the date format if needed
-                    return label;
+                    // const tdate = new Date(item.tdate);
+                    // const label = tdate.toLocaleDateString(); // Adjust the date format if needed
+                    return item.tdate;
                 });
                 let datasets = [
                     {

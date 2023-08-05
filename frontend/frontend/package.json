@@ -20,7 +20,7 @@
     "js-cookie": "^3.0.5",
     "latest": "^0.2.0",
     "popper.js": "^1.16.1",
-    "socket.io-client": "^4.7.1",
+    "socket.io-client": "^4.7.2",
     "sse": "^0.0.8",
     "uglifyjs-webpack-plugin": "^2.2.0",
     "uuid": "^9.0.0",

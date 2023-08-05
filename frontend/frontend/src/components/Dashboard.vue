@@ -46,50 +46,56 @@
             <div class="d-block mt-4 justify-content-between py-3 px-4"
                 style="margin-left: 2rem !important; background-color: #f8fafb; border-radius: 1rem;">
                 <label style="margin: 0 0 0 2rem; font-weight: 500;">My graphs</label>
-                <hr v-if="graphs.length === 0">
-                <div  v-if="graphs.length === 0" class="d-flex" style="justify-content: space-evenly !important;">
-                    No graph found
-                    </div>              
+                <div>
+                    <p v-if="sseMessage">{{ sseMessage }}</p>
+                    <p v-else>No SSE message yet.</p>
                 </div>
-                <div class="d-flex" style="justify-content: space-evenly !important; margin-top: 1rem;">
-                    <div v-if="graphs.length > 0" class="d-flex" style="justify-content: space-evenly !important;">
-                        <div v-for="graph in graphs" :key="graph.id">
-                            <LineChart :data="graph.data" :graphe="graph.graphe" :type="graph.graphe.graphe_type"/>
-                        </div>
+                <hr v-if="graphs.length === 0">
+                <div v-if="graphs.length === 0" class="d-flex" style="justify-content: space-evenly !important;">
+                    No graph found
+                </div>
+            </div>
+            <div class="d-flex" style="justify-content: space-evenly !important; margin-top: 1rem;">
+                <div v-if="graphs.length > 0" class="d-flex" style="justify-content: space-evenly !important;">
+                    <div v-for="graph in graphs" :key="graph.id">
+                        <LineChart :data="graph.data" :graphe="graph.graphe" :type="graph.graphe.graphe_type" />
                     </div>
                 </div>
-        
-                <div class="d-block mt-4 justify-content-between py-3 px-4"
+            </div>
+
+            <div class="d-block mt-4 justify-content-between py-3 px-4"
                 style="margin-left: 2rem !important; background-color: #f8fafb; border-radius: 1rem;">
                 <label style="margin: 0 0 0 2rem; font-weight: 500;">My KPIs</label>
                 <hr v-if="kpis.length === 0">
-                <div  v-if="kpis.length === 0" class="d-flex" style="justify-content: space-evenly !important;">
+                <div v-if="kpis.length === 0" class="d-flex" style="justify-content: space-evenly !important;">
                     No KPIs found
-                    </div>              
                 </div>
-                <div class="d-flex" style="justify-content: space-evenly !important; margin-top: 1rem;">
-                    <div v-if="kpis.length > 0" class="d-flex" style="justify-content: space-evenly !important;">
-                        <div v-for="kpi in kpis" :key="kpi.id">
-                            <KpiChart :name="kpi.kpi.name" :currentValue="kpi.data" :kpiValue="kpi.kpi.value" :start="kpi.kpi.start" :end="kpi.kpi.end"/>
-                        </div>
+            </div>
+            <div class="d-flex" style="justify-content: space-evenly !important; margin-top: 1rem;">
+                <div v-if="kpis.length > 0" class="d-flex" style="justify-content: space-evenly !important;">
+                    <div v-for="kpi in kpis" :key="kpi.id">
+                        <KpiChart :name="kpi.kpi.name" :currentValue="kpi.data" :kpiValue="kpi.kpi.value"
+                            :start="kpi.kpi.start" :end="kpi.kpi.end" />
                     </div>
                 </div>
+            </div>
 
-                <div class="d-block mt-4 justify-content-between py-3 px-4"
+            <div class="d-block mt-4 justify-content-between py-3 px-4"
                 style="margin-left: 2rem !important; background-color: #f8fafb; border-radius: 1rem;">
                 <label style="margin: 0 0 0 2rem; font-weight: 500;">My heatmaps</label>
                 <hr v-if="heatmaps.length === 0">
-                <div  v-if="heatmaps.length === 0" class="d-flex" style="justify-content: space-evenly !important;">
+                <div v-if="heatmaps.length === 0" class="d-flex" style="justify-content: space-evenly !important;">
                     No heatmap found
-                    </div>              
                 </div>
-                <div class="d-flex" style="justify-content: space-evenly !important; margin-top: 1rem;">
-                    <div v-if="heatmaps.length > 0" class="d-flex" style="justify-content: space-evenly !important;">
-                        <div v-for="heatmap in heatmaps" :key="heatmap.heatmap.id">
-                            <HeatMapChart :id="heatmap.heatmap.id" :screenResolution="heatmap.heatmap.resolution" :data="heatmap.data" />
-                        </div>
+            </div>
+            <div class="d-flex" style="justify-content: space-evenly !important; margin-top: 1rem;">
+                <div v-if="heatmaps.length > 0" class="d-flex" style="justify-content: space-evenly !important;">
+                    <div v-for="heatmap in heatmaps" :key="heatmap.heatmap.id">
+                        <HeatMapChart :id="heatmap.heatmap.id" :screenResolution="heatmap.heatmap.resolution"
+                            :data="heatmap.data" />
                     </div>
                 </div>
+            </div>
         </div>
     </div>
 </template>
@@ -101,7 +107,11 @@ import KpiChart from './KpiChart.vue';
 import HeatMapChart from "./HeatMapChart.vue";
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap';
+import { mapState } from "vuex";
 import DashboardService from '../services/dashboard.service';
+const API_URL = import.meta.env.VITE_API_ENDPOINT;
+import { useStore } from "vuex";
+import { io } from "socket.io-client";
 
 export default {
     components: {
@@ -124,9 +134,33 @@ export default {
             graphs: {},
         };
     },
+    computed: {
+        ...mapState(["wsMessage"]),
+    },
+    watch: {
+        wsMessage(newValue) {
+            this.getDashBoard();
+        },
+    },
     mounted() {
         // this.$tracker.trackPageView('/example-page', 'Example Page');
         this.getDashBoard();
+    },
+    setup() {
+        const store = useStore(); // Use the Vuex store in your component
+        const socket = io(API_URL, {
+            withCredentials: true, // Important: Set withCredentials to true to enable sending cookies (for authentication) with requests
+        });
+
+        // Listen for incoming messages from the server
+        socket.on("message", (data) => {
+            // Dispatch the action to update the Vuex store with the received message
+            store.dispatch("handleWSMessage", data);
+        });
+
+        return {
+            socket,
+        };
     },
     methods: {
         getDashBoard() {
@@ -138,27 +172,31 @@ export default {
             }
 
             DashboardService.getDashBoard(req).then(
-            (response) => {
-                const { kpis, heatmaps, graphes} = response.data;
-                this.kpis = kpis;
-                this.heatmaps = heatmaps;
-                this.heatmaps.forEach((heatmap) => {
-                    heatmap.data.forEach((data) => {
-                        if (data.location === "8x248.5") {
-                            data.location = "708x248.5";
-                        }
+                (response) => {
+                    const { kpis, heatmaps, graphes } = response.data;
+                    this.kpis = kpis;
+                    this.kpis.forEach((kpi) => {
+                        kpi.kpi.value = parseFloat(kpi.kpi.value);
                     });
+                    this.heatmaps = heatmaps;
+                    this.heatmaps.forEach((heatmap) => {
+                        heatmap.heatmap.id = heatmap.heatmap.id.toString();
+                        heatmap.data.forEach((data) => {
+                            if (data.location === "8x248.5") {
+                                data.location = "708x248.5";
+                            }
+                        });
+                    });
+                    this.graphs = graphes;
+                },
+                (error) => {
+                    this.datas =
+                        (error.response &&
+                            error.response.data &&
+                            error.response.data.message) ||
+                        error.message ||
+                        error.toString();
                 });
-                this.graphs = graphes;
-            },
-            (error) => {
-                this.datas =
-                    (error.response &&
-                        error.response.data &&
-                        error.response.data.message) ||
-                    error.message ||
-                    error.toString();
-            });
         }
     }
 };
