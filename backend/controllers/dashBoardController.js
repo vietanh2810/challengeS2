@@ -90,7 +90,7 @@ const getUserGraphe = async (userId, tdateStart, tdateEnd, step, step_type) => {
         let res = [];
 
         for (const graphe of graphes) {
-            let data = await eventController.getGrapheByDate(tdateStart, tdateEnd, graphe.event_type, graphe.tag_id, graphe.graphe_type, step, step_type, app_id);
+            let data = await eventController.getGrapheByDateBis(tdateStart, tdateEnd, graphe.event_type, graphe.tag_id, graphe.graphe_type, step, step_type, app_id);
 
             res.push({ "graphe": graphe, "data": data });
         }
