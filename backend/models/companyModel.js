@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         kbis: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: true
         },
         // Add userId field to link the Company to the User
         userId: {

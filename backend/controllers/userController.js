@@ -246,8 +246,19 @@ const createDefaultWebmaster = async () => {
             role: "webmaster",
             isValidated: true, // Got validated
         });
-
         const user = await User.findOne({ where: { userName: "user" } });
+        await Company.create({
+            appId: 'test',
+            companyName: 'Trio Challenge - sdk test site',
+            kbis: null,
+            userId: user.id,
+        });
+        const website = await Website.create({
+            baseUrl: 'http://localhost:8081/',
+            userId: user.id,
+        });
+
+
         return user.dataValues;
     } catch (error) {
         console.error("Error creating default webmaster :", error);
