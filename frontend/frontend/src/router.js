@@ -9,6 +9,7 @@ import Heatmap from "./components/Heatmap.vue";
 import Kpi from "./components/Kpi.vue";
 import Tag from "./components/Tag.vue";
 import ConversionTunnel from "./components/ConversionTunnel.vue";
+import AlertPage from "./components/AlertPage.vue";
 
 const routes = [
   {
@@ -55,6 +56,10 @@ const routes = [
     path: "/tags",
     component: Tag,
   },
+  {
+    path: "/alert",
+    component: AlertPage,
+  }
 ];
 
 const router = createRouter({
