@@ -1,4 +1,5 @@
 const db = require("../models");
+const nodemailer = require("nodemailer");
 
 const Alert = db.alerts;
 const Company = db.companies;
@@ -108,6 +109,32 @@ const sendHttpAlert = (url, data) => {
         return;
     }
 }
+
+const sendMailAlert = async (mail, data) => {
+    try {
+        // create reusable transporter object using the default SMTP transport
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: "vutony@seznam.cz",
+                pass: "Test1234test",
+            }
+        });
+
+        // setup email data with unicode symbols
+        const mailOptions = {
+            from: 'Trio Challange <vutony@seznam.cz>', // sender address
+            to: mail, // list of receivers
+            subject: 'Alert KPI', // Subject line
+            text: data.message, // plain text body
+        };
+
+        // send mail with defined transport object
+        await transporter.sendMail(mailOptions);
+    } catch (error) {
+        console.error('Error sending email:', error);
+    }
+};
 
 const getStartDate = (time_scale) => {
     const date = new Date();
@@ -313,6 +340,7 @@ const updateAlert = async (req, res) => {
 module.exports = {
     getAllAlerts,
     createAlert,
+    sendMailAlert,
     updateAlert,
     checkAlerts,
     createDefaultAlerts
