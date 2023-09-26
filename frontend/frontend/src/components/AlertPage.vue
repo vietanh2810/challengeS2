@@ -5,15 +5,17 @@
             <div class="mt-4"
                 style="background-color: #f8fafb; height: 80px !important; width: 95%; margin-left: 2rem !important; border-radius: 1rem;">
                 <label style="margin: 1.5rem 0 0 2rem; font-size: 21px; font-weight: 500;">Alerts</label>
-
-                <Modal id="modal-create-alert">
+                <Modal id="modal-create-alert" ref="modalAlert">
                     <template #activator="{ openModal }">
-                        <button class="btn btn-info btn-newAlert" @click="openModal">Nouvelle alerte</button>
+                        <button class="btn btn-info btn-newAlert"
+                            @click="alertData = {}; isEditing = false; openModal()">Nouvelle alerte</button>
+                        <button class="btn btn-info btn-newAlert" v-show="false" ref="openModalBtn" @click="openModal">Open
+                            Modal</button>
                     </template>
                     <template v-slot:actions="{ closeModal }">
                         <button class="btn btn-danger" title="Fermer" @click="closeModal">Fermer</button>
                     </template>
-                    <Form @submit="createAlert" :validation-schema="schema" style="padding: 1.5em;">
+                    <Form @submit="handleSubmit" :validation-schema="schema" style="padding: 1.5em;">
                         <div class="form-group">
                             <label for="entity">Type de value :</label>
                             <Field name="entity" v-model="alertData.entity" as="select" class="form-control">
@@ -23,7 +25,7 @@
                             </Field>
                             <ErrorMessage name="entity" class="error-feedback" />
                         </div>
-                        <div class="form-group" v-if="alertData.entity==='event' && alertData !== ''">
+                        <div class="form-group" v-if="alertData.entity === 'event' && alertData.entity !== ''">
                             <label for="event_type">Type d'événement :</label>
                             <Field name="event_type" v-model="alertData.event_type" as="select" class="form-control">
                                 <option v-for="eventType in eventTypes" :key="eventType" :value="eventType">{{ eventType }}
@@ -31,16 +33,17 @@
                             </Field>
                             <ErrorMessage name="event_type" class="error-feedback" />
                         </div>
-                        <div class="form-group" v-else>
+                        <div class="form-group" v-if="alertData.entity === 'conversion' && alertData.entity !== ''">
                             <label for="conversion">Conversions :</label>
                             <Field name="conversion" v-model="alertData.conversionId" as="select" class="form-control">
-                                <option v-for="conversion in conversions" :key="conversion" :value="conversion.id">{{ conversion.comment }}
+                                <option v-for="conversion in conversions" :key="conversion" :value="conversion.id">{{
+                                    conversion.comment }}
                                 </option>
                             </Field>
                             <ErrorMessage name="conversion" class="error-feedback" />
                         </div>
                         <div class="form-group"
-                            v-if="alertData.event_type !== 'new_visitor' && alertData.event_type !== ''">
+                            v-if="alertData.event_type !== 'new_visitor' && alertData.entity && alertData.entity !== 'conversion'">
                             <label for="tag_id">Tag :</label>
                             <Field name="tag_id" v-model="alertData.tag_id" as="select" class="form-control">
                                 <option :value="null">Aucun</option>
@@ -63,7 +66,7 @@
                             <ErrorMessage name="value_type" class="error-feedback" />
                         </div>
                         <div class="form-group">
-                            <label for="notif_method">Type de value :</label>
+                            <label for="notif_method">Notification method :</label>
                             <Field name="notif_method" v-model="alertData.notif_method" as="select" class="form-control">
                                 <!-- Generating options based on this.eventTypes -->
                                 <option value="http">HTTP</option>
@@ -71,8 +74,18 @@
                             </Field>
                             <ErrorMessage name="notif_method" class="error-feedback" />
                         </div>
+                        <div class="form-group" v-if="alertData.notif_method === 'http'">
+                            <label for="url">URL:</label>
+                            <Field name="url" v-model="alertData.url" type="text" class="form-control" />
+                            <ErrorMessage name="value" class="error-feedback" />
+                        </div>
+                        <div class="form-group" v-if="alertData.notif_method === 'mail'">
+                            <label for="mail">Mail:</label>
+                            <Field name="mail" v-model="alertData.mail" type="text" class="form-control" />
+                            <ErrorMessage name="value" class="error-feedback" />
+                        </div>
                         <div class="form-group">
-                            <label for="time_scale">Type de value :</label>
+                            <label for="time_scale">Time scale :</label>
                             <Field name="time_scale" v-model="alertData.time_scale" as="select" class="form-control">
                                 <!-- Generating options based on this.eventTypes -->
                                 <option value="day">Today</option>
@@ -82,14 +95,14 @@
                             </Field>
                             <ErrorMessage name="time_scale" class="error-feedback" />
                         </div>
-                        <button class="btn btn-primary" type="submit">Ajouter un alert</button>
+                        <button class="btn btn-primary" v-if="isEditing === false" type="submit">Ajouter un alert</button>
+                        <button class="btn btn-primary" v-else type="submit">Editer cet alert</button>
                     </Form>
                     <template #close-icon="{ closeModal }">
                         <button class="btn btn-default" ref="clodeModalBtn" title="Fermer" @click="closeModal">x</button>
                     </template>
                 </Modal>
             </div>
-
             <div class="mt-4 col-12"
                 style="background-color: #f8fafb; height: 50px !important; width: 95%; margin-left: 2rem !important; border-radius: 1rem;">
                 <div class="d-flex">
@@ -138,15 +151,40 @@
 
             <div class="d-flex mt-4 justify-content-between py-3 px-4"
                 style="margin-left: 32px !important; padding-left:38px !important; background-color: #f8fafb; border-radius: 1rem; width: 95%; height: 60px;">
-                <div class="row">
-                    <div style="width: 450px;" class="d-flex justify-content-center border-right">
+                <div class="row" style="width: 100%;">
+                    <div class="d-flex col-1 justify-content-center border-right" style="min-width: 108px;">
                         <span class="cursor-pointer" @click="orderListBy('tag_uid', 'String')">
                             <b class="mr-2">Id</b>
                         </span>
                     </div>
-                    <div style="width: 750px;" class="d-flex justify-content-center">
+                    <div class="d-flex col-3 justify-content-center border-right" style="min-width: 325px;">
                         <span class="cursor-pointer" @click="orderListBy('comment', 'String')">
-                            <b class="mr-2">Commentaire</b>
+                            <b class="mr-2">Event type</b>
+                        </span>
+                    </div>
+                    <div class="d-flex col-2 justify-content-center border-right" style="min-width: 216px;">
+                        <span class="cursor-pointer" @click="orderListBy('comment', 'String')">
+                            <b class="mr-2">Conversion/Tag's ID</b>
+                        </span>
+                    </div>
+                    <div class="d-flex col-2 justify-content-center border-right">
+                        <span class="cursor-pointer" @click="orderListBy('comment', 'String')">
+                            <b class="mr-2">Time scale</b>
+                        </span>
+                    </div>
+                    <div class="d-flex col-1 justify-content-center border-right">
+                        <span class="cursor-pointer" @click="orderListBy('comment', 'String')">
+                            <b class="mr-2">Method</b>
+                        </span>
+                    </div>
+                    <div class="d-flex col-2 justify-content-center border-right">
+                        <span class="cursor-pointer" @click="orderListBy('comment', 'String')">
+                            <b class="mr-2">Contact Infos</b>
+                        </span>
+                    </div>
+                    <div class="d-flex col-1 justify-content-center">
+                        <span>
+                            <b class="mr-2">Edit</b>
                         </span>
                     </div>
                 </div>
@@ -154,22 +192,49 @@
 
             <div v-for="(alert, index) in filteredAlert" :key="index" class="d-flex mt-4 justify-content-between py-3 px-4"
                 style="margin:0.5rem 0 0 2rem !important; background-color: #f8fafb; border-radius: 1rem; width: 95%; height: 60px;">
-                <div class="row px-3" :id="'alert-row-' + alert.id">
-                    <div style="width: 450px;" class="d-flex justify-content-center border-right">
+                <div class="row px-3" :id="'alert-row-' + alert.id" style="width: 100%;">
+                    <div class="d-flex col-1 justify-content-center border-right" style="min-width: 108px;">
                         <span class="cursor-pointer">
                             <span class="badge rounded-pill badge-info">
                                 {{ alert.id ?? 'Not available' }}
                             </span>
                         </span>
                     </div>
-                    <div style="width: 750px;" class="d-flex justify-content-center">
+                    <div class="d-flex col-3 justify-content-center border-right" style="min-width: 325px;">
                         <span class="cursor-pointer">
                             {{ alert.event_type ?? 'Not available' }}
                         </span>
                     </div>
+                    <div class="d-flex col-2 justify-content-center border-right" style="min-width: 216px;">
+                        <span class="cursor-pointer">
+                            {{ (alert.tag_id ? alert.tag_id : (alert.conversionId ? alert.conversionId : 'Not available'))
+                            }}
+                        </span>
+                    </div>
+                    <div class="d-flex col-2 justify-content-center border-right" style="min-width: 216px;">
+                        <span class="cursor-pointer">
+                            {{ 'Reach ' + alert.value + (alert.value_type === 'number' ? ' ' : '% ') + (alert.time_scale ===
+                                'week' ? 'this week' : (alert.time_scale === 'month' ? 'this month' : 'this week')) }}
+                        </span>
+                    </div>
+                    <div class="d-flex col-1 justify-content-center border-right" style="min-width: 108px;">
+                        <span class="cursor-pointer">
+                            {{ (alert.url ? "HTTP" : "Mail") ?? 'Not available' }}
+                        </span>
+                    </div>
+                    <div class="d-flex col-2 justify-content-center border-right cursor-pointer"
+                        @click="copyToClipBoard(alert)" style="min-width: 216px;">
+                        <span class="cursor-pointer">
+                            {{ (alert.url ? alert.url.slice(0, 20) : alert.mail.slice(0, 20)) ?? 'Not available' }}
+                        </span>
+                    </div>
+                    <div class="d-flex col-1 justify-content-center" style="max-width: 90px;">
+                        <button class="btn btn-primary" @click="editAlert(alert)">
+                            <font-awesome-icon icon="edit" />
+                        </button>
+                    </div>
                 </div>
             </div>
-
         </div>
     </div>
 </template>
@@ -185,6 +250,7 @@ import EventService from "../services/events.service";
 import TagService from '../services/tag.service';
 import ConversionService from '../services/conversion.service';
 const API_URL = import.meta.env.VITE_API_ENDPOINT;
+
 
 export default {
     components: {
@@ -216,6 +282,7 @@ export default {
             },
             schema,
             alertData: {
+                entity: "",
                 event_type: "",
                 value: "",
                 value_type: "number",
@@ -230,7 +297,30 @@ export default {
             search: "",
             tags: [],
             conversions: [],
+            isEditing: false,
         };
+    },
+    watch: {
+        'alertData.event_type'(newVal) {
+            if (newVal === 'new_visitor') {
+                this.alertData.tag_id = null;
+            }
+        },
+        'alertData.notif_method'(newVal) {
+            if (newVal === 'mail') {
+                this.alertData.url = null;
+            } else {
+                this.alertData.mail = null;
+            }
+        },
+        'alertData.entity'(newVal) {
+            if (newVal === 'conversion') {
+                this.alertData.event_type = null;
+                this.alertData.tag_id = null;
+            } else {
+                this.alertData.conversionId = null;
+            }
+        }
     },
     computed: {
         nbPageMax() {
@@ -258,6 +348,43 @@ export default {
         this.getConversions();
     },
     methods: {
+        handleSubmit() {
+            if (this.isEditing === false) {
+                this.createAlert();
+            } else {
+                this.updateAlert();
+            }
+        },
+        updateAlert() {
+            const id = this.alertData.id; 
+
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('user')).token },
+                body: JSON.stringify(this.alertData)
+            };
+
+            fetch(`${API_URL}/api/alerts/update/${id}`, requestOptions)
+                .then(async response => {
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        const error = (data && data.message) || response.status;
+                        return Promise.reject(error);
+                    }
+                    this.fetchAlert();
+                    this.$refs.closeModalBtn.click();
+                })
+                .catch(error => {
+                    this.errorMessage = error;
+                    console.error('There was an error!', error);
+                })
+                .finally(() => {
+                    this.isEditing = false;
+                    this.fetchAlert();
+                    this.$refs.clodeModalBtn.click();
+                });
+        },
         createAlert() {
             const requestOptions = {
                 method: 'POST',
@@ -269,6 +396,8 @@ export default {
                     value_type: this.alertData.value_type,
                     notif_method: this.alertData.notif_method,
                     tag_id: this.alertData.tag_id,
+                    url: this.alertData.url,
+                    mail: this.alertData.mail,
                 })
             };
             fetch(API_URL + '/api/alerts/create', requestOptions)
@@ -360,6 +489,16 @@ export default {
                         error.toString();
                 }
             );
+        },
+        editAlert(alert) {
+            this.alertData = alert;
+            this.alertData.entity = alert.conversionId ? 'conversion' : 'event';
+            this.isEditing = true;
+            this.$refs.openModalBtn.click();
+        },
+        copyToClipBoard(alert) {
+            const tmp = alert.url ? alert.url : alert.mail ?? 'Not available'
+            navigator.clipboard.writeText(tmp);
         }
     },
 };

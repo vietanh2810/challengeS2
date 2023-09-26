@@ -15,12 +15,13 @@ import {
     faSortDown,
     faSortUp,
     faSort,
-    faCopy
+    faCopy,
+    faEdit
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(faHome, faUser, faUserPlus, faSignInAlt, faSignOutAlt , 
             faStepBackward, faStepForward, faChevronLeft, 
             faChevronRight, faSortDown, faSortUp, faSort, 
-            faCopy, faChevronDown, faChevronUp);
+            faCopy, faChevronDown, faChevronUp, faEdit);
 
 export { FontAwesomeIcon };
