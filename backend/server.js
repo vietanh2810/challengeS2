@@ -143,7 +143,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 const server = app.listen(PORT, () => console.log(`Server is connected on ${PORT}`));
 const io = require("socket.io")(server, {
     cors: {
-        origin: "http://localhost:5173",
+        origin: "https://zesty-cranachan-1bc6dc.netlify.app/",
         methods: ["GET", "POST"],
         credentials: true,
     },
