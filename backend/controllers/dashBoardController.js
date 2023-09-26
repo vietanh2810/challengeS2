@@ -38,6 +38,8 @@ const getUserKpi = async (userId) => {
     try {
         const kpis = await kpi.findAll({ where: { userId } });
 
+        console.log("kpis", kpis)
+
         const res = [];
 
         for (const kpi of kpis) {
@@ -61,6 +63,8 @@ const getUserKpi = async (userId) => {
 const getUserHeatmap = async (userId, tdateStart, tdateEnd) => {
     try {
         const heatmaps = await heatmap.findAll({ where: { userId } });
+
+        console.log("heatmaps", heatmaps)
 
         let res = [];
 
@@ -88,6 +92,8 @@ const getUserGraphe = async (userId, tdateStart, tdateEnd, step, step_type) => {
         const app_id = companies && companies.appId !== null ? companies.appId : 'test';
 
         let res = [];
+
+        console.log("graphes", graphes)
 
         for (const graphe of graphes) {
             let data = await eventController.getGrapheByDateBis(tdateStart, tdateEnd, graphe.event_type, graphe.tag_id, graphe.graphe_type, step, step_type, app_id);
