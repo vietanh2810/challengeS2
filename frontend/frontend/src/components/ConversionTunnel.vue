@@ -8,12 +8,14 @@
                 
                 <Modal>
                     <template #activator="{ openModal }">
-                        <button class="btn btn-info btn-newTag" @click="openModal">Ajouter un tunnel de conversion</button>
+                        <button class="btn btn-info btn-newCt" @click="convTunnelData = {}; isEditing = false; openModal()">Ajouter un tunnel de conversion</button>
+                        <button class="btn btn-info btn-newCt" v-show="false" ref="openModalBtn" @click="openModal">Open
+                            Modal</button>
                     </template>
                     <template v-slot:actions="{ closeModal }">
                         <button class="btn btn-danger" title="Fermer" @click="closeModal">Fermer</button>
                     </template>
-                    <Form @submit="createConvTunnel" :validation-schema="schema" style="padding: 1.5em;">
+                    <Form @submit="handleSubmit" :validation-schema="schema" style="padding: 1.5em;">
                             <div class="form-group">
                                 <label for="comment">Commentaire:</label>
                                 <Field name="comment" v-model="convTunnelData.comment" type="text" class="form-control" />
@@ -74,7 +76,8 @@
                                 -->
                             </div>
                             
-                            <button type="submit">ajouter une conversion de tunnels</button>
+                            <button v-if="isEditing === false" type="submit">ajouter un tunnel de conversion</button>
+                            <button class="btn btn-primary" v-else type="submit">Modifier ce tunnel de conversion</button>
                         </Form>
                         
                         
@@ -217,6 +220,7 @@ export default {
             },
             currentPage: 1,
             pageLimit: 10,
+            isEditing: false,
         };
     },
     computed: {
@@ -246,9 +250,16 @@ export default {
     },
     methods: {
         
-    log: function(evt) {
-      window.console.log(evt);
-    },
+        log: function(evt) {
+            window.console.log(evt);
+        },
+        handleSubmit() {
+            if (this.isEditing === false) {
+                this.createConvTunnel();
+            } else {
+                this.updateConvTunnel();
+            }
+        },
         createConvTunnel() {
 
             const listTags =  new Array();
@@ -260,9 +271,9 @@ export default {
                 headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('user')).token},
                 body: JSON.stringify({ comment: this.convTunnelData.comment, tags: listTags})
             };
-            this.convTunnelData.comment - '';
-            this.convTunnelData.tags - [];
-            fetch( API_URL + '/convTunnel/create', requestOptions)
+            //this.convTunnelData.comment - '';
+            //this.convTunnelData.tags - [];
+            fetch( API_URL + '/api/convTunnel/create/', requestOptions)
             .then(async response => {
                 const data = await response.json();
 
@@ -281,6 +292,41 @@ export default {
                 this.errorMessage = error;
                 console.error('There was an error!', error);
             });
+        },
+        updateConvTunnel() {
+            const id = this.convTunnelData.id; 
+
+            const listTags =  new Array();
+            this.newTagList.forEach(element => {
+                listTags.push(element.tag_uid)
+            });
+
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('user')).token },
+                body: JSON.stringify({ comment: this.convTunnelData.comment, tags: listTags })
+            };
+
+            fetch(`${API_URL}/api/convTunnel/update/${id}`, requestOptions)
+                .then(async response => {
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        const error = (data && data.message) || response.status;
+                        return Promise.reject(error);
+                    }
+                    this.fetchConvTunnel();
+                    this.$refs.closeModalBtn.click();
+                })
+                .catch(error => {
+                    this.errorMessage = error;
+                    console.error('There was an error!', error);
+                })
+                .finally(() => {
+                    this.isEditing = false;
+                    this.fetchConvTunnel();
+                    this.$refs.clodeModalBtn.click();
+                });
         },
         navigatePage(direction) {
             if (direction === 'forward' && this.currentPage < this.nbPageMax) {
@@ -317,6 +363,17 @@ export default {
             .then((responseJSON) => {
                 this.tagList= responseJSON;
             });
+        },
+        editConvTunnel(convTunnel) {
+            this.convTunnelData = convTunnel;
+            this.newTagList = this.convTunnelData.tags
+            this.newTagList.forEach(element => {
+                //listTags.push(element.tag_uid)
+                myIndex = this.tagList.indexOf(element)
+                this.tagList.splice(myIndex)
+            });
+            this.isEditing = true;
+            this.$refs.openModalBtn.click();
         }
     },
 };
@@ -368,7 +425,7 @@ export default {
   cursor: no-drop;
 }
 
-.btn-newTag {
+.btn-newCt {
     background-color: #84a3b3 !important;
     border-color: #f8fafb !important;
     border-radius: 2rem;
@@ -378,14 +435,14 @@ export default {
 	right: 5%;
 }
 
-.btn-newTag:hover {
+.btn-newCt:hover {
     background-color: #6f8d9d !important;
     border-color: #e6e8ea !important;
     border-radius: 2rem;
     color: black;
 }
 
-.btn-newTag:disabled {
+.btn-newCt:disabled {
     background-color: #9ec1d4 !important;
     border-color: #f8fafb !important;
     border-radius: 2rem;
