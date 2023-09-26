@@ -1,10 +1,13 @@
 <template>
-    <div id="myChartContainer" :style="cssVars">
+    <div v-if="type === 'time_span'" id="myChartContainer" :style="cssVars">
         <div style="color: black; text-align: center;">
             <label>{{ label }}</label>
         </div>
         <hr style="margin: 5px 0 !important;" />
         <Bar class="bar-chart" :data="data" :options="options" />
+    </div>
+    <div v-else>
+        
     </div>
 </template>
   

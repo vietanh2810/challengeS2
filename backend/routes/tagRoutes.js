@@ -15,7 +15,7 @@ router.get('/', userAuth.authenticate, tagController.getAllTags)
 //passing the middleware function to the signup
 router.post('/create',userAuth.authenticate, tagController.createTag);
 
-// router.put('/update/:id', userAuth.authenticate, tagController.updateTag)
+router.put('/update/:id', userAuth.authenticate, tagController.updateTag)
 
 
 module.exports = router

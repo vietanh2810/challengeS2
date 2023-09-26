@@ -7,18 +7,18 @@ const userAuth = require("../middlewares/userAuth");
 const router = express.Router();
 
 //get all tags
-router.get("/", grapheController.getAllGraphes);
+router.get("/", userAuth.authenticate, grapheController.getAllGraphes);
 
 //create a new graphe
-router.post("/create", grapheController.createGraphe);
+router.post("/create", userAuth.authenticate, grapheController.createGraphe);
 
 // Route to get a single graphe by ID
-router.get("/:id", grapheController.getGrapheById);
+router.get("/:id", userAuth.authenticate, grapheController.getGrapheById);
 
 // Route to update a graphe by ID
-router.put("/:id", grapheController.updateGrapheById);
+router.put("/:id", userAuth.authenticate, grapheController.updateGrapheById);
 
 // Route to delete a graphe by ID
-router.delete("/:id", grapheController.deleteGrapheById);
+router.delete("/:id", userAuth.authenticate, grapheController.deleteGrapheById);
 
 module.exports = router;

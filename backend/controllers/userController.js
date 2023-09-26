@@ -1,63 +1,93 @@
-//importing modules
 const bcrypt = require("bcrypt");
 const db = require("../models");
 const jwt = require("jsonwebtoken");
+const mailer = require("../mailer/mailer");
+const nodeMailer = require("nodemailer");
 
 // Assigning users to the variable User
 const User = db.users;
 const Company = db.companies;
 const Website = db.websites;
-
-//signing a user up
-//hashing users password before its saved to the database with bcrypt
+const tagController = require("./tagController");
 
 const signup = async (req, res) => {
-    try {
-        const { userName, email, password, companyName, contactInfo, websiteUrl } = req.body;
 
-        // Hash the password before storing it
+    try {
+        const { userName, email, password, companyName, contactInfo, websiteUrl } =
+            req.body;
+
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Save the user data to the database
         const user = await User.create({
             userName,
             email,
             password: hashedPassword,
-            role: userName === 'admin' ? 'admin' : 'user',
+            role: userName === "admin" ? "admin" : "user",
             contactInfo,
         });
 
-        // Create a new Company record and associate it with the user
         const company = await Company.create({
             companyName,
-            kbis: req.file.filename, // The filename of the uploaded KBIS document
-            userId: user.id, // Set the userId to associate the Company with the user
+            kbis: req.file.filename,
+            userId: user.id,
         });
-
-        // Create a new Website record and associate it with the user
         const website = await Website.create({
             baseUrl: websiteUrl,
-            userId: user.id, // Set the userId to associate the Website with the user
+            userId: user.id,
         });
 
-        // Generate and set the JWT token in the response cookie
         const token = jwt.sign({ id: user.id }, process.env.jwtSecret, {
-            expiresIn: '1d',
+            expiresIn: "1d",
         });
-        res.cookie('jwt', token, { maxAge: 1 * 24 * 60 * 60 * 1000, httpOnly: true });
+        res.cookie("jwt", token, {
+            maxAge: 1 * 24 * 60 * 60 * 1000,
+            httpOnly: true,
+        });
 
-        console.log('User:', JSON.stringify(user, null, 2));
-        console.log('Company:', JSON.stringify(company, null, 2));
-        console.log('Website:', JSON.stringify(website, null, 2));
-        console.log('Token:', token);
+        /*console.log("User:", JSON.stringify(user, null, 2));
+        console.log("Company:", JSON.stringify(company, null, 2));
+        console.log("Website:", JSON.stringify(website, null, 2));
+        console.log("Token:", token);*/
+        //emailing
+        const toEmail = user.email;
+        const content = `
+        <h1>Bonjour ${userName}</h1>
+        <p>Voici une Confirmation que vous êtes bien inscrit !</p>
+        `;
 
+        const transporter = nodeMailer.createTransport({
+            host: "smtp.seznam.cz",
+            port: 465,
+            secure: true,
+            auth: {
+                user: "vutony@seznam.cz",
+                pass: "Test1234test",
+            },
+        });
+
+        const message = {
+            from: "Trio Challange <vutony@seznam.cz>",
+            to: toEmail,
+            subject: "Confirmation Message",
+            html: content,
+        };
+
+        // Call the mailer function
+        try {
+            await mailer.mailer(toEmail, content);
+            console.log("Message sent");
+            console.log(message);
+            console.log(content);
+        } catch (error) {
+            console.error("Error sending confirmation email:", error);
+        }
+        console.log("User created");
         return res.status(201).json(user);
     } catch (error) {
-        console.error('Error during signup:', error);
-        return res.status(500).send('Internal Server Error');
+        console.error("Error during signup:", error);
+        return res.status(500).send("Internal Server Error");
     }
 };
-
 
 //login authentication
 
@@ -66,11 +96,10 @@ const login = async (req, res) => {
         const { email, password } = req.body;
 
         //find a user by their email
-        const user = await User.findOne({
+        let user = await User.findOne({
             where: {
-                email: email
-            }
-
+                email: email,
+            },
         });
 
         //if user email is found, compare password with bcrypt
@@ -81,14 +110,26 @@ const login = async (req, res) => {
             //generate token with the user's id and the secretKey in the env file
 
             if (isSame) {
-                let token = jwt.sign({ id: user.id },  process.env.jwtSecret, {
+                let token = jwt.sign({ id: user.id }, process.env.jwtSecret, {
                     expiresIn: 1 * 24 * 60 * 60 * 1000,
                 });
 
                 res.cookie("jwt", token, { maxAge: 1 * 24 * 60 * 60, httpOnly: true });
 
-                if(user.isValidated === false) {
-                    return res.status(401).send("Authentication failed, Your account is not validated yet");
+                if (user.isValidated === false) {
+                    return res
+                        .status(401)
+                        .send("Authentication failed, Your account is not validated yet");
+                }
+
+                const tmpCompany = await Company.findOne({ where: { userId: user.id } });
+
+                if (tmpCompany && tmpCompany.kbis !== null) {
+                    const rawData = user.get();
+
+                    rawData.appId = tmpCompany.appId;
+
+                    user = rawData;
                 }
 
                 //send user data
@@ -104,81 +145,124 @@ const login = async (req, res) => {
     }
 };
 
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require("uuid");
 
-// Controller function for validating a user
 const validateUser = async (req, res) => {
-    const { id } = req.params; // Assuming userId is passed as a URL parameter
+    const { id } = req.params;
 
     try {
-        // Find the user in the database based on the provided userId
         const user = await User.findByPk(id);
 
         const company = await Company.findOne({ where: { userId: id } });
 
         if (!user) {
-            return res.status(404).json({ error: 'User not found.' });
+            return res.status(404).json({ error: "User not found." });
         }
 
-        // Check if the user making the request has the "admin" role
-        const { role } = req.user; // Assuming you have the authenticated user details in the request (set by userAuth middleware)
-        if (role !== 'admin') {
-            return res.status(403).json({ error: 'Unauthorized. Only admin users can validate users.' });
+        const { role } = req.user;
+        if (role !== "admin") {
+            return res
+                .status(403)
+                .json({ error: "Unauthorized. Only admin users can validate users." });
         }
-        
-        // Generate a uuid for the user
+
         const uuid = uuidv4();
 
-        // Update the user's validation status to true
         user.isValidated = true;
         await user.save();
 
-        // Update the linked Company's appId with the generated uuid
         company.appId = uuid;
         await company.save();
-        console.log(company);
+        //console.log(company);
 
-        res.json({ message: 'User validated successfully.' });
+        res.json({ message: "User validated successfully." });
     } catch (error) {
-        console.error('Error during user validation:', error); // Add the error log to the console
-        res.status(500).json({ error: 'An error occurred during user validation.' });
+        console.error("Error during user validation:", error); // Add the error log to the console
+        res
+            .status(500)
+            .json({ error: "An error occurred during user validation." });
     }
 };
 
 const getAllUsers = async (req, res) => {
     try {
         const users = await User.findAll();
-        console.log(users)
-        return res.status(200).json(users);
+        //loop every user and check if the user is validated
+
+        for (let i = 0; i < users.length; i++) {
+            let tmpId = users[i].id;
+            let tmpCompany = await Company.findOne({ where: { userId: tmpId } });
+
+            if (tmpCompany && tmpCompany.kbis !== null) {
+                const rawData = users[i].get();
+
+                rawData.kbis = tmpCompany.kbis;
+
+                users[i] = rawData;
+            }
+        }
+
+        //console.log(users);
+
+        res.status(200).json(users);
     } catch (error) {
-        console.log(error);
+        res.status(500).json({ error: "Internal Server Error" });
     }
 };
 
 const createDefaultAdmin = async () => {
     try {
-        // Check if the default admin user already exists
-        const admin = await User.findOne({ where: { userName: 'admin' } });
+        const admin = await User.findOne({ where: { userName: "admin" } });
 
         if (!admin) {
-            // If the admin user doesn't exist, create it
-            const password = 'test1234'; // Set your default admin password here
+            const password = "test1234"; 
             const hashedPassword = await bcrypt.hash(password, 10);
 
             await User.create({
-                userName: 'admin',
-                email: 'admin@example.com',
+                userName: "admin",
+                email: "admin@example.com",
                 password: hashedPassword,
-                role: 'admin',
-                isValidated: true, // Assuming default admin is already validated
+                role: "admin",
+                isValidated: true, 
             });
 
-            console.log('Default admin user created.');
-        } else {
-            console.log('Default admin user already exists.');
-        }
+        console.log("Default admin user created.");
+    } else {
+        console.log("Default admin user already exists.");
+    }
+} catch (error) {
+    console.error("Error creating default admin user:", error);
+}
+};
+
+const createDefaultWebmaster = async () => {
+    try {
+        const password = "user1234";
+        const hashedPassword = await bcrypt.hash(password, 10);
+        await User.create({
+            userName: "user",
+            email: "user10@example.com",
+            password: hashedPassword,
+            role: "webmaster",
+            isValidated: true, // Got validated
+        });
+        const user = await User.findOne({ where: { userName: "user" } });
+        await Company.create({
+            appId: 'test',
+            companyName: 'Trio Challenge - sdk test site',
+            kbis: null,
+            userId: user.id,
+        });
+        const website = await Website.create({
+            baseUrl: 'http://localhost:8081/',
+            userId: user.id,
+        });
+
+
+        return user.dataValues;
     } catch (error) {
-        console.error('Error creating default admin user:', error);
+        console.error("Error creating default webmaster :", error);
+        return null;
     }
 };
 
@@ -187,5 +271,6 @@ module.exports = {
     login,
     validateUser,
     getAllUsers,
-    createDefaultAdmin
+    createDefaultAdmin,
+    createDefaultWebmaster,
 };

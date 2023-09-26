@@ -1,59 +1,89 @@
 
 <script>
-import { watch } from "vue";
-import { useRoute } from "vue-router";
-import DashBoard from './components/DashBoard.vue'
-import Cookies from 'js-cookie';
+import DashBoard from './components/Dashboard.vue'
+import Login from './components/Login.vue'
+import Signup from './components/SignUp.vue'
+
 
 export default {
   name: 'App',
   components: {
-    DashBoard
+    DashBoard,
+    Login,
+    Signup
   },
   data() {
     return {
-      sessionInterval: null 
+      sessionInterval: null
     };
   },
-  async mounted() {
-    this.$tracker.detectNewVisitor();
+  computed: {
+    currentUser() {
+      return this.$store.state.auth.user;
+    },
+    showAdminBoard() {
+      if (this.currentUser && this.currentUser['roles']) {
+        return this.currentUser['roles'].includes('ROLE_ADMIN');
+      }
 
-    await this.$tracker.detectSession();
+      return false;
+    },
+    showModeratorBoard() {
+      if (this.currentUser && this.currentUser['roles']) {
+        return this.currentUser['roles'].includes('ROLE_MODERATOR');
+      }
 
-    const intervalDuration = 10 * 60 * 1000;
-
-    this.sessionInterval = setInterval(async () => {
-      await this.$tracker.detectSession();
-    }, intervalDuration);
-
-    document.addEventListener('click', this.updateLastActivity);
-    // document.addEventListener('mousemove', this.updateLastActivity);
-    document.addEventListener('keydown', this.updateLastActivity);
+      return false;
+    }
   },
   methods: {
-    updateLastActivity() {
-      Cookies.set('last_activity_time', new Date().getTime());
-    },
+    logOut() {
+      this.$store.dispatch('auth/logout');
+      this.$router.push('/login');
+    }
   },
   setup() {
-    // const route = useRoute();
-
-    // Watch for route changes and perform actions when the route changes
-    // watch(
-    //   () => route.fullPath,
-    //   async (newPath, oldPath) => {
-    //     console.log("Route changed from:", oldPath, "to:", newPath);
-    //     // You can add any custom logic here based on the route changes
-    //     // For example, you can call functions to track the page view or perform other actions.
-    //   }
-    // );
   },
 };
 </script>
 
+<!-- // App.vue
 <template>
   <div id="app">
-    <DashBoard />
+    <StreamUpdates />
+  </div>
+</template>
+
+<script>
+import Vue from "vue";
+import StreamUpdates from "./components/StreamUpdates.vue";
+import store from "./store"; // Import the Vuex store
+
+export default {
+  components: {
+    StreamUpdates,
+  },
+  created() {
+    // Set up an SSE event listener to receive messages from the server
+    const eventSource = new EventSource("/api/events");
+
+    eventSource.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      console.log("Received SSE message in App:", data);
+      store.dispatch("updateSSEMessage", data); // Update the Vuex store with the received SSE message
+    };
+
+    eventSource.onerror = (event) => {
+      console.error("Error in SSE stream:", event);
+    };
+  },
+};
+</script> -->
+
+
+<template>
+  <div id="app">
+    <router-view />
   </div>
 </template>
 
