@@ -35,12 +35,12 @@ const createTag = async (req, res) => {
         const tag = await Tag.create({
             comment: comment,
             userId: userId,
-            tag_uid: uuidv4()
+            tag_uid: generateUniqueTag()
         });
 
         return res.status(201).json(tag);
     } catch (error) {
-        console.error('Error during signup:', error);
+        console.error('Error during creating tag:', error);
         return res.status(500)//.send('Internal Server Error');
     }
 };
@@ -80,6 +80,22 @@ const updateTag = async (req, res) => {
         return res.status(500).send('Internal Server Error');
     }
 };
+
+const generateUniqueTag = () => {
+    // Generate a UUID
+    const uuid = uuidv4();
+
+    // Create a hash
+    const hash = crypto.createHash('sha256').update(uuid).digest('hex');
+
+    // Trim to 10 characters
+    const trimmedHash = hash.substr(0, 10);
+
+    // Append "-tag"
+    const uniqueTag = trimmedHash + '-tag';
+
+    return uniqueTag;
+}
 
 module.exports = {
     getAllTags,
