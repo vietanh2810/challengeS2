@@ -284,7 +284,18 @@ const createDefaultAlerts = async (eventType, tag_id, value, value_type, time_sc
 const updateAlert = async (req, res) => {
     try {
         const id = req.params.id;
-        const { event_type, time_scale, value, value_type, notif_method, last_alert_date } = req.body;
+        const { 
+            event_type, 
+            time_scale, 
+            value, 
+            value_type, 
+            notif_method, 
+            last_alert_date, 
+            tag_id, 
+            conversionId,
+            mail,
+            url
+        } = req.body;
 
         const alert = await Alert.update(
             {
@@ -294,21 +305,59 @@ const updateAlert = async (req, res) => {
                 notif_method: notif_method,
                 last_alert_date: last_alert_date,
                 time_scale: time_scale,
-                tag_id: tag_id,
-                conversionId: conversionId,
-            }, {
-            where: { id: id },
-            returning: true,
-        });
+                tag_id: tag_id, 
+                conversionId: conversionId, 
+                mail: mail,
+                url: url,
+                updateAt: new Date()
+            }, 
+            {
+                where: { id: id },
+                returning: true,
+            }
+        );
 
         if (!alert) {
             return res.sendStatus(404);
-        } else return res.status(200).json(alert);
+        } else {
+            return res.status(200).json(alert);
+        }
     } catch (error) {
         console.error('Error during edit:', error);
         return res.status(500).send('Internal Server Error');
     }
 };
+
+
+// const updateAlert = async (req, res) => {
+//     try {
+//         const id = req.params.id;
+        
+//         // Validate req.body
+//         if (!req.body) {
+//             return res.status(400).send("Request body is empty");
+//         }
+        
+//         // Assuming req.body contains the alert object that needs to be updated
+//         const updatedAlert = req.body;
+
+//         const [updatedRows, [alert]] = await Alert.update(updatedAlert, {
+//             where: { id: id },
+//             returning: true, // returns the updated alert
+//         });
+
+//         if (updatedRows === 0) {
+//             return res.sendStatus(404);
+//         }
+
+//         return res.status(200).json(alert);
+
+//     } catch (error) {
+//         console.error('Error during edit:', error);
+//         return res.status(500).send('Internal Server Error');
+//     }
+// };
+
 
 module.exports = {
     getAllAlerts,

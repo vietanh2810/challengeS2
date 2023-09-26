@@ -25,4 +25,14 @@ router.post('/create',
     },
 )
 
+router.put('/update/:id',
+    userAuth.authenticate,
+    (req, res) => {
+        // Call the getAllUsers function here
+        alertController.updateAlert(req, res).catch((error) => {
+            res.status(500).json({ error: "Internal Server Error" });
+        });
+    },
+)
+
 module.exports = router
