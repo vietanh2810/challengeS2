@@ -1,8 +1,8 @@
 import Cookies from 'js-cookie';
 import { v4 as uuidv4 } from 'uuid';
 
-// const socketUrl = 'https://analytic-challenge-node.onrender.com/api/events';
-const socketUrl = 'http://localhost:8080/api/events';
+const socketUrl = 'https://analytic-challenge-node.onrender.com/api/events';
+// const socketUrl = 'http://localhost:8080/api/events';
 
 const APP_ID = 'test';
 
