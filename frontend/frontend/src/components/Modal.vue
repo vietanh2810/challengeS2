@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, provide } from 'vue';
 
 defineProps({
   title: { type: String, default: 'Formulaire' }
@@ -10,12 +10,14 @@ const openModal = ref(false);
 function toggleModal() {
   openModal.value = !openModal.value;
 }
+
+provide('toggleModal', toggleModal);
 </script>
 
 <template>
-  <slot name="activator" :openModal="toggleModal"
-    ><button @click="toggleModal">Open Modal</button></slot
-  >
+  <slot name="activator" :openModal="toggleModal">
+    
+  </slot>
   <div v-show="openModal" class="modal">
     <div class="backdrop" @click.self="toggleModal"></div>
     <div class="modal-box">

@@ -31,15 +31,14 @@
                         <br>
                         <pre>
                 <code>
-        import Vue from 'vue';
-        import App from './App.vue';
-        import vueTracker from './path/to/tracker'; // Replace with the actual path to your tracker.js file
 
-        Vue.use(vueTracker);
+        import { createApp } from "vue";
+        import App from "./App.vue";
+        import router from "./router";
+        import VueTracker from "./plugins/vueTracker";
 
-        new Vue({
-        render: (h) => h(App),
-        }).$mount('#app');
+        createApp(App).use(router).use(VueTracker).mount("#app");
+
                 </code>
                 </pre>
                         <li>
@@ -119,14 +118,19 @@
                                 Copy</button>
                         </div>
                     </div>
+                    <div>
+                        <p>
+                        Replace the APP_ID with your APP_ID: <code>{{company.appId}}</code>
+                        </p>
+                    </div>
                     <pre class="code" :class="{ 'show-full-code': showFullCode }">
-                                <code> 
+                                <code>
 import Cookies from 'js-cookie';
 import { v4 as uuidv4 } from 'uuid';
 
-const socketUrl = 'http://localhost:3000/api/events';
+const socketUrl = 'https://analytic-challenge-node.onrender.com/api/events'; // The URL towrard our API endpoint
 
-const APP_ID = 'test';
+const APP_ID = 'test'; // Replace with your APP_ID  
 
 let tmp_session_id = null;
 
@@ -194,7 +198,7 @@ const setCookie = (name, value, days) => {
 // Function to get a cookie value by name
 const getCookie = (name) => {
     const cookieArr = document.cookie.split(';');
-    for (let i = 0; i %lt; cookieArr.length; i++) {
+    for (let i = 0; i &lt; cookieArr.length; i++) {
         const cookiePair = cookieArr[i].split('=');
         const cookieName = cookiePair[0].trim();
         if (cookieName === name) {
@@ -353,6 +357,7 @@ export default vueTracker;
 import Sidebar from './Sidebar.vue';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap';
+import CompanyService from '../services/company.service';
 
 export default {
     components: {
@@ -361,10 +366,11 @@ export default {
     data() {
         return {
             showFullCode: false,
+            company: {},
         };
     },
     mounted() {
-        // this.$tracker.trackPageView('/example-page', 'Example Page');
+        this.getAppId();
     },
     methods: {
         copyCode() {
@@ -378,6 +384,21 @@ export default {
         toggleFullCode() {
             this.showFullCode = !this.showFullCode;
         },
+        getAppId() {
+            CompanyService.getCompany().then(
+                (response) => {
+                    this.company = response.data[0];
+                },
+                (error) => {
+                    this.content =
+                        (error.response &&
+                            error.response.data &&
+                            error.response.data.message) ||
+                        error.message ||
+                        error.toString();
+                }
+            );
+        }
     },
 };
 </script>

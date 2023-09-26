@@ -61,6 +61,12 @@
                             <span class="links_name">Tunnel de conversion</span>
                         </router-link>
                     </li>
+                    <li>
+                        <router-link to="/alert">
+                            <i class='bx bx-bell' ></i>
+                            <span class="links_name">Alert</span>
+                        </router-link>
+                    </li>
                     <!-- <li>
                         <router-link to="/web-param">
                             <i class="bx bx-user" />

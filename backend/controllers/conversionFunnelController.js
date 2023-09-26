@@ -16,12 +16,12 @@ const getAllConvFunns = async (req, res) => {
             const conversion_funnels = await ConversionFunnel.findAll({
                 include: [
                     {
-                      model: Tag,
-                      as: "tags",
-                      attributes: ["tag_uid", "comment"],
-                      through: {
-                        attributes: [],
-                      }
+                        model: Tag,
+                        as: "tags",
+                        attributes: ["tag_uid", "comment"],
+                        through: {
+                            attributes: [],
+                        }
                     },
                 ],
             });
@@ -29,16 +29,18 @@ const getAllConvFunns = async (req, res) => {
         } else {
             // If the user is not an admin, return tags associated with the user's ID
             const userId = dataValues.id;
-            const conversion_funnels = await ConversionFunnel.findAll({ where: { userId }, include: [
-                {
-                    model: Tag,
-                    as: "tags",
-                    attributes: ["tag_uid", "comment"],
-                    through: {
-                        attributes: [],
+            const conversion_funnels = await ConversionFunnel.findAll({
+                where: { userId }, include: [
+                    {
+                        model: Tag,
+                        as: "tags",
+                        attributes: ["tag_uid", "comment"],
+                        through: {
+                            attributes: [],
+                        }
                     }
-                }
-            ], }, 
+                ],
+            },
             );
             return res.status(200).json(conversion_funnels);
         }
@@ -63,7 +65,7 @@ const createConvFunn = async (req, res) => {
             const myID = tab_tags[index];
             conversion_funnel.addTag(myID);
         }
-        
+
         return res.status(201).json(conversion_funnel);
     } catch (error) {
         console.error('Error during creation:', error);
@@ -76,12 +78,12 @@ const updateConvFunn = async (req, res) => {
         const id = req.params.id;
         const { comment } = req.body;
 
-        const conversion_funnel = await ConversionFunnel.update({comment : comment}, {
-            where: { id : id },
+        const conversion_funnel = await ConversionFunnel.update({ comment: comment }, {
+            where: { id: id },
             returning: true,
         });
 
-        if (!conversion_funnel ) {
+        if (!conversion_funnel) {
             return res.sendStatus(404);
         } else return res.status(200).json(conversion_funnel);
     } catch (error) {

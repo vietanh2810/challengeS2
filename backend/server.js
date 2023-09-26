@@ -9,9 +9,12 @@ const eventRoutes = require("./routes/eventRoutes");
 const dashboardRoutes = require("./routes/dashBoardRoutes");
 const grapheRoutes = require("./routes/grapheRoutes");
 const heatmapRoutes = require("./routes/heatmapRoutes");
+const alertRoutes = require("./routes/alertRoutes");
+const companyRoutes = require("./routes/companyRoutes");
 const userController = require("./controllers/userController");
 const tagController = require("./controllers/tagController");
 const eventController = require("./controllers/eventController");
+const alertController = require("./controllers/alertController");
 const grapheController = require("./controllers/grapheController");
 const kpiController = require("./controllers/kpiController");
 const heatmapController = require("./controllers/heatmapController");
@@ -106,6 +109,12 @@ db.sequelize.sync({ force: true }).then(async () => {
 
     // Now, use the created webmaster's ID to create the default tag
     await tagController.createDefaultTag("core-docs-tags", webmaster.id);
+    await tagController.createDefaultTag("vvue-router", webmaster.id);
+    await tagController.createDefaultTag("esstial-links", webmaster.id);
+
+    // const createDefaultAlerts = async ( eventType,tag_id,value,value_type,time_scale,notif_method,userId) => {
+    await alertController.createDefaultAlerts("click", "core-docs-tags", 100, "number", "month", "http", webmaster.id, 'test.fr',null);
+    await alertController.createDefaultAlerts("click", null, 100, "number", "month", "http", webmaster.id, 'test.fr',null);
 
     graphes.forEach(graphe => {
         grapheController.createDefaultGraph(webmaster.id, graphe.graphe_type, graphe.name, graphe.event_type, graphe.tag_id);
@@ -120,19 +129,21 @@ db.sequelize.sync({ force: true }).then(async () => {
 
 app.use("/api/users", userRoutes);
 app.use("/api/tags", tagRoutes);
-app.use("/api/convTunnel", conversion_funnelRoutes);
+app.use("/api/conversions", conversion_funnelRoutes);
 app.use("/api/tags", tagRoutes);
 app.use("/api/kpis", kpiRoutes);
 app.use("/api/graphes", grapheRoutes);
 app.use("/api/heatmaps", heatmapRoutes);
 app.use("/api/event", eventRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/alerts", alertRoutes);
+app.use("/api/company", companyRoutes);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const server = app.listen(PORT, () => console.log(`Server is connected on ${PORT}`));
 const io = require("socket.io")(server, {
     cors: {
-        origin: "https://zesty-cranachan-1bc6dc.netlify.app", // Replace with your Vue.js app's domain
+        origin: "http://localhost:5173",
         methods: ["GET", "POST"],
         credentials: true,
     },
@@ -144,13 +155,15 @@ io.on("connection", (socket) => {
 });
 
 // Example: When a new event is created, emit a Socket.IO message to connected clients
-app.post('/api/events', auth.checkAppId, (req, res) => {
+app.post('/api/events', auth.checkAppId, async (req, res) => {
     const { eventName, eventData } = req.body;
 
-    eventController.createEvent(eventName, eventData);
+    await eventController.createEvent(eventName, eventData);
 
     const message = { message: 'New event created' };
     io.emit('message', message); // Emit the message to all connected clients using Socket.IO
+
+    alertController.checkAlerts(eventName, eventData);
 
     res.status(200).json({ message: 'Event data received successfully' });
 });

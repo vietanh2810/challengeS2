@@ -46,10 +46,6 @@
             <div class="d-block mt-4 justify-content-between py-3 px-4"
                 style="margin-left: 2rem !important; background-color: #f8fafb; border-radius: 1rem;">
                 <label style="margin: 0 0 0 2rem; font-weight: 500;">My graphs</label>
-                <div>
-                    <p v-if="sseMessage">{{ sseMessage }}</p>
-                    <p v-else>No SSE message yet.</p>
-                </div>
                 <hr v-if="graphs.length === 0">
                 <div v-if="graphs.length === 0" class="d-flex" style="justify-content: space-evenly !important;">
                     No graph found

@@ -33,7 +33,8 @@ const SessionEvent = mongoose.model("SessionEvent", sessionEventSchema);
 const CustomEvent = mongoose.model("CustomEvent", customEventSchema);
 
 // Establish the MongoDB connection
-mongoose.connect("mongodb+srv://honzikoi:SuperTestPass123@analytic-challenge.2q15bqi.mongodb.net/", {
+// mongoose.connect("mongodb+srv://honzikoi:SuperTestPass123@analytic-challenge.2q15bqi.mongodb.net/", {
+mongoose.connect("mongodb://localhost:27017/mydatabase", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
