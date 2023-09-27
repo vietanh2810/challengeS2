@@ -195,9 +195,9 @@ export default {
     methods: {
         handleSubmit() {
             if (this.isEditing === false) {
-                this.createAlert();
+                this.createTag();
             } else {
-                this.updateAlert();
+                this.updateTag();
             }
         },
         createTag() {
