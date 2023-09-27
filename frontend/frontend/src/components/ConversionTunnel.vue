@@ -273,7 +273,7 @@ export default {
             };
             //this.convTunnelData.comment - '';
             //this.convTunnelData.tags - [];
-            fetch( API_URL + '/api/convTunnel/create/', requestOptions)
+            fetch( API_URL + '/api/conversions/create/', requestOptions)
             .then(async response => {
                 const data = await response.json();
 
@@ -307,7 +307,7 @@ export default {
                 body: JSON.stringify({ comment: this.convTunnelData.comment, tags: listTags })
             };
 
-            fetch(`${API_URL}/api/convTunnel/update/${id}`, requestOptions)
+            fetch(`${API_URL}/api/conversions/update/${id}`, requestOptions)
                 .then(async response => {
                     const data = await response.json();
 
