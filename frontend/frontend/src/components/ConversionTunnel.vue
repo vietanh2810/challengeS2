@@ -341,7 +341,7 @@ export default {
             }
         },
         async fetchConvTunnel() {
-            const response = await fetch( API_URL + '/api/convTunnel/', {
+            const response = await fetch( API_URL + '/api/conversions/', {
                 method: "Get",
                 headers: {
                     "Content-type": 'application/json',
