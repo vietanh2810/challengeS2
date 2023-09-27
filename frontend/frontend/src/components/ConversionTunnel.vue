@@ -233,6 +233,7 @@ export default {
             currentPage: 1,
             pageLimit: 10,
             isEditing: false,
+            myIndex: 0
         };
     },
     computed: {
@@ -381,8 +382,8 @@ export default {
             this.newTagList = this.convTunnelData.tags
             this.newTagList.forEach(element => {
                 //listTags.push(element.tag_uid)
-                myIndex = this.tagList.indexOf(element)
-                this.tagList.splice(myIndex)
+                this.myIndex = this.tagList.indexOf(element)
+                this.tagList.splice(this.myIndex)
             });
             this.isEditing = true;
             this.$refs.openModalBtn.click();
