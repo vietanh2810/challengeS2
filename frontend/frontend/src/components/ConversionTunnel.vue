@@ -14,6 +14,7 @@
                     </template>
                     <template v-slot:actions="{ closeModal }">
                         <button class="btn btn-danger" title="Fermer" @click="closeModal">Fermer</button>
+                        <button class="btn btn-danger" title="Fermer" v-show="false" ref="closeModalBtn" @click="closeModal">Fermer</button>
                     </template>
                     <Form @submit="handleSubmit" :validation-schema="schema" style="padding: 1.5em;">
                             <div class="form-group">
