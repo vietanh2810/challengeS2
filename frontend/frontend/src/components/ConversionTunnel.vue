@@ -233,7 +233,7 @@ export default {
             currentPage: 1,
             pageLimit: 10,
             isEditing: false,
-            myIndex: 0
+            myIndex: ''
         };
     },
     computed: {
@@ -338,7 +338,7 @@ export default {
                 .finally(() => {
                     this.isEditing = false;
                     this.fetchConvTunnel();
-                    this.$refs.clodeModalBtn.click();
+                    this.$refs.closeModalBtn.click();
                 });
         },
         navigatePage(direction) {
@@ -383,7 +383,8 @@ export default {
             this.newTagList.forEach(element => {
                 //listTags.push(element.tag_uid)
                 this.myIndex = this.tagList.indexOf(element)
-                this.tagList.splice(this.myIndex)
+                if(this.myIndex)
+                    this.tagList.splice(this.myIndex)
             });
             this.isEditing = true;
             this.$refs.openModalBtn.click();

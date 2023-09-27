@@ -208,7 +208,7 @@ export default {
                 headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('user')).token},
                 body: JSON.stringify({ comment: this.tagData.comment })
             };
-            this.tagData.comment - '';
+            this.tagData.comment = '';
             fetch(API_URL + '/api/tags/create', requestOptions)
             .then(async response => {
                 const data = await response.json();
