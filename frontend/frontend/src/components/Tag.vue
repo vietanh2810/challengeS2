@@ -251,7 +251,7 @@ export default {
                 .finally(() => {
                     this.isEditing = false;
                     this.fetchTag();
-                    this.$refs.clodeModalBtn.click();
+                    this.$refs.closeModalBtn.click();
                 });
         },
         navigatePage(direction) {
