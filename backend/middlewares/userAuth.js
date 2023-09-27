@@ -10,12 +10,14 @@ function checkAdminRole(req, res, next){
 
   const role = dataValues.role;
 
+  console.log("role:", role)
+
   if (role !== "admin") {
     res.status(403).json({
       error: "Unauthorized. Only admin users can perform this action.",
     });
   }
-  res.send("Admin role verified"); 
+  // res.send("Admin role verified"); 
   next();
 };
 
