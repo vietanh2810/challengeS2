@@ -28,15 +28,15 @@ router.get(
 router.post(
   "/signup",
   upload.single("kbis"),
-  (req, res) => {
+  (req, res,next) => {
     // Call the getAllUsers function here
     saveUser(req, res,next).catch((error) => {
       res.status(500).json({ error: "Internal Server Error" });
     });
   },
-  (req, res) => {
+  (req, res,next) => {
     // Call the getAllUsers function here
-    signup(req, res).catch((error) => {
+    signup(req, res,next).catch((error) => {
       res.status(500).json({ error: "Internal Server Error" });
     });
   },
