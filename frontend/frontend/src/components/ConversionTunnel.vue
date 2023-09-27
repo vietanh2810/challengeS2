@@ -8,12 +8,15 @@
                 
                 <Modal>
                     <template #activator="{ openModal }">
-                        <button class="btn btn-info btn-newTag" @click="openModal">Ajouter un tunnel de conversion</button>
+                        <button class="btn btn-info btn-newCt" @click="convTunnelData = {}; isEditing = false; openModal()">Ajouter un tunnel de conversion</button>
+                        <button class="btn btn-info btn-newCt" v-show="false" ref="openModalBtn" @click="openModal">Open
+                            Modal</button>
                     </template>
                     <template v-slot:actions="{ closeModal }">
                         <button class="btn btn-danger" title="Fermer" @click="closeModal">Fermer</button>
+                        <button class="btn btn-danger" title="Fermer" v-show="false" ref="closeModalBtn" @click="closeModal">Fermer</button>
                     </template>
-                    <Form @submit="createConvTunnel" :validation-schema="schema" style="padding: 1.5em;">
+                    <Form @submit="handleSubmit" :validation-schema="schema" style="padding: 1.5em;">
                             <div class="form-group">
                                 <label for="comment">Commentaire:</label>
                                 <Field name="comment" v-model="convTunnelData.comment" type="text" class="form-control" />
@@ -74,7 +77,8 @@
                                 -->
                             </div>
                             
-                            <button type="submit">ajouter une conversion de tunnels</button>
+                            <button v-if="isEditing === false" type="submit">ajouter un tunnel de conversion</button>
+                            <button class="btn btn-primary" v-else type="submit">Modifier ce tunnel de conversion</button>
                         </Form>
                         
                         
@@ -134,14 +138,19 @@
             <div class="d-flex mt-4 justify-content-between py-3 px-4"
                 style="margin-left: 32px !important; padding-left:38px !important; background-color: #f8fafb; border-radius: 1rem; width: 95%; height: 60px;">
                 <div class="row col-12">
-                    <div style="width: 50%;" class="d-flex justify-content-center border-right">
+                    <div class="d-flex justify-content-center border-right col-5">
                         <span class="cursor-pointer" @click="orderListBy('comment', 'String')">
                             <b class="mr-2">Commentaire</b>
                         </span>
                     </div>
-                    <div style="width:50%;" class="d-flex justify-content-center">
+                    <div class="d-flex justify-content-center col-5">
                         <span class="cursor-pointer" @click="orderListBy('tags', 'String')">
                             <b class="mr-2">Tags</b>
+                        </span>
+                    </div>
+                    <div class="d-flex col-2 justify-content-center">
+                        <span>
+                            <b class="mr-2">Edit</b>
                         </span>
                     </div>
                 </div>
@@ -151,15 +160,21 @@
                 class="d-flex mt-4 justify-content-between py-3 px-4"
                 style="margin:0.5rem 0 0 2rem !important; background-color: #f8fafb; border-radius: 1rem; width: 95%; height: 80px;">
                 <div class="row px-3 col-12" :id="'dupli-row-' + convtunnel.id">
-                    <div style="width: 50%;" class="d-flex justify-content-center border-right">
+                    <div class="d-flex justify-content-center border-right col-5">
                         <span class="cursor-pointer">
                             {{ convtunnel.comment?? 'Not available' }}
                         </span>
                     </div>
-                    <div style="max-width: 50%; overflow:scroll;" class="d-flex justify-content-center">
+                    <div style="max-width: 40%; overflow:scroll;" class="d-flex justify-content-center col-5">
                         <span class="cursor-pointer" v-for="(tag, index) in convtunnel.tags" :key="index">
                             <span class="badge rounded-pill badge-info">tag {{tag.tag_uid ?? 'Not available' }}</span>
                         </span>
+                    </div>
+
+                    <div class="d-flex col-2 justify-content-center" style="max-width: 90px;">
+                        <button class="btn btn-primary" @click="editConvTunnel(convtunnel)">
+                            <font-awesome-icon icon="edit" />
+                        </button>
                     </div>
                 </div>
             </div>
@@ -217,6 +232,8 @@ export default {
             },
             currentPage: 1,
             pageLimit: 10,
+            isEditing: false,
+            myIndex: ''
         };
     },
     computed: {
@@ -246,9 +263,16 @@ export default {
     },
     methods: {
         
-    log: function(evt) {
-      window.console.log(evt);
-    },
+        log: function(evt) {
+            window.console.log(evt);
+        },
+        handleSubmit() {
+            if (this.isEditing === false) {
+                this.createConvTunnel();
+            } else {
+                this.updateConvTunnel();
+            }
+        },
         createConvTunnel() {
 
             const listTags =  new Array();
@@ -260,9 +284,9 @@ export default {
                 headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('user')).token},
                 body: JSON.stringify({ comment: this.convTunnelData.comment, tags: listTags})
             };
-            this.convTunnelData.comment - '';
-            this.convTunnelData.tags - [];
-            fetch( API_URL + '/convTunnel/create', requestOptions)
+            //this.convTunnelData.comment - '';
+            //this.convTunnelData.tags - [];
+            fetch( API_URL + '/api/conversions/create/', requestOptions)
             .then(async response => {
                 const data = await response.json();
 
@@ -282,6 +306,41 @@ export default {
                 console.error('There was an error!', error);
             });
         },
+        updateConvTunnel() {
+            const id = this.convTunnelData.id; 
+
+            const listTags =  new Array();
+            this.newTagList.forEach(element => {
+                listTags.push(element.tag_uid)
+            });
+
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('user')).token },
+                body: JSON.stringify({ comment: this.convTunnelData.comment, tags: listTags })
+            };
+
+            fetch(`${API_URL}/api/conversions/update/${id}`, requestOptions)
+                .then(async response => {
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        const error = (data && data.message) || response.status;
+                        return Promise.reject(error);
+                    }
+                    this.fetchConvTunnel();
+                    this.$refs.closeModalBtn.click();
+                })
+                .catch(error => {
+                    this.errorMessage = error;
+                    console.error('There was an error!', error);
+                })
+                .finally(() => {
+                    this.isEditing = false;
+                    this.fetchConvTunnel();
+                    this.$refs.closeModalBtn.click();
+                });
+        },
         navigatePage(direction) {
             if (direction === 'forward' && this.currentPage < this.nbPageMax) {
                 this.currentPage = this.nbPageMax
@@ -295,7 +354,7 @@ export default {
             }
         },
         async fetchConvTunnel() {
-            const response = await fetch( API_URL + '/api/convTunnel/', {
+            const response = await fetch( API_URL + '/api/conversions/', {
                 method: "Get",
                 headers: {
                     "Content-type": 'application/json',
@@ -317,6 +376,18 @@ export default {
             .then((responseJSON) => {
                 this.tagList= responseJSON;
             });
+        },
+        editConvTunnel(convTunnel) {
+            this.convTunnelData = convTunnel;
+            this.newTagList = this.convTunnelData.tags
+            this.newTagList.forEach(element => {
+                //listTags.push(element.tag_uid)
+                this.myIndex = this.tagList.indexOf(element)
+                if(this.myIndex)
+                    this.tagList.splice(this.myIndex)
+            });
+            this.isEditing = true;
+            this.$refs.openModalBtn.click();
         }
     },
 };
@@ -368,7 +439,7 @@ export default {
   cursor: no-drop;
 }
 
-.btn-newTag {
+.btn-newCt {
     background-color: #84a3b3 !important;
     border-color: #f8fafb !important;
     border-radius: 2rem;
@@ -378,14 +449,14 @@ export default {
 	right: 5%;
 }
 
-.btn-newTag:hover {
+.btn-newCt:hover {
     background-color: #6f8d9d !important;
     border-color: #e6e8ea !important;
     border-radius: 2rem;
     color: black;
 }
 
-.btn-newTag:disabled {
+.btn-newCt:disabled {
     background-color: #9ec1d4 !important;
     border-color: #f8fafb !important;
     border-radius: 2rem;

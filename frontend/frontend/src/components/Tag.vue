@@ -8,22 +8,24 @@
 
                 <Modal>
                     <template #activator="{ openModal }">
-                        <button class="btn btn-info btn-newTag" @click="openModal">Nouveau tag</button>
+                        <button class="btn btn-info btn-newTag"  @click="tagData = {}; isEditing = false; openModal()">Nouveau tag</button>
+                        <button class="btn btn-info btn-newTag" v-show="false" ref="openModalBtn" @click="openModal">Open
+                            Modal</button>
                     </template>
                     <template v-slot:actions="{ closeModal }">
                         
                         <button class="btn btn-danger" title="Fermer" @click="closeModal">Fermer</button>
+                        <button class="btn btn-danger" v-show="false" ref="closeModalBtn" @click="closeModal">Fermer</button>
                     </template>
-                    <Form @submit="createTag" :validation-schema="schema" style="padding: 1.5em;">
+                    <Form @submit="handleSubmit" :validation-schema="schema" style="padding: 1.5em;">
                         <div class="form-group">
                             <label for="comment">Commentaire:</label>
                             <Field name="comment" v-model="tagData.comment" type="text" class="form-control" />
                             <ErrorMessage name="comment" class="error-feedback" />
                         </div>
-                        <button class="btn btn-primary" type="submit">Ajouter un tag</button>
+                        <button class="btn btn-primary" v-if="isEditing === false" type="submit">Ajouter un tag</button>
+                        <button class="btn btn-primary" v-else type="submit">Modifier ce tag</button>
                     </Form>
-                        
-                        
                     
                         <template #close-icon="{ closeModal }">
                             <button class="btn btn-default" title="Fermer" @click="closeModal">x</button>
@@ -79,15 +81,20 @@
 
             <div class="d-flex mt-4 justify-content-between py-3 px-4"
                 style="margin-left: 32px !important; padding-left:38px !important; background-color: #f8fafb; border-radius: 1rem; width: 95%; height: 60px;">
-                <div class="row">
-                    <div style="width: 450px;" class="d-flex justify-content-center border-right">
+                <div class="row col-12">
+                    <div class="d-flex justify-content-center border-right col-2">
                         <span class="cursor-pointer" @click="orderListBy('tag_uid', 'String')">
                             <b class="mr-2">Id</b>
                         </span>
                     </div>
-                    <div style="width: 750px;" class="d-flex justify-content-center">
+                    <div class="d-flex justify-content-center col-8">
                         <span class="cursor-pointer" @click="orderListBy('comment', 'String')">
                             <b class="mr-2">Commentaire</b>
+                        </span>
+                    </div>
+                    <div class="d-flex col-1 justify-content-center">
+                        <span>
+                            <b class="mr-2">Edit</b>
                         </span>
                     </div>
                 </div>
@@ -96,18 +103,23 @@
             <div v-for="(tag, index) in filteredTag" :key="index"
                 class="d-flex mt-4 justify-content-between py-3 px-4"
                 style="margin:0.5rem 0 0 2rem !important; background-color: #f8fafb; border-radius: 1rem; width: 95%; height: 60px;">
-                <div class="row px-3" :id="'dupli-row-' + tag.tag_uid">
-                    <div style="width: 450px;" class="d-flex justify-content-center border-right">
+                <div class="row px-3 col-12" :id="'dupli-row-' + tag.tag_uid">
+                    <div class="d-flex justify-content-center border-right col-2">
                         <span class="cursor-pointer">
                             <span class="badge rounded-pill badge-info">
                                 {{ tag.tag_uid ?? 'Not available' }}
                             </span>
                         </span>
                     </div>
-                    <div style="width: 750px;" class="d-flex justify-content-center">
+                    <div class="d-flex justify-content-center col-8">
                         <span class="cursor-pointer">
                             {{ tag.comment ?? 'Not available' }}
                         </span>
+                    </div>
+                    <div class="d-flex col-1 justify-content-center" style="max-width: 90px;">
+                        <button class="btn btn-primary" @click="editTag(tag)">
+                            <font-awesome-icon icon="edit" />
+                        </button>
                     </div>
                 </div>
             </div>
@@ -156,6 +168,7 @@ export default {
             },
             currentPage: 1,
             pageLimit: 10,
+            isEditing: false,
         };
     },
     computed: {
@@ -181,6 +194,13 @@ export default {
         //this.$tracker.trackPageView('/example-page', 'Example Page');
     },
     methods: {
+        handleSubmit() {
+            if (this.isEditing === false) {
+                this.createTag();
+            } else {
+                this.updateTag();
+            }
+        },
         createTag() {
 
             const requestOptions = {
@@ -188,7 +208,7 @@ export default {
                 headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('user')).token},
                 body: JSON.stringify({ comment: this.tagData.comment })
             };
-            this.tagData.comment - '';
+            this.tagData.comment = '';
             fetch(API_URL + '/api/tags/create', requestOptions)
             .then(async response => {
                 const data = await response.json();
@@ -203,6 +223,36 @@ export default {
             }).catch(error => {
                     this.errorMessage = error;
                     console.error('There was an error!', error);
+                });
+        },
+        updateTag() {
+            const id = this.tagData.id; 
+
+            const requestOptions = {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + JSON.parse(localStorage.getItem('user')).token },
+                body: JSON.stringify({ comment: this.tagData.comment })
+            };
+
+            fetch(`${API_URL}/api/tags/update/${id}`, requestOptions)
+                .then(async response => {
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        const error = (data && data.message) || response.status;
+                        return Promise.reject(error);
+                    }
+                    this.fetchTag();
+                    this.$refs.closeModalBtn.click();
+                })
+                .catch(error => {
+                    this.errorMessage = error;
+                    console.error('There was an error!', error);
+                })
+                .finally(() => {
+                    this.isEditing = false;
+                    this.fetchTag();
+                    this.$refs.closeModalBtn.click();
                 });
         },
         navigatePage(direction) {
@@ -229,6 +279,11 @@ export default {
                 this.tagList= responseJSON;
                 //console.log(this.tagList);
             });
+        },
+        editTag(tag) {
+            this.tagData = tag;
+            this.isEditing = true;
+            this.$refs.openModalBtn.click();
         }
     },
 };

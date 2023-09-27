@@ -15,7 +15,7 @@ router.get('/', userAuth.authenticate, convFunnelController.getAllConvFunns)
 //passing the middleware function to the signup
 router.post('/create',userAuth.authenticate, convFunnelController.createConvFunn);
 
-//router.put('/update/:id', userAuth.authenticate, convFunnelController.updateConvFunn)
+router.put('/update/:id', userAuth.authenticate, convFunnelController.updateConvFunn)
 
 
 module.exports = router
