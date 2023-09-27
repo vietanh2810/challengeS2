@@ -138,14 +138,19 @@
             <div class="d-flex mt-4 justify-content-between py-3 px-4"
                 style="margin-left: 32px !important; padding-left:38px !important; background-color: #f8fafb; border-radius: 1rem; width: 95%; height: 60px;">
                 <div class="row col-12">
-                    <div style="width: 50%;" class="d-flex justify-content-center border-right">
+                    <div class="d-flex justify-content-center border-right col-5">
                         <span class="cursor-pointer" @click="orderListBy('comment', 'String')">
                             <b class="mr-2">Commentaire</b>
                         </span>
                     </div>
-                    <div style="width:50%;" class="d-flex justify-content-center">
+                    <div class="d-flex justify-content-center col-5">
                         <span class="cursor-pointer" @click="orderListBy('tags', 'String')">
                             <b class="mr-2">Tags</b>
+                        </span>
+                    </div>
+                    <div class="d-flex col-2 justify-content-center">
+                        <span>
+                            <b class="mr-2">Edit</b>
                         </span>
                     </div>
                 </div>
@@ -155,15 +160,21 @@
                 class="d-flex mt-4 justify-content-between py-3 px-4"
                 style="margin:0.5rem 0 0 2rem !important; background-color: #f8fafb; border-radius: 1rem; width: 95%; height: 80px;">
                 <div class="row px-3 col-12" :id="'dupli-row-' + convtunnel.id">
-                    <div style="width: 50%;" class="d-flex justify-content-center border-right">
+                    <div class="d-flex justify-content-center border-right col-5">
                         <span class="cursor-pointer">
                             {{ convtunnel.comment?? 'Not available' }}
                         </span>
                     </div>
-                    <div style="max-width: 50%; overflow:scroll;" class="d-flex justify-content-center">
+                    <div style="max-width: 40%; overflow:scroll;" class="d-flex justify-content-center col-5">
                         <span class="cursor-pointer" v-for="(tag, index) in convtunnel.tags" :key="index">
                             <span class="badge rounded-pill badge-info">tag {{tag.tag_uid ?? 'Not available' }}</span>
                         </span>
+                    </div>
+
+                    <div class="d-flex col-2 justify-content-center" style="max-width: 90px;">
+                        <button class="btn btn-primary" @click="editConvTunnel(convtunnel)">
+                            <font-awesome-icon icon="edit" />
+                        </button>
                     </div>
                 </div>
             </div>
